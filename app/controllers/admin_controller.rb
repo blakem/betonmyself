@@ -1,3 +1,3 @@
 class AdminController < ApplicationController
-  active_scaffold :user
+  scaffold :user
 end
