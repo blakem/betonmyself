@@ -1,5 +1,7 @@
 class FooController < ApplicationController
   def index
-    render:text => "Welcome to the foo page" 
+    @time = Time.now
+  end
+  def goodbye
   end
 end

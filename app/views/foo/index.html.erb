@@ -1,0 +1,21 @@
+<html>
+ <head>
+  <title>Demo</title>
+ </head>
+ <body>
+<% 3.times do -%>
+ Welcome to the foo page</br>
+<% end -%>
+ <ul>
+  <li>Addition: <%= 1+2 %> </li>
+  <li>Concatenation: <%= "cow" + "boy" %> </li>
+  <li>Time: <%= @time %> </li>
+  <li>Time in one hour: <%= 1.hour.from_now %> </li>
+ </ul>
+ <%= h("I like <chocolate>") -%>
+ <p>
+   Time to say
+   <%= link_to "Goodbye!", :action => "goodbye" %>
+ </p>
+ </body>
+</html>
