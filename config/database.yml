@@ -2,6 +2,7 @@
 #   gem install sqlite3-ruby (not necessary on OS X Leopard)
 development:
   adapter: postgresql
+  username: root
   database: betonmyself_development
   timeout: 5000
 
