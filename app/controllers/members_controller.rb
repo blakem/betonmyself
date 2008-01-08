@@ -1,4 +1,3 @@
 class MembersController < ApplicationController
-  def index
-  end
+  active_scaffold :bet
 end

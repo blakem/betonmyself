@@ -11,9 +11,11 @@
 
 ActiveRecord::Schema.define(:version => 2) do
 
-  create_table "elephants", :force => true do |t|
-    t.string   "username"
-    t.string   "name"
+  create_table "bets", :force => true do |t|
+    t.string   "descr"
+    t.string   "amount"
+    t.string   "notes"
+    t.string   "due_date"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
