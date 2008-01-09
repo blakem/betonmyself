@@ -2,6 +2,7 @@ class UsersController < ApplicationController
   # render new.rhtml
   def new
   end
+  skip_before_filter :login_required
 
   def create
     cookies.delete :auth_token
@@ -12,7 +13,7 @@ class UsersController < ApplicationController
     @user = User.new(params[:user])
     @user.save!
     self.current_user = @user
-    redirect_back_or_default('/')
+    redirect_back_or_default('/members')
     flash[:notice] = "Thanks for signing up!"
   rescue ActiveRecord::RecordInvalid
     render :action => 'new'

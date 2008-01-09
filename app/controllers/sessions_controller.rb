@@ -3,6 +3,7 @@ class SessionsController < ApplicationController
   # render new.rhtml
   def new
   end
+  skip_before_filter :login_required
 
   def create
     self.current_user = User.authenticate(params[:login], params[:password])
@@ -14,6 +15,8 @@ class SessionsController < ApplicationController
       redirect_back_or_default('/')
       flash[:notice] = "Logged in successfully"
     else
+#     flash[:notice] = "Failed Authentication"
+#     flash.now[:error] = "Authentication Failed"
       render :action => 'new'
     end
   end

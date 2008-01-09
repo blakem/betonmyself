@@ -13,4 +13,5 @@ class ApplicationController < ActionController::Base
     config.ignore_columns.add [:created_at, :updated_at, :lock_version]
   end
 
+  before_filter :login_required
 end
