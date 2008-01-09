@@ -1,5 +1,6 @@
 Fill in the form to get an account
-<form action="/members">
- Username: <input type=text name=name><br>
- <input type=submit value="Signup">
-</form>
+<% form_for :user, :url => { :action => :create } do |form| %>
+ <p>Username: <%= form.text_field :username %></p>
+ <p>Password: <%= form.text_field :password %></p>
+ <p><%= submit_tag%></p>
+<% end %>
