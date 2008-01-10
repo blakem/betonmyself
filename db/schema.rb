@@ -13,6 +13,7 @@ ActiveRecord::Schema.define(:version => 2) do
 
   create_table "bets", :force => true do |t|
     t.integer  "user_id",    :null => false
+    t.integer  "state",      :null => false
     t.string   "descr"
     t.string   "amount"
     t.string   "notes"
