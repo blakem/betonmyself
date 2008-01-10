@@ -6,7 +6,4 @@ class BetController < ApplicationController
     columns[:descr].label = "Goal"
     columns[:amount].label = "Payoff"
   end
-  def conditions_for_collection
-#    ['amount IN (?)', ['34']]
-  end
 end
