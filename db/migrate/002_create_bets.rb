@@ -1,6 +1,7 @@
 class CreateBets < ActiveRecord::Migration
   def self.up
     create_table :bets do |t|
+      t.integer :user_id, :null => false, :references => :users
       t.string :descr
       t.string :amount
       t.string :notes

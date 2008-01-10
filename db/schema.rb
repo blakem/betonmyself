@@ -9,9 +9,10 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 3) do
+ActiveRecord::Schema.define(:version => 2) do
 
   create_table "bets", :force => true do |t|
+    t.integer  "user_id",    :null => false
     t.string   "descr"
     t.string   "amount"
     t.string   "notes"
@@ -30,5 +31,7 @@ ActiveRecord::Schema.define(:version => 3) do
     t.string   "remember_token"
     t.datetime "remember_token_expires_at"
   end
+
+  add_foreign_key "bets", ["user_id"], "users", ["id"], :name => "bets_user_id_fkey"
 
 end
