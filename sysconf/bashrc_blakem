@@ -1,0 +1,70 @@
+set -o emacs
+
+alias 'eamcs=emacs'
+export PAGER=less
+export LESS=iR
+export CHANGESDIR=diffs
+alias 'more=${PAGER}'
+alias 'mroe=${PAGER}'
+export EDITOR='emacs -nw'
+alias 'e=emacs -nw'
+alias 'eap=emacs ~/svn/mercury/lib/perl/Mercury/AP.pm'
+alias 'elisp=cd $root/lib/conf/elisp'
+alias 'ls=ls -F'
+bind '"\eOA": history-search-backward'
+bind '"\eOB": history-search-forward'
+bind '"\e[A": history-search-backward'
+bind '"\e[B": history-search-forward'
+bind '"\e[5C": forward-word'
+bind '"\e[5D": backward-word'
+bind '"\e[3C": end-of-line'
+bind '"\e[3D": beginning-of-line'
+bind '"\e[3~": delete-char'
+bind '"\M-k": "\C-p\C-w"'
+bind '"\M-j": delete-horizontal-space'
+bind '"\M-w": "\M-j\C-w\C-y \C-y"'  # M-w copy last word
+bind '" ": magic-space'
+export CVSROOT=blakem@cvs.dev.airwave.com:/usr/local/cvsroot
+export CVS_RSH=sshnox
+export SVN_SSH=sshnox
+grep -qi fedora /etc/redhat-release;
+if [ "$?" == "0" ]; then \
+  export OS=FC3;
+fi
+
+function emacs { _emacs "$@"; }
+function ci
+{
+  if [ "$TERM" == "screen" ]; then
+    echo "don't start emacs inside a screen"
+    return
+  fi
+  (echo; root; cat CVS/Root; echo); 
+  sleep 1; 
+  cvs ci "$@";
+}
+
+function sync_to_home {
+  scp /root/svn/mercury/mercury/lib/conf/emacs blakem@penguin.blakem.com:.emacs
+  scp /root/svn/mercury/mercury/lib/conf/elisp/airwave-func.el /root/svn/mercury/mercury/lib/conf/elisp/airwave-for-mercury.el /root/svn/mercury/mercury/lib/conf/elisp/examples.txt /root/svn/mercury/mercury/lib/conf/elisp/console.el blakem@penguin.blakem.com:.elisp/.
+}
+
+function sync_from_home {
+  scp blakem@penguin.blakem.com:.emacs /root/svn/mercury/mercury/lib/conf/emacs
+  scp blakem@penguin.blakem.com:.elisp/airwave-func.el blakem@penguin.blakem.com:.elisp/examples.txt blakem@penguin.blakem.com:.elisp/console.el  blakem@penguin.blakem.com:.elisp/airwave-for-mercury.el /root/svn/mercury/mercury/lib/conf/elisp/.
+}
+
+# No core files for me, please
+if [ "$USER" = "root" ]; then ulimit -c 0; fi
+
+# I like to see context with my tl
+function tl () { (log; tail -n 50 -f "$@") }
+function tnl () { (log; tail -n 0 -f "$@") }
+
+# Tab complete for cs and comparesub
+complete -F _mercury_method_completion cs
+complete -F _mercury_method_completion comparesub
+
+# bigmonitor
+alias bigmonitor='apply_diff ~/diffs/big_monitor_header.diff ; uimake';
+alias nobigmonitor='revert_diff ~/diffs/big_monitor_header.diff ; uimake';

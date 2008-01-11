@@ -1,0 +1,1187 @@
+; -*- lisp -*-
+; To do:
+;
+; make emacs do a 's-a mf' when I press F5 inside bin/update_db.pl
+; make run_modified_tests work w/o having to run 'relevant_tests'
+; make it as easy to remove a useline as it is to add one
+; super-right in a diff from the current working copy shouldn't take so damn long
+; jump back to newly added file from diff is broken (airwave-rdiff-forward)
+; look into going to test given a number and potentially optional filename
+; Make cvs-annotate run in background.
+; '{' in heredoc is broken
+; up -C should revert deleted directories
+; make mercmerc return root or something so re-homing emacs to a different mercury checkout does the right thing.
+; setting root to /root/svn/devtoys breaks F6-ing through findcallers results (darrell)
+; Be able to apply hunk that creates a new file on disk
+; Make F4 let you get to a MIB file from various point locations
+; Bind a-o to asciify oid
+; ability to copy quoted string under point
+; s-a wh should use M:U:MAC->text2bin etc. where applicable instead of pack (belden)
+; s-right_arrow won't take you into an svn-added file from a diff but c-s-right_arrow will 
+; allow belden to 'svn add' unknown files when viewing a diff
+; airwave-kill-least-significant-buffers kills some significant buffers
+; f4 on trunk revision when sandbox is on branch doesn't work
+; Annotate takes *forever* see if we can speed it up
+; f4 on variable could statically check for scope...
+; one word class add-use-line (like RallyRest)
+; Caching time machine
+; tab-complete class names rooted in Handler, for device config maps
+; f4 on 'fetch_handler' in M::H::Dispatcher.t jumps to wrong 'sub fetch_handler'
+; swap query-replace (M-%) and query-replace-regexp bindings (C-M-%)
+; green parens (after 80 chars) don't blink properly
+; Find test_data which adds '$$' to uniquify strings and begin using caller() info instead- filename and line number. This would make finding creators of leaked objects easier. (belden)
+; Add some mouse bindings to run "cs", "findcallers", and possibly "findcode" on the clicked-upon word.  Eclipse has a ctrl-click which makes navigation of code handy since you don't have to move the cursor (point) around with the keyboard.
+; kill least significant relies on existing /tmp/current_cdiff
+;   and doesn't actually pay attention to how much a file has been modified
+; airwave-follow in other window (for looking at check_use_line output)
+; fix dynamic_use to work for inlined packages
+;     x \%{"Mercury::Handler::Test::FatalCSVUploader::"}
+;     Check ServiceWatchers tests....
+; burry-buffer on method lookup
+; C-x C-b should bring up electric buffer list from within a debugger window
+; find-unbalanced-parens
+; enable f6 / shift+f6 to move through 'whatisa' output (requestor: belden)
+; emacs keyboard configuration script
+; make internal_link.tmpl easier to read (like readable-testoutput)
+; self shortcut should leave cursor after self
+; column numbers should be 1 based
+; failed_tests shouldn't record their time in the dbm
+; Ctrl-c during an awprof.db refresh requires manual removal of partial file
+; stacktrace inside assert is actually readable, could be useful elsewhere
+; revert-hunk doesn't always save correctly, revert-file doesn't always work
+; apply_diff should 755 newly added .t files, and cvs add/remove files
+; Want to be able to cut-n-paste from sub-only mode
+; cant sort indented use lines...
+; ->get() and ->get_by_id() should be special-cased like ->new()
+; bash 'up' should check for conflicts first...
+; file-completion in minibuffer should deal better with .t, and .pm
+; findcode and airwave-follow don't work well with ENV{root} set to spike
+; fix tab completion of SUPER::method_foo (don't look at the SUPER part)
+; f6 error-jumping should work in debugger
+; revist jumping to first error (sometimes it doesn't work)
+; superclass doesn't handle multiple inheritance (probably no big deal....)
+; class completion in minibuffer in emacs-nox (general minibuffer tab complete)
+;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Are we running XEmacs or Emacs?
+(defvar running-xemacs (string-match "XEmacs\\|Lucid" emacs-version))
+(add-to-list 'load-path "~/.elisp")
+(require 'airwave-generic)
+(require 'airwave-func)
+(require 'airwave-for-mercury)
+(require 'airwave-rally)
+
+;; quickly jump to lisp functions
+(require 'find-func)
+
+;; hide menu bar
+(require 'menu-bar)
+(menu-bar-mode -1)
+
+;; hide lines matching regexps 
+(require 'hide-lines);
+
+;; add line numbers to buffer
+(require 'setnu);
+(setq setnu-line-number-format "%3d  ")
+
+;; Make buffer-names uniquify better
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'post-forward)
+
+;; iswitchb
+(iswitchb-mode)
+(add-hook 'iswitchb-define-mode-map-hook 'iswitchb-my-keys)
+(defun iswitchb-my-keys ()
+ "Add my keybindings for iswitchb."
+ (define-key iswitchb-mode-map " " 'iswitchb-next-match)
+ (define-key iswitchb-mode-map "\C-f" 'iswitchb-find-file)
+ (define-key iswitchb-mode-map "\C-o" 'airwave-iswitchb-otherwindow)
+ (define-key iswitchb-mode-map "\C-j" 'iswitchb-exit-minibuffer)
+ )
+
+;; Kill whole line with single C-k when at beginning of line
+(setq kill-whole-line t)
+
+;; Tab completion on drugs
+(setq hippie-expand-try-functions-list (list
+  'airwave-try-expand-hashitems
+  'airwave-try-expand-perlclass
+  'try-expand-dabbrev-visible
+  'try-expand-dabbrev
+  'try-expand-dabbrev-all-buffers
+  'try-expand-dabbrev-from-kill
+  'try-complete-file-name-partially
+  'try-complete-file-name
+))
+
+;; make apropros and super-apropos search through more stuff
+(setq apropos-do-all t)
+
+;; none of this truncating lines stuff
+(setq truncate-partial-width-windows nil)
+
+;; start server for emacsclient
+(server-start)
+
+;; functions for applying regexps to strings instead of buffers
+(require 'string)
+
+;; better buffer selection on C-down-mouse-1 and menu bar
+;(require 'msb)
+;(msb-mode)
+(global-unset-key [C-down-mouse-1])
+; HAHAHAHAHA! I'm binding C-mouse-1 to airwave-follow, so there!
+;  (which necessitates unbinding C-down-mouse-1)
+;  -darrell
+
+;; navigation support: display function name in modeline
+;; doesn't work without imenu though.  but imenu is vaguely useful in itself.
+(which-function-mode)
+(setq which-func-cleanup-function 'airwave-which-func-cleanup)
+(add-hook 'window-configuration-change-hook 'airwave-set-frame-title)
+
+;; search for word with [f2], make backspace and delete work too
+(require 'tinysearch)
+(define-key isearch-mode-map [delete] 'isearch-delete-char)
+(define-key isearch-mode-map [backspace] 'isearch-delete-char)
+(define-key isearch-mode-map (kbd "C-o") 'isearch-occur)
+(setq tinysearch-:wrap-flag t)
+
+;; highlight long lines
+(require 'highlight-beyond-fill-column)
+(setq default-fill-column 85)
+(defface highlight-beyond-fill-column-my-face
+  '((((class color)
+      (background dark))
+     (:foreground "DarkSeaGreen2" :bold t))
+    (((class color)
+      (background light))
+     (:foreground "ForestGreen" :bold t))
+    (t
+     ()))
+  "*Face used by highlight-beyond-fill-column")
+(setq highlight-beyond-fill-column-face 'highlight-beyond-fill-column-my-face)
+(setq highlight-beyond-fill-column-in-modes
+      '("perl-mode"
+        "cperl-mode"))
+
+(require 'auto-save)
+(setq-default auto-save-directory "~/.autosaves/")
+
+(require 'comint)
+(setq confirm-kill-emacs 'yes-or-no-p)
+
+;; No TABS
+(setq-default indent-tabs-mode nil)
+
+;; fix backspace
+(global-set-key [delete] 'delete-char)
+(global-set-key [kp-delete] 'delete-char)
+(global-set-key "\M-g" 'set-mark-and-goto-line)
+(global-set-key "\C-g" 'airwave-keyboard-quit)
+(global-set-key "\M-h" 'help-for-help)
+(global-set-key "\C-x?" 'help-command)
+(global-set-key "\C-x\C-e" 'airwave-eval-last-sexp)
+(global-set-key (kbd "C-x s-e") 'eval-last-sexp)
+(global-set-key "\C-k" 'airwave-kill-line-or-region)
+(global-set-key "\M-u" 'airwave-upcase-word)
+(global-set-key "\M-l" 'airwave-downcase-word)
+(global-set-key [(meta shift u)] 'airwave-upcase-char)
+(global-set-key [(meta shift l)] 'airwave-downcase-char)
+(global-set-key "\C-xw" 'airwave-copy-buffer)
+(global-set-key "\C-x\C-w" 'airwave-copy-buffer)
+(global-set-key (kbd "C-%") 'airwave-region-replace)
+(global-set-key (kbd "C-s-%") 'airwave-region-replace-regex)
+
+;; make arrow keys keep mark active
+(global-set-key [up] 'previous-line)
+(global-set-key [down] 'next-line)
+(global-set-key [left] 'backward-char)
+(global-set-key [right] 'forward-char)
+(global-set-key [insert] 'nil)
+(global-set-key "\C-a" 'airwave-beginning-or-toindent)
+(global-set-key "\C-e" 'airwave-ending-or-nextline-end)
+
+(global-set-key [C-prior] 'airwave-jump-to-top)
+(global-set-key [C-next] 'airwave-jump-to-bottom)
+(global-set-key [C-up] '(lambda () (interactive) (previous-line 5)))
+(global-set-key [C-down] '(lambda () (interactive) (next-line 5)))
+(global-set-key [(ctrl shift p)] '(lambda () (interactive) (previous-line 5)))
+(global-set-key [(ctrl shift n)] '(lambda () (interactive) (next-line 5)))
+(global-set-key [C-left] 'airwave-backward-word)
+(global-set-key [C-right] 'airwave-forward-word)
+(global-set-key [M-up] 'airwave-backward-to-enclosing-pblock)
+(global-set-key [M-down] 'airwave-forward-to-enclosing-pblock)
+(global-set-key [M-left] 'back-to-indentation)
+(global-set-key [M-right] 'end-of-line-ignore-whitespace)
+(global-set-key [s-left] 'airwave-diff-left)
+(global-set-key [C-s-left] 'airwave-load-latest-diff-buffer)
+(global-set-key [s-right] 'airwave-diff-back-to-source)
+(global-set-key [s-up] 
+  '(lambda () (interactive) (copy-from-above-or-below 1)))
+(global-set-key [C-s-up] 
+  '(lambda () (interactive) (copy-from-above-or-below)))
+(global-set-key [s-down] 
+  '(lambda () (interactive) (copy-from-above-or-below 1 1)))
+(global-set-key [C-s-down] 
+  '(lambda () (interactive) (copy-from-above-or-below 'nil 1)))
+(global-set-key [M-s-up] 'airwave-scootch-up)
+(global-set-key [M-s-down] 'airwave-scootch-down)
+(global-set-key [M-s-left] 'airwave-scootch-left)
+(global-set-key [M-s-right] 'airwave-scootch-right)
+(global-set-key [M-S-up] 'airwave-scootch-up)
+(global-set-key [M-S-down] 'airwave-scootch-down)
+(global-set-key [M-S-left] 'airwave-scootch-left)
+(global-set-key [M-S-right] 'airwave-scootch-right)
+(global-set-key (kbd "s-0") 'airwave-blink-matching-char)
+(global-set-key (kbd "C-s-0") 'airwave-goto-matching-char)
+
+;; pairs of files to toggle between easily
+(airwave-paired-files 
+ '(
+   ("$HOME/.elisp/airwave-func.el" "$HOME/.emacs") 
+   ("bin/database.t" "bin/update_db.pl")
+   ("bin/snmpd.t" "bin/snmpd")
+   ("lib/conf/elisp/airwave-func.el" "lib/conf/emacs") 
+   ("lib/perl/Mercury/AP.pm" "lib/perl/Mercury/APTests/AP.t")
+   ("lib/perl/Mercury/AP/CiscoBase.pm" "lib/perl/Mercury/AP/CiscoTests/CiscoBase.t")
+   ("lib/perl/Mercury/AP/CiscoIOSBase.pm" "lib/perl/Mercury/AP/CiscoTests/CiscoIOSBase.t")
+   ("lib/perl/Mercury/AP/IOSConfig.pm" "lib/perl/Mercury/AP/CiscoTests/IOSConfig.t")
+   ("lib/perl/Mercury/Client.pm" "lib/perl/Mercury/ClientTests/Client.t")
+   ("lib/perl/Mercury/Reports/OldUptime.pm" "lib/perl/Mercury/Handler/Reports/OldUptime.t")
+   ("lib/perl/Mercury/Handler/APManage.pm" "lib/perl/Mercury/Handler/APManageTests/BuildDisplayVars.t")
+   ("lib/perl/Mercury/AP/Proxim/Base.pm" "lib/perl/Mercury/AP/Proxim/Tests/AP2000.t")
+   ("lib/perl/Mercury/AP/Airespace/Airespace4000.pm" 
+    "lib/perl/Mercury/AP/Airespace/Tests/Airespace4000.t" )
+   ("lib/perl/Mercury/AP/Airespace/Airespace4400.pm" 
+    "lib/perl/Mercury/AP/Airespace/Tests/Airespace4400.t" )
+   ("lib/perl/Mercury/AP/Airespace/ControllerBase.pm"
+    "lib/perl/Mercury/AP/Airespace/Tests/ControllerBase.t" )
+   ("lib/perl/Mercury/AP/Airespace/Airespace1000.pm" 
+    "lib/perl/Mercury/AP/Airespace/Tests/Airespace1000.t" )
+   ("lib/perl/Mercury/AP/Airespace/CiscoIWLC.pm" 
+    "lib/perl/Mercury/AP/Airespace/Tests/CiscoIWLC.t" )
+   ("lib/perl/Mercury/AP/Airespace/Cisco1030.pm" 
+    "lib/perl/Mercury/AP/Airespace/Tests/Cisco1030.t" )
+   ("lib/perl/Mercury/AP/Airespace/Cisco3201.pm"
+    "lib/perl/Mercury/AP/Airespace/Tests/Cisco3201.t" )
+   ("lib/perl/Mercury/AP/IOS/TemplateParser.pm"
+    "lib/perl/Mercury/CiscoTests/IOSTemplateParser.t")
+   ("lib/perl/Mercury/AP/Symbol/ThinAPBase.pm"
+    "lib/perl/Mercury/AP/Symbol/ThinAP.t")
+   ("lib/perl/Mercury/AP/Aruba/ThinAPBase.pm"
+    "lib/perl/Mercury/AP/Aruba/ThinAP.t")
+   ("/var/log/httpd/ssl_error_log" "/var/log/httpd/error_log")
+   ("/usr/lib/perl5/site_perl/5.8.0/Apache/AuthDBI.pm" "lib/perl/Mercury/Apache/AuthDBI.t")
+   ("/tmp/testrunner_failed_tests" "/tmp/testrunner_failed_tests_reason")
+   ("lib/perl/Mercury/AP/Accton/ProCurve420/FW/V2_1_0.pm"
+    "lib/perl/Mercury/AP/Accton/Tests/ProCurve420FW_2_1_0.t")
+   ("lib/templates/html/views/js_security_mode_function.tmpl"
+    "lib/perl/Mercury/Test/Javascript/APGroupSecurity.t")
+   ("lib/templates/html/views/js_firmware_add.tmpl"
+    "lib/perl/Mercury/Test/Javascript/FlashFile.t")
+   ("lib/templates/html/views/js_wesm_interface.tmpl"
+    "lib/perl/Mercury/Test/Javascript/WESMInterface.t")
+   ("lib/perl/Mercury/AP/IOS/TemplateParser.pm"
+    "lib/perl/Mercury/AP/CiscoTests/IOSTemplateParser.t")
+   ("lib/perl/Mercury/AP/Meru/ThinAPBase.pm"
+    "lib/perl/Mercury/AP/Meru/ThinAP.t")
+   ("tools/auth_aps.pl"
+    "tools/auth_aps.t")
+   )
+ )
+
+(airwave-populate-hash airwave-tab-completions
+ '(
+   ("" 'nil)
+   ("dbs" ("$DB::single = 1;"))
+   ("ddd" ("Data::Dumper::Dumper "))
+   ("xxx" ("# XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"))
+   ("c;;" ("$column = get_column('"))
+   ("cca" ("ok( check_class_attributes($class, {\n\n  }) );"))
+   ("cco" ("ok( check_obj_fields($column, {\n\n  }) );"))
+   ("dap" ("my ($ap, $dap) = get_test_up_ap;"))
+   ("wdd" ("warn Data::Dumper->Dump([], [qw()]);"))
+   ("ddq" ("$Data::Dumper::Sortkeys=$Data::Dumper::Indent=1;$Data::Dumper::Quotekeys=0;\n"))
+   (";;;" (";;;;;;;;;;;;;;;;;;"))
+   ("sc;" ("}, {\nname => '',\naction => sub {\n\n},"))
+   ("s;" ("my ($self) = @_;" "my ($class) = @_;"))
+   ("c;" ("my ($class) = @_;" "my ($self) = @_;"))
+   ("r;" ("my $r = Mercury::Apache::Request->get;\n"))
+   ("MAR" ("Mercury::Apache::Request"))
+   ("sr;" ("my ($self, $r) = @_;" "my ($class, $r) = @_;"))
+   ("cr;" ("my ($class, $r) = @_;" "my ($self, $r) = @_;"))
+   ("sa;" ("my ($self, %args) = @_;"))
+   ("ca;" ("my ($class, %args) = @_;"))
+   ("gos;" ("use Getopt::Std;\nmy %opt;\ngetopts('', \\%opt) or exit;\n"))
+   ("tz;" ("local $ENV{TZ} = 'America/Los_Angeles';"))
+   )
+ )
+
+;; Visual feedback on selections
+(setq-default transient-mark-mode t)
+ 
+; Show line and column numbers in modeline
+(line-number-mode t)
+(column-number-mode t)
+
+; 'y' for 'yes', 'n' for 'no'
+(fset 'yes-or-no-p 'y-or-n-p)
+
+;; Use cperl-mode instead of the default perl-mode
+(add-to-list 'auto-mode-alist '("\\.\\([pP][Llm]\\|[tT]\\)\\'" . cperl-mode))
+(add-to-list 'auto-mode-alist '("\\.tmpl\\'" . html-mode))
+(add-to-list 'auto-mode-alist '("\\.js\\'" . java-mode))
+(add-to-list 'auto-mode-alist '("bashrc" . sh-mode))
+(add-to-list 'auto-mode-alist '("mibs/" . snmp-mode))
+(add-to-list 'interpreter-mode-alist '("perl" . cperl-mode))
+(add-to-list 'interpreter-mode-alist '("perl5" . cperl-mode))
+(add-to-list 'interpreter-mode-alist '("miniperl" . cperl-mode))
+
+;; HOT KEYS 
+(global-set-key [f2] 'tinysearch-search-word-forward)
+(global-set-key [f3] '(lambda () (interactive) (set-mark-command t)))
+(global-set-key [(shift f3)] 'pop-global-mark)
+(global-set-key [f4] 'airwave-follow)
+(global-set-key [C-mouse-1] 'airwave-follow-mouse)
+(global-set-key [(shift f4)] 'airwave-super-follow)
+(global-set-key [(shift f2)] 'tinysearch-search-word-backward)
+(global-set-key [f5] 'airwave-run-perl-file)
+(global-set-key [(shift f5)] 'airwave-toggle-code-test-buffer)
+(global-set-key [(control f5)] 'airwave-rerun-test)
+(global-set-key [(super f5)] 'airwave-jump-to-last-test)
+(global-set-key [f6] 'next-error-recenter)
+; darrell has C-M-S-x coming from his mouse driver's "right side button"
+(global-set-key (kbd "C-M-S-x") 'next-error-recenter)
+(global-set-key [(shift f6)] 'previous-error-recenter)
+; darrell has C-M-S-z coming from his mouse driver's "left side button"
+(global-set-key (kbd "C-M-S-z") 'previous-error-recenter)
+(global-set-key [f7] 'mdi-maximize-restore-toggle)
+(global-set-key [(control f7)] 'maximize-restore-toggle-with-subbuffer)
+(global-set-key [(shift f7)] 'delete-window-restorable)
+(global-set-key [(super f7)] 'airwave-birds-eye)
+(global-set-key [(control super f7)] 'airwave-turtles-eye)
+(global-set-key [f8] 'airwave-kill-this-buffer)
+(global-set-key [(shift f8)] 'airwave-kill-other-buffer)
+(global-set-key [f9] 'airwave-perldb)
+(global-set-key [(control f9)] 'airwave-rerun-debugger)
+(global-set-key [(shift f9)] 'airwave-perldb-ask)
+(global-set-key [(super f9)] 'perldb)
+(global-set-key [f10] 'airwave-comment-dwim)
+(global-set-key [(shift f10)] 'uncomment-region)
+(global-set-key [f11] 'other-window)
+(global-set-key [(super f11)] 'airwave-swap-windows)
+(global-set-key [(control super f10)] 'airwave-toggle-pounds)
+(global-set-key [f12] 'font-lock-mode)
+(global-set-key [(control f12)] 'airwave-banish-mouse)
+(global-set-key (kbd "M-(") 'airwave-toggle-vertical-horizontal-list)
+(global-set-key (kbd "M-9") 'airwave-toggle-vertical-horizontal-list)
+
+;; make buffer list hot
+(global-set-key "\C-x\C-b"   'electric-buffer-list)
+(global-set-key "\C-j"       'iswitchb-buffer)
+(global-set-key "\M-j"       'airwave-class-picker)
+
+;; C del kills word, not line
+(global-set-key [C-delete]    'airwave-kill-word)
+(global-set-key [C-backspace] 'airwave-backward-kill-word)
+(global-set-key [M-delete]    'kill-line)
+(global-set-key [M-backspace] 'backward-kill-line)
+(global-set-key [S-backspace] 'airwave-kill-whole-word)
+(global-set-key [S-delete]    'airwave-kill-whole-word)
+(global-set-key [C-tab]       'hippie-expand)
+(global-set-key [(super tab)] 'cperl-indent-command)
+(define-key isearch-mode-map [C-tab] 'airwave-isearch-yank-char)
+
+;; Commonly-typed things
+(global-set-key [(hyper m)] '(lambda () (interactive) (insert "Mercury::")))
+(global-set-key [(hyper h)] '(lambda () (interactive) (insert "Mercury::Handler::")))
+(global-set-key [(hyper v)] '(lambda () (interactive) (insert "Mercury::Handler::View::")))
+(global-set-key [(hyper d)] '(lambda () (interactive) (insert "Mercury::DB::")))
+(global-set-key [(hyper shift d)] 'airwave-get-test-object) 
+(global-set-key [(hyper a)] '(lambda () (interactive) (insert "Mercury::AP::")))
+(global-set-key [(hyper e)] '(lambda () (interactive) (insert "Mercury::Daemon::")))
+(global-set-key [(hyper g)] '(lambda () (interactive) (insert "->get_test_object")))
+(global-set-key [(hyper shift s)] 'airwave-super-call)
+(global-set-key [(hyper s)] 'airwave-my-self)
+(global-set-key [(hyper c)] 'airwave-my-class)
+
+;; airwave bindings (aka supermap)
+(global-set-key [(ctrl super k)] '(lambda () (interactive) (append-next-kill) (airwave-kill-line-or-region)))
+(global-set-key [(meta ?\ )] 'airwave-kill-whole-word)
+(global-set-key [(ctrl ?\()] 'airwave-toggle-vertical-horizontal-list)
+(global-set-key [(ctrl ?\))] 'airwave-end-and-format-list)
+(global-set-key [(ctrl  ?\{)] 'airwave-add-braces-to-word)
+(global-set-key [(super ?\))] 'airwave-toggle-spaces-in-sexp)
+(global-set-key [(ctrl  ?\})] 'airwave-remove-braces)
+(global-set-key [(super meta ,)] 'airwave-birds-eye-delete-column)
+(global-set-key [(super meta .)] 'airwave-birds-eye-add-column)
+
+(global-set-key [(meta shift w)] 'airwave-copy-word)
+(global-set-key [(super c)] 'quick-copy-line)
+(global-set-key [(super k)] 'airwave-kill-whole-line)
+(global-set-key [(super l)] '(lambda () (interactive) (recenter 1)))
+(global-set-key [(super p)] 'yank)
+(global-set-key [(super v)] 'yank)
+(global-set-key [(super y)] 'airwave-clone-line)
+(global-set-key [(super z)] 'airwave-set-frame-properties)
+(global-set-key [(control super z)] 'airwave-maximize-frame)
+(global-set-key (kbd "s-SPC") 'airwave-push-mark)
+(global-set-key (kbd "s-a SPC") 'set-mark-command)
+(global-set-key [(super -)] 'airwave-smaller-font)
+(global-set-key [(super =)] 'airwave-bigger-font)
+(global-set-key [(super \\)] 'airwave-default-font-big)
+(global-set-key [(super ,)] 'airwave-ensure-trailing-comma)
+
+(global-set-key [(super a) ?a ?b] 'airwave-ampboard)
+(global-set-key [(super a) ?a ?f] 'airwave-airwavefunc)
+(global-set-key [(super a) ?a ?g] 'airwave-airwavegeneric)
+(global-set-key [(super a) ?a ?h] 'airwave-apply-hunk)
+(global-set-key [(super a) ?a ?i] 'airwave-apply-file)
+(global-set-key [(super a) ?a ?m] 'airwave-airwavemerc)
+(global-set-key [(super a) ?a ?p] 'airwave-open-ap)
+(global-set-key [(super a) ?a ?s] 'airwave-accept-useline-suggestions)
+(global-set-key [(super a) ?a ?u] 'airwave-add-use-line)
+(global-set-key [(super a) ?b ?b] 'airwave-bookmark-jump)
+(global-set-key [(super a) ?b ?e] 'airwave-birds-eye)
+(global-set-key [(super a) ?b ?m] 'airwave-bookmark)
+(global-set-key [(super a) ?c ?a] 'airwave-cleanap)
+(global-set-key [(super a) ?c ?b] 'airwave-copy-buffer)
+(global-set-key [(super a) ?c ?c] 'airwave-insert-current-class)
+(global-set-key [(super a) ?c ?d] 'airwave-cdiff)
+(global-set-key [(super a) ?c ?f] 'airwave-find-current-file)
+(global-set-key [(super a) ?c ?l] 'airwave-cvs-log)
+(global-set-key [(super a) ?c ?m] 'airwave-check-modified-files)
+(global-set-key [(super a) ?c ?o] 'airwave-open-console-elisp)
+(global-set-key [(super a) ?c ?p] 'airwave-class-picker)
+(global-set-key [(super a) ?c ?r] 'airwave-resolve-svn-conflict)
+(global-set-key [(super a) ?c ?s] 'airwave-comparesub)
+(global-set-key [(super a) ?c ?t] 'airwave-insert-current-task)
+(global-set-key [(super a) ?c ?u] 'airwave-check-use-lines)
+(global-set-key [(super a) ?d ?b] 'dbs)
+(global-set-key [(super a) ?d ?c] 'airwave-clean-droppings)
+(global-set-key [(super a) ?d ?d] 'airwave-delta-diff)
+(global-set-key [(super a) ?d ?e] 'airwave-dotemacs)
+(global-set-key [(super a) ?d ?l] 'airwave-difflists)
+(global-set-key [(super a) ?d ?m] 'airwave-make-diff-marker)
+(global-set-key [(super a) ?d ?n] 'airwave-delete-newest-schema-change)
+(global-set-key [(super a) ?d ?p] 'airwave-deparse-perl)
+(global-set-key [(super a) ?d ?q] 'airwave-devquote)
+(global-set-key [(super a) ?d ?r] 'airwave-diff-for-revision)
+(global-set-key [(super a) ?d ?s] 'dbs)
+(global-set-key [(super a) ?d ?w] 'airwave-delete-new-trailing-whitespace)
+(global-set-key [(super a) ?e ?b] 'airwave-eval-buffer)
+(global-set-key [(super a) ?e ?h] 'airwave-end-here)
+(global-set-key [(super a) ?e ?m] 'airwave-method-extract)
+(global-set-key [(super a) ?e ?o] 'airwave-expand-oid-to-snmp-config-map-entry)
+(global-set-key [(super a) ?e ?s] 'airwave-expand-security-mode)
+(global-set-key [(super a) ?e ?t] 'airwave-emacs-todo)
+(global-set-key [(super a) ?f ?c] 'airwave-findcallers)
+(global-set-key [(super a) ?f ?d] 'airwave-cvs-file-diff)
+(global-set-key [(super a) ?f ?f] 'airwave-fix-folding)
+(global-set-key [(super a) ?f ?l] 'airwave-failedlists)
+(global-set-key [(super a) ?f ?m] 'airwave-find-module)
+(global-set-key [(super a) ?f ?s] 'airwave-forget-snmp-info)
+(global-set-key [(super a) ?f ?t] 'airwave-test-filter-off)
+(global-set-key [(super a) ?f ?	] 'airwave-fix-tabstops)
+(global-set-key [(super a) ?g ?s] 'airwave-get-scratch-buffer)
+(global-set-key [(super a) ?g ?t] 'airwave-get-test-object)
+(global-set-key [(super a) ?h ?c] 'airwave-hide-copyleft)
+(global-set-key [(super a) ?h ?h] 'airwave-help)
+(global-set-key [(super a) ?i ?a] 'airwave-isa)
+(global-set-key [(super a) ?i ?c] '(lambda () (interactive) 
+                                     (setq case-fold-search (not case-fold-search))))
+(global-set-key [(super a) ?i ?o] 'airwave-insert-isa-ok)
+(global-set-key [(super a) ?i ?p] 'airwave-init-for-package)
+(global-set-key [(super a) ?i ?v] 'airwave-tobelden)
+(global-set-key [(super a) ?j ?s] 'airwave-open-amp-js)
+(global-set-key [(super a) ?k ?c] 'airwave-kill-cvs-buffers)
+(global-set-key [(super a) ?k ?l] 'airwave-kill-least-significant-buffers)
+(global-set-key [(super a) ?k ?o] 'airwave-kill-old-buffers)
+(global-set-key [(super a) ?l ?l] 'airwave-set-frame-properties)
+(global-set-key [(super a) ?l ?s] 'airwave-long-skinny)
+(global-set-key [(super a) ?m ?c] 'airwave-make-confcommon)
+(global-set-key [(super a) ?m ?e] 'airwave-method-extract)
+(global-set-key [(super a) ?m ?f] 'airwave-make-frontendperl)
+(global-set-key [(super a) ?m ?i] 'airwave-show-module-isa)
+(global-set-key [(super a) ?m ?j] 'airwave-method-jump)
+(global-set-key [(super a) ?m ?l] 'airwave-make-libperl)
+(global-set-key [(super a) ?m ?m] 'airwave-toggle-kbd-macro-recording)
+(global-set-key [(super a) ?m ?r] 'airwave-make-libperl-and-restart-apache)
+(global-set-key [(super a) ?m ?p] 'airwave-make-pm)
+(global-set-key [(super a) ?m ?s] 'airwave-method-signature)
+(global-set-key [(super a) ?m ?t] 'airwave-make-testfile)
+(global-set-key [(super a) ?n ?f] 'airwave-newly-failing-tests-list) ; belden rox
+(global-set-key [(super a) ?n ?l] 'airwave-newly-failing-tests-list)
+(global-set-key [(super a) ?n ?n] 'airwave-next-call)
+(global-set-key [(super a) ?o ?i] 'airwave-oid-info)
+(global-set-key [(super a) ?o ?r] 'airwave-translate-and-replace)
+(global-set-key [(super a) ?o ?t] 'airwave-translate-oid)
+(global-set-key [(super a) ?p ?c] 'airwave-perl-check)
+(global-set-key [(super a) ?p ?d] 'cperl-perldoc)
+(global-set-key [(super a) ?p ?i] 'airwave-init-for-package)
+(global-set-key [(super a) ?p ?p] 'airwave-pretty-print)
+(global-set-key [(super a) ?p ?t] 'airwave-test-filter-on)
+(global-set-key [(super a) ?r ?a] 'airwave-restart-apache)
+(global-set-key [(super a) ?r ?d] 'airwave-restart-daemons)
+(global-set-key [(super a) ?r ?f] 'airwave-reformat-debugging-output)
+(global-set-key [(super a) ?r ?b] 'airwave-revert-buffer)
+(global-set-key [(super a) ?r ?c] 'airwave-recent-checkin-comments)
+(global-set-key [(super a) ?r ?h] 'airwave-revert-hunk)
+(global-set-key [(super a) ?r ?f] 'airwave-revert-file)
+(global-set-key [(super a) ?r ?i] 'airwave-random-ip)
+(global-set-key [(super a) ?r ?m] 'airwave-random-mac)
+(global-set-key [(super a) ?r ?n] 'airwave-random-number)
+(global-set-key [(super a) ?r ?r] 'rally-start-task-and-pick-pair)
+(global-set-key [(super a) ?r ?s] 'airwave-random-string)
+(global-set-key [(super a) ?r ?t] 'airwave-readable-testoutput)
+(global-set-key [(super a) ?s ?a] 'airwave-svn-annotate)
+(global-set-key [(super a) ?s ?b] 'airwave-sort-buffer-diff)
+(global-set-key [(super a) ?s ?c] 'airwave-goto-superclass)
+(global-set-key [(super a) ?s ?d] 'airwave-sorted-cdiff)
+(global-set-key [(super a) ?s ?f] 'airwave-shell-function)
+(global-set-key [(super a) ?s ?l] 'airwave-suggestion-list)
+(global-set-key [(super a) ?s ?r] 'airwave-shell-replace)
+(global-set-key [(super a) ?s ?s] 'airwave-super-call)
+(global-set-key [(super a) ?s ?t] 'airwave-stack-trace)
+(global-set-key [(super a) ?s ?u] 'airwave-sort-use-lines)
+(global-set-key [(super a) ?s ?w] 'airwave-snmp-walk)
+(global-set-key [(super a) ?s ?x] 'airwave-save-and-make-executable)
+(global-set-key [(super a) ?t ?a] 'airwave-tailapache)
+(global-set-key [(super a) ?t ?b] 'airwave-toblakem)
+(global-set-key [(super a) ?t ?c] 'airwave-set-test-count)
+(global-set-key [(super a) ?t ?d] 'airwave-test-count-decrement)
+(global-set-key [(super a) ?t ?e] 'airwave-turtles-eye)
+(global-set-key [(super a) ?t ?f] 'airwave-set-test-file)
+(global-set-key [(super a) ?t ?m] 'airwave-tests-for-method)
+(global-set-key [(super a) ?t ?o] 'airwave-translate-oid)
+(global-set-key [(super a) ?t ?p] 'airwave-toggle-pounds)
+(global-set-key [(super a) ?t ?q] 'airwave-toggle-quotes)
+(global-set-key [(super a) ?t ?r] 'toggle-read-only)
+(global-set-key [(super a) ?t ?s] 'airwave-toggle-spaces-in-sexp)
+(global-set-key [(super a) ?t ?t] 'toggle-truncate-lines)
+(global-set-key [(super a) ?t ?u] 'airwave-test-count-increment)
+(global-set-key [(super a) ?u ?b] 'airwave-update-buffers)
+(global-set-key [(super a) ?u ?d] 'airwave-update-db)
+(global-set-key [(super a) ?u ?h] 'url2handler)
+(global-set-key [(super a) ?u ?i] 'airwave-uimake)
+(global-set-key [(super a) ?u ?s] 'airwave-sort-use-lines)
+(global-set-key [(super a) ?u ?t] 'airwave-insert-unix-time)
+(global-set-key [(super a) ?v ?v] 'airwave-view-version)
+(global-set-key [(super a) ?w ?a] 'airwave-warn-data-dumper)
+(global-set-key [(super a) ?w ?d] 'airwave-rally-diff)
+(global-set-key [(super a) ?w ?e] 'airwave-cdiff-what-else)
+(global-set-key [(super a) ?w ?h] 'airwave-snmpwalk-to-hash)
+(global-set-key [(super a) ?w ?i] 'airwave-whatisa)
+(global-set-key [(super a) ?w ?f] 'airwave-what-file)
+(global-set-key [(super a) ?w ?u] 'airwave-whitespace-as-underline)
+(global-set-key [(super a) ?y ?c] 'airwave-yesterdays-checkins)
+(global-set-key [(super a) ?y ?d] 'airwave-your-diff)
+(global-set-key [(super a) ?y ?m] 'airwave-insult)
+(global-set-key [(super a) ?z ?z] 'zap-to-char)
+
+(global-set-key [(super r) ?c ?t] 'rally-complete-task)
+(global-set-key [(super r) ?f ?t] 'rally-forget-task)
+(global-set-key [(super r) ?p ?m] 'rally-pair-mode)
+(global-set-key [(super r) ?p ?t] 'rally-pause-task)
+(global-set-key [(super r) ?r ?t] 'rally-resume-task)
+(global-set-key [(super r) ?s ?m] 'rally-singleton-mode)
+(global-set-key [(super r) ?s ?t] 'rally-start-task)
+(global-set-key [(super r) ?t ?a] 'rally-start-task)
+(global-set-key [(super r) ?a ?t] 'airwave-rat)
+
+(global-set-key "\M-z"     'airwave-zap-to-char)
+(global-set-key "\C-o"     'airwave-add-vertical-space)
+(global-set-key "\M-]"     'airwave-remove-braces)
+(global-set-key "\M-n"     'airwave-toggle-hide-subs)
+(global-set-key "\M-\C-s"  'airwave-findcode)
+
+(global-set-key (kbd "C-'")    'airwave-toggle-kbd-macro-recording)
+(global-set-key (kbd "M-'")    'call-last-kbd-macro)
+(global-set-key (kbd "s-'")    'airwave-edit-kbd-macro)
+(global-set-key (kbd "C-s-'")  'name-last-kbd-macro)
+(global-set-key (kbd "M-s-'")  'airwave-assign-to-last-kbd-macro)
+
+;; C-q is mapped to s-a, so quoted-insert needs a new keybinding
+(global-set-key [(super q)] 'quoted-insert)
+(global-set-key "\C-cq"    'quoted-insert)
+(global-set-key "\C-c\C-q" 'quoted-insert)
+(global-set-key (kbd "C-c s-a") 'quoted-insert)
+(global-set-key (kbd "s-a <tab>") '(lambda () (interactive) (insert "\t")))
+(global-set-key (kbd "s-a <return>") '(lambda () (interactive) (insert "\n")))
+
+(global-set-key [(control super meta s)] 'airwave-comparesub)
+
+;; code to run in cperl-mode
+(defun my-cperl-mode-hook ()
+  (cperl-define-key "\t" 'airwave-indent-cperl-region-or-line)
+  (cperl-define-key "\C-c\C-t" 'airwave-toggle-if-unless)
+  (cperl-define-key "\C-m" `newline-and-indent)
+  (cperl-define-key "\C-j" 'iswitchb-buffer)
+  (cperl-define-key (kbd "\C-x DEL") 'cperl-electric-backspace)
+  (if (string-match "^perl5db.pl\$" (buffer-name)) 
+      (fundamental-mode) ; prevent expensive parsing for this boring file
+    (imenu-add-to-menubar "Imenu"))
+  (set (make-local-variable 'compile-rpf-command) 
+       (airwave-find-test-file (buffer-file-name)))
+  (set (make-local-variable 'compile-apc-command) 
+       (airwave-find-test-file (buffer-file-name)))
+  (set (make-local-variable 'parens-require-spaces) nil)
+  (airwave-hide-copyleft t)
+  (local-set-key [S-f1] 'cperl-perldoc)
+  )
+(add-hook 'cperl-mode-hook 'my-cperl-mode-hook)
+
+; uimake when you save a template or some javascript
+(defun file-needs-uimake ()
+  (or (in-template-dir) (in-html-dir)))
+(add-hook 'after-save-hook (lambda () (if (file-needs-uimake) (airwave-uimake))))
+
+(require 'compile)
+; (add-hook 'shell-mode-hook #'compilation-shell-minor-mode) ; doesn't work very well
+(setq compilation-scroll-output t)
+(setq compilation-search-path 
+      (list (mercmerc "/lib/perl/Mercury")
+            (mercmerc "/lib/perl")
+            (mercmerc "/")
+            airwave-cvs-root
+            nil))
+(setq compilation-error-regexp-alist 
+      (append '(("# Failed test [0-9]+ in \\(.*\\) at line \\([0-9]+\\)\\( fail #[0-9]+\\)?$" 1 2)
+                (".* (\\(.*\\) at line \\([0-9]+\\)\\( fail #[0-9]+\\)?)$" 1 2))
+              compilation-error-regexp-alist))
+;;; The following two regexps trigger falsely on things like "(id: 13059)" which
+;;; really screws up our lives when we're running tests.  So I revised them to
+;;; require filenames to be at least three characters long.
+(defun airwave-fix-compilation-regexp (regexp-to-replace replacement-regexp)
+  (setq compilation-error-regexp-alist
+        (mapcar (lambda (pat)
+                  (if (equal (car pat) regexp-to-replace)
+                      (cons replacement-regexp (cdr pat))
+                    pat)) compilation-error-regexp-alist)))
+(airwave-fix-compilation-regexp 
+ (concat "\\([a-zA-Z][-a-zA-Z._0-9]+: ?\\)?"
+         "\\([a-zA-Z]?:?[^:( \t\n]*[^:( \t\n0-9]"
+           "[^:( \t\n]*\\)"
+         "[:(][ \t]*\\([0-9]+\\)\\([) \t]\\|:\\(\\([0-9]+:\\)\\|"
+         "[0-9]*[^:0-9]\\)\\)")
+ (concat "\\([a-zA-Z][-a-zA-Z._0-9]+: ?\\)?"
+         "\\([a-zA-Z]?:?[^:( \t\n]*[^:( \t\n0-9][^:( \t\n0-9][^:( \t\n0-9]"
+           "[^:( \t\n]*\\)"
+         "[:(][ \t]*\\([0-9]+\\)\\([) \t]\\|:\\(\\([0-9]+:\\)\\|"
+         "[0-9]*[^:0-9]\\)\\)"))
+(airwave-fix-compilation-regexp
+   (concat ".*([ \t]*\\([a-zA-Z]?:?[^:( \t\n]+\\)"
+           "[:(][ \t]*\\([0-9]+\\))")
+   (concat ".*([ \t]*\\([a-zA-Z]?:?[^:( \t\n][^:( \t\n][^:( \t\n]+\\)"
+           "[:(][ \t]*\\([0-9]+\\))"))
+
+(setq compilation-finish-function 'airwave-finish-compilation)
+
+(setq airwave-shell-dir-aliases
+      '(("root\n"      . "")
+        ("bin\n"       . "/bin")
+        ("lib\n"       . "/lib/perl/Mercury")
+        ("handler\n"   . "/lib/perl/Mercury/Handler")
+        ("AP\n"        . "/lib/perl/Mercury/AP")
+        ("conf\n"      . "/lib/conf")
+        ("html\n"      . "/lib/html")
+        ("scripts\n"   . "/scripts")
+        ("templates\n" . "/lib/templates/html")
+        ("tmpl\n"      . "/lib/templates/html")))
+
+;; our java style
+(add-hook 'java-mode-hook 
+          (lambda ()
+            (progn
+              (c-set-offset 'arglist-intro '+)
+              (c-set-offset 'arglist-cont 0)
+              (c-set-offset 'arglist-cont-nonempty '+)
+              (c-set-offset 'arglist-close 0)
+              (setq c-basic-offset 2)
+              (set (make-local-variable 'compile-command)
+                   (concat "make -k && "
+                           "/scratch/aml/aml/mutex java "
+                           "junit.textui.TestRunner "
+                           (file-name-sans-extension 
+                            (file-name-nondirectory (buffer-file-name))))))))
+
+;; indent 2
+(setq-default indent-level 2)
+(setq-default c-indent-level 2)
+
+;; cperl indentation;
+(setq cperl-indent-level 2
+      cperl-under-as-char t
+      cperl-indent-parens-as-block nil
+      cperl-continued-statement-offset 2
+      cperl-brace-offset 0
+      cperl-close-paren-offset -2
+      cperl-electric-parens nil
+      cperl-autoindent-on-semi t
+      cperl-auto-newline nil
+      cperl-auto-newline-after-colon nil
+      cperl-auto-newline-after-brace nil
+      cperl-electric-linefeed nil
+      cperl-electric-lbrace-space nil
+      cperl-break-one-line-blocks-when-indent nil
+      cperl-fix-hanging-brace-when-indent nil
+      cperl-use-syntax-table-text-property t
+      cperl-use-syntax-table-text-property-for-tags t
+      cperl-invalid-face nil
+)
+
+;; Enable wheelmouse support by default
+(cond (window-system (mwheel-install)))
+
+; Access system clipboard for yanking and copying but not for killing
+(if (string= window-system "x")
+    (progn
+      (setq x-cut-buffer-max 100000)
+      (setq interprogram-cut-function 'airwave-x-select-text)
+      (setq interprogram-paste-function 'airwave-x-paste-text)))
+(setq mouse-yank-at-point t)
+(global-set-key (kbd "<M-insert>") 'airwave-paste-it)
+; (setq x-select-enable-clipboard 't) ; x-cut-buffer-or-selection-value
+
+(setq-default visible-bell t)
+(blink-cursor-mode -1)
+(setq blink-matching-delay 0.1)
+
+; white on black text
+(airwave-set-background)
+
+;; minibuffer auto-complete
+; breaks file-tab-completion
+; (define-key minibuffer-local-completion-map [tab] 'hippie-expand)
+(partial-completion-mode) ; must come before geosoft-parse-minibuffer
+(setq PC-word-delimiters "-_ ")
+(define-key minibuffer-local-completion-map " " 'geosoft-parse-minibuffer) 
+(defun geosoft-parse-minibuffer ()
+  ;; Extension to the complete word facility of the minibuffer
+  (interactive)
+  (backward-char 3)
+  (setq found t)
+  (cond
+     ; local directories
+     ((looking-at "roo") (setq directory (root "/")))
+     ((looking-at "mib") (setq directory (mercmerc "/mibs/")))
+     ((looking-at "con") (setq directory (mercmerc "/lib/conf/")))
+     ((looking-at "onf") (setq directory (mercmerc "/lib/conf/")))
+     ((looking-at "eli") (setq directory (mercmerc "/lib/conf/elisp/")))
+     ((looking-at "lis") (setq directory (mercmerc "/lib/conf/elisp/")))
+     ((looking-at "isp") (setq directory (mercmerc "/lib/conf/elisp/")))
+     ((looking-at "dev") (setq directory (mercmerc "/lib/perl/Devel/")))
+     ((looking-at "lib") (setq directory
+       (root (if (string= (svnproj) "devtoys") "/rally/lib/" "/lib/perl/Mercury/"))))
+     ((looking-at ".ap") (setq directory (mercmerc "/lib/perl/Mercury/AP/")))
+     ((looking-at "han") (setq directory (mercmerc "/lib/perl/Mercury/Handler/")))
+     ((looking-at "vie") (setq directory (mercmerc "/lib/perl/Mercury/Handler/View/")))
+     ((looking-at ".db") (setq directory (mercmerc "/lib/perl/Mercury/DB/")))
+     ((looking-at "rrd") (setq directory (mercmerc "/lib/perl/Mercury/RRD/")))
+     ((looking-at "dae") (setq directory (mercmerc "/lib/perl/Mercury/Daemon/")))
+     ((looking-at "tem") (setq directory (mercmerc "/lib/templates/html/")))
+     ((looking-at "log") (setq directory "/var/log/"))
+     ((looking-at "rol") (setq directory (mercmerc "/lib/perl/Mercury/Role/")))
+     ((looking-at "sha") (setq directory "/usr/share/emacs/21.3/lisp/"))
+     ((looking-at "bin") (setq directory 
+       (root (if (string= (svnproj) "devtoys") "/rally/bin/" "/bin/"))))
+     ((looking-at "scr") (setq directory (mercmerc "/scripts/")))
+     ((looking-at "too") (setq directory (mercmerc "/tools/")))
+     ((looking-at "iff") (setq directory (home "/diffs/")))
+     ((looking-at "dif") (setq directory (home "/diffs/")))
+     ((looking-at "src") (setq directory (mercmerc "/src/")))
+     ((looking-at "svn") (setq directory (home "/svn/")))
+     ((looking-at "toy") (setq directory (home "/svn/devtoys/")))
+     (t (setq found nil)))
+  (cond (found (beginning-of-line)
+               (delete-region (line-beginning-position) (line-end-position))
+               (insert directory))
+        (t     (forward-char 3)
+               (minibuffer-complete))))
+
+; Font lock in all major modes
+(global-font-lock-mode 1)
+(setq font-lock-maximum-decoration t)
+
+; hide passwords as they are entered
+(add-hook 'comint-output-filter-functions
+          'comint-watch-for-password-prompt)
+
+;; dont load /usr/share/emacs/site-lisp/default.el
+(setq inhibit-default-init t)
+
+;; Always end a file with a newline
+(setq require-final-newline t)
+
+;; Stop at the end of the file, not just add lines
+(setq next-line-add-newlines nil)
+
+;; auto customization
+(custom-set-variables
+  ;; custom-set-variables was added by Custom -- don't edit or cut/paste it!
+  ;; Your init file should contain only one such instance.
+ '(load-home-init-file t t)
+ '(mode-line-format (quote (
+    #("-" 0 1 'nil)
+    mode-line-mule-info mode-line-modified mode-line-frame-identification
+    mode-line-buffer-identification
+    #("   " 0 3 'nil) 
+    global-mode-string 
+    #("   %[(" 0 6 'nil) 
+    (:eval (mode-line-mode-name)) 
+    mode-line-process minor-mode-alist 
+    #("%n" 0 2 (local-map 
+                 (keymap (mode-line keymap (mouse-2 . mode-line-widen))))) 
+    #(")%]--" 0 5 'nil) 
+    (line-number-mode (#("L%l" 0 3 'nil) #("--" 0 2 'nil))) 
+    (column-number-mode (#("C%c" 0 3 'nil) #("--" 0 2 'nil))) 
+    #("%p" 0 2 'nil) #("--" 0 2 'nil)
+    (which-func-mode ("" which-func-format #("--" 0 2 'nil))) 
+    #("-%-" 0 3 'nil)
+  )))
+ '(tool-bar-mode nil nil (tool-bar))
+ '(tooltip-gud-modes (quote (gud-mode c-mode c++-mode cperl-mode)))
+ '(tooltip-gud-tips-p t))
+
+(custom-set-faces
+  ;; custom-set-faces was added by Custom -- don't edit or cut/paste it!
+  ;; Your init file should contain only one such instance.
+ ;'(default ((t (:stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :width normal :family "default"))))
+  '(cperl-array-face ((t (:foreground "gold"))))
+  '(cperl-hash-face ((t (:foreground "firebrick1"))))
+  '(diff-added-face ((t (:foreground "dark turquoise"))))
+  '(diff-removed-face ((t (:foreground "violet"))))
+  '(diff-file-header-face ((t (:foreground "firebrick" :weight bold))))
+  '(diff-header-face ((((class color) (background dark)) (:foreground "forest green"))))
+  '(diff-index-face ((t (:inherit diff-file-header-face :underline t))))
+  '(diff-function-face ((t (:inherit diff-context-face :foreground "DarkGoldenrod1"))))
+  '(trailing-whitespace ((((class color) (background dark)) (:background "grey30")))))
+
+;; setdefault window size
+(setq default-frame-alist (append (list
+  (if (athome) '(width . 81) '(width . 95))
+  (if (athome) '(height . 40) (if (onfedora) '(height . 49) '(height . 57)))
+  '(vertical-scroll-bars . right)
+  '(font . "-misc-fixed-medium-r-normal--20-200-75-75-c-100-iso8859-1"))
+  default-frame-alist))
+
+(setq inhibit-startup-message    t) ; Don't want any startup message
+(setq search-highlight           t) ; Highlight search object
+(setq query-replace-highlight    t) ; Highlight query object
+(setq mouse-sel-retain-highlight t) ; Keep mouse high-lightening
+
+(global-set-key [kp-home]  'airwave-goto-beg)
+(global-set-key [home]     'airwave-goto-beg)
+(global-set-key [kp-end]   'airwave-goto-end)
+(global-set-key [end]      'airwave-goto-end)
+
+(global-set-key "\C-x`" 'next-error-recenter)
+(global-set-key [(super x) ?`] 'next-error)
+
+;; kill and yank rectangle with mouse
+(global-set-key [(meta button2)] 'yank-rectangle)
+(global-set-key [(meta button3)] 'kill-rectangle)
+
+;;; save places between sessions.
+(require 'saveplace)
+(setq-default save-place t)
+(setq save-place-file    "~/.places.emacs.sav")
+(setq dont-save-place-alist (list
+ (cons (home "/svn/mercury/svn-commit.tmp") t)
+ '("svn-commit.tmp" . t)
+ '("/tmp/use_line_suggestions" . t)
+ '("/tmp/cicomm" . t)
+ ))
+
+;; Case-insensitive tab completion.
+(setq completion-ignore-case t)
+
+;; Lisp specific stuff
+(defun my-emacs-lisp-mode-hook () 
+  (define-key emacs-lisp-mode-map [M-up] 'airwave-backward-to-enclosing-sexp)
+  (define-key emacs-lisp-mode-map [M-down] 'airwave-forward-to-enclosing-sexp)
+  (define-key emacs-lisp-mode-map [tab] 'airwave-indent-lisp-region-or-line)
+  (local-set-key "\C-j" 'iswitchb-buffer)
+  )
+(defun my-lisp-mode-hook ()
+  (define-key lisp-mode-map [M-up] 'airwave-backward-to-enclosing-sexp)
+  (define-key lisp-mode-map [M-down] 'airwave-forward-to-enclosing-sexp)
+  (define-key lisp-mode-map [tab] 'airwave-indent-lisp-region-or-line)
+  (local-set-key "\C-j" 'iswitchb-buffer)
+  )
+(defun my-lisp-interaction-mode-hook ()
+  (local-set-key "\C-j" 'iswitchb-buffer)
+  )
+(add-hook 'emacs-lisp-mode-hook 'my-emacs-lisp-mode-hook)
+(add-hook 'lisp-mode-hook 'my-lisp-mode-hook)
+(add-hook 'lisp-interaction-mode-hook 'my-lisp-interaction-mode-hook)
+
+; make isearch put you at the start of the search, not the end
+(add-hook 'isearch-mode-end-hook 'my-goto-match-beginning)
+(defun my-goto-match-beginning ()
+  (if (and isearch-success isearch-forward isearch-other-end)
+      (goto-char isearch-other-end)))
+
+; make isearch a bit smarter (C-t toggles regexp searching)
+(add-hook 'isearch-mode-hook
+          (function
+           (lambda ()
+             (define-key isearch-mode-map "*" 'airwave-isearch-star-triggers-regex-mode)
+             (define-key isearch-mode-map "\C-h" 'isearch-mode-help)
+             (define-key isearch-mode-map "\C-t" 'isearch-toggle-regexp)
+             (define-key isearch-mode-map "\C-c" 'isearch-toggle-case-fold)
+             (define-key isearch-mode-map "\C-j" 'isearch-edit-string))))
+
+; make f5 jump to source in diff mode
+(add-hook 'diff-mode-hook 'my-diff-mode-hook)
+(defun my-diff-mode-hook ()
+  (define-key diff-mode-map [f5] 'diff-goto-source)
+  (define-key diff-mode-map [s-up] 'airwave-diff-hunk-prev)
+  (define-key diff-mode-map [s-down] 'airwave-diff-hunk-next)
+  (define-key diff-mode-map [C-s-up] 'airwave-diff-hunk-prev)
+  (define-key diff-mode-map [C-s-down] 'airwave-diff-hunk-next)
+  (define-key diff-mode-map [M-up] 'airwave-diff-file-prev)
+  (define-key diff-mode-map [M-down] 'airwave-diff-file-next)
+  (define-key diff-mode-map [s-left] 'airwave-rdiff-backward)
+  (define-key diff-mode-map [s-right] 'airwave-rdiff-forward)
+  (define-key diff-mode-map [C-s-right] 'airwave-diff-jump-to-line)
+  (define-key diff-mode-map [(meta shift w)] 'airwave-copy-word)
+  (setq show-trailing-whitespace (string= window-system "x"))
+  (modify-syntax-entry ?\_ "w")
+  (set (make-local-variable 'diff-remembered-files-alist)
+       (list (cons
+              '("lib/conf/emacs" "lib/conf/emacs" "lib/conf/emacs" "emacs")
+              (root "/lib/conf/emacs"))))
+  )
+
+(add-hook 'compilation-mode-hook 'my-compilation-mode-hook)
+(defun my-compilation-mode-hook ()
+  (modify-syntax-entry ?\_ "w")
+  )
+
+(add-hook 'html-mode-hook 'my-html-mode-hook)
+(defun my-html-mode-hook ()
+  (modify-syntax-entry ?\_ "w")
+  )
+
+; M-r replace-recent-character
+(require 'rrc)
+
+; vi-like dot-mode
+(require 'dot-mode)
+(add-hook 'find-file-hooks 'dot-mode-on)
+
+; hide copyright notices
+(require 'hide-copyleft)
+
+; cvs commands
+(require 'vc-svn)
+(load (home "/.elisp/vc-hooks.el"))
+(setq diff-switches "-u")
+(setq vc-diff-switches diff-switches)
+(setq vc-svn-diff-switches (list "--diff-cmd" "diff" "-x" "-u --show-function-line=^[[:space:]]*sub[[:space:]]"))
+(setq vc-root (home "/svn/mercury"))
+(setq vc-suppress-confirm 't)  ;; save buffer before diffing
+(setq vc-cvs-stay-local nil)   ;; Dont save cvs files locally
+; (setq debug-on-error t)
+; (setq debug-on-error 'nil)
+(setq vc-handled-backends '(RCS CVS SVN SCCS))
+
+; don't iconify on C-z when running in X
+(when window-system (global-set-key "\C-z" 'airwave-zap-to-char))
+(when (not window-system) (airwave-set-charmap-for-nox))
+(airwave-set-charmap-for-x-and-nox)
+
+; load date parsing functions
+(require 'time-date)
+
+; place to store currently selected bookmark
+(require 'bookmark)
+(setq bookmark-save-flag 'nil)
+(defvar airwave-current-bookmark 'nil)
+
+;; make airwave specific menu 
+(require 'easymenu)
+(defvar airwave-menu-map (make-sparse-keymap "Airwave Menu"))
+(easy-menu-define airwave-menu airwave-menu-map
+  "Airwave Functions"
+  '("Top Level Menu"
+    ("Editing" 
+     ["Add Use Line"                  airwave-add-use-line t]
+     ["Call SUPER::"                  airwave-super-call t]
+     ["Comment/Uncomment Region"      comment-dwim :keys "<f10>"]
+     ["Copy Buffer"                   airwave-copy-buffer t]
+     ["Character Downcase"            airwave-downcase-char t]
+     ["Character Upcase"              airwave-upcase-char t]
+     ["Curlies (add)"                 airwave-add-braces-to-word t]
+     ["Curlies (delete)"              airwave-remove-braces :keys "C-}"]
+     ["Delete trailing whitespace"    airwave-delete-trailing-whitespace t]
+     ["Dot (like vi)"                 dot-mode-execute :keys "C-."]
+     ["Duplicate Line"                airwave-clone-line t]
+     ["Insert Current Class"          airwave-insert-current-class t]
+     ["Expand OID to snmp_config_map" airwave-expand-oid-to-snmp-config-map-entry t]
+     ["Expand Security Mode"          airwave-expand-security-mode t]
+     ["Kill to End of Line"           kill-line t]
+     ["Kill to End of Word"           airwave-kill-word t]
+     ["Kill to Start of Line"         backward-kill-line t]
+     ["Kill to Start of Word"         airwave-backward-kill-word t]
+     ["Kill Whole Line (or Region)"   airwave-kill-whole-line t]
+     ["Kill Whole Word"               airwave-kill-whole-word :keys "<s-backspace>"]
+     ["Method Extract"                airwave-method-extract t]
+     ["Macro Start/End"               airwave-toggle-kbd-macro-recording t]
+     ["Macro Execute"                 call-last-kbd-macro :keys "M-'"]
+     ["Macro Edit"                    airwave-edit-kbd-macro t]
+     ["Macro Save"                    name-last-kbd-macro t]
+     ["Macro Restore"                 airwave-assign-to-last-kbd-macro t]
+     ["Make .t  File (for class)"     airwave-make-testfile t]
+     ["Make .pm File (for class)"     airwave-make-pm t]
+     ["Quick Copy by line"            quick-copy-line t]
+     ["Quick Paste"                   yank :keys "s-p"]
+     ["Random IP"                     airwave-random-ip t]
+     ["Random MAC"                    airwave-random-mac t]
+     ["Random Number"                 airwave-random-number t]
+     ["Random String"                 airwave-random-string t]
+     ["Region Downcase"               airwave-downcase-word t]
+     ["Region Upcase"                 airwave-upcase-word t]
+     ["Replace Recent Char"           replace-recent-character :keys "M-r"]
+     ["Revert Buffer"                 airwave-revert-buffer t]
+     ["Save as Executable"            airwave-save-and-make-executable t]
+     ["Fix Tabstops (defaults to 2)"  airwave-fix-tabstops t]
+     ["Shell Replace Region"          airwave-shell-replace t]
+     ["SNMP walk to Perl hash"        airwave-snmpwalk-to-hash t]
+     ["Sort Use Lines"                airwave-sort-use-lines :keys "s-a s u"]
+     ["Toggle List Format"            airwave-toggle-vertical-horizontal-list t]
+     ["Toggle Postfix 'ifs'"          airwave-toggle-if-unless :keys "C-c C-t"]
+     ["Toggle Quotes"                 airwave-toggle-quotes t]
+     ["Toggle ReadOnly"               toggle-read-only t]
+     ["Toggle Surrounding Spaces"     airwave-toggle-spaces-in-sexp t]
+     ["Zap to Char"                   airwave-zap-to-char t]
+     )
+    ("CVS/Diff"
+     ["Apply Diff for File"           airwave-apply-file t]
+     ["Apply Diff for Hunk"           airwave-apply-hunk t]
+     ["CVS Annotate"                  airwave-svn-annotate t]
+     ["CVS Diff (aka cdiff)"          airwave-cdiff t]
+     ["CVS Diff for revision"         airwave-diff-for-revision t]
+     ["CVS Log"                       airwave-cvs-log t]
+     ["Delta Diff"                    airwave-delta-diff t]
+     ["Diff Timemachine Backward"     airwave-diff-left :keys "<s-left>"]
+     ["Diff Timemachine Forward"      airwave-rdiff-forward :keys "<s-right>"]
+     ["Go back to the Diff"           airwave-load-latest-diff-buffer :keys "<C-s-left>"]
+     ["Go back to the Source"         airwave-load-latest-diff-buffer :keys "<C-s-right>"]
+     ["Kill CVS Buffers"              airwave-kill-cvs-buffers t]
+     ["Make Diff Marker"              airwave-make-diff-marker t]
+     ["Revert Diff for File"          airwave-revert-file t]
+     ["Revert Diff for Hunk"          airwave-revert-hunk t]
+     ["Recent Checkin Comments"       airwave-recent-checkin-comments t]
+     ["Sort the diff in this Buffer"  airwave-sort-buffer-diff t]
+     ["Update Buffers"                airwave-update-buffers t]
+     ["View Version"                  airwave-view-version t]
+     ["What Else was checkedin"       airwave-cdiff-what-else t]
+     )
+    ("Navigation"
+     ["Beginning of Line"             back-to-indentation :keys "<M-left>"]
+     ["Blink Matching Paren"          airwave-blink-matching-char t]
+     ["Bookmark"                      airwave-bookmark t]
+     ["Bookmark Jump"                 airwave-bookmark-jump t]
+     ["Buffer List"                   electric-buffer-list t]
+     ["Buffer List (isearch)"         iswitchb-buffer :keys "C-b"]
+     ["Class Picker"                  airwave-class-picker :keys "s-a c p"]
+     ["comparesub"                    airwave-comparesub :keys "s-a c s"]
+     ["End of Line"                   end-of-line-ignore-whitespace t]
+     ["Failed List (of tests)"        airwave-failedlists t]
+     ["Findcallers"                   airwave-findcallers t]
+     ["Findcode"                      airwave-findcode t]
+     ["Goto Line"                     set-mark-and-goto-line t]
+     ["Goto Matching Paren"           airwave-goto-matching-char t]
+     ["Hide Copyright (also unhide)"  airwave-hide-copyleft t]
+     ["isa"                           airwave-isa t]
+     ["isa at point"                  airwave-show-module-isa t]
+     ["Jump to Superclass"            airwave-goto-superclass t]
+     ["Jump to Thing-At-Point"        airwave-follow t]
+     ["Jump to Other-Thing-At-Point"  airwave-super-follow t]
+     ["Jump to Method in Heirarchy"   airwave-method-jump t]
+     ["Paren Match Back"              airwave-backward-to-enclosing-pblock :keys "M-up"]
+     ["Paren Match Forward"           airwave-forward-to-enclosing-pblock :keys "M-down"]
+     ["Stack Trace (next err)"        next-error-recenter :keys "<f6>"]
+     ["Stack Trace (prev err)"        previous-error-recenter t]
+     ["Subroutine Folding"            airwave-toggle-hide-subs :keys "M-n"]
+     ["What File is this"             airwave-what-file t]
+     ["whatisa"                       airwave-whatisa t]
+     )
+    ("Tests"
+     ["Accept use line suggestions"   airwave-accept-useline-suggestions t]
+     ["check_modified_files"          airwave-check-modified-files t]
+     ["check_use_lines"               airwave-check-use-lines t]
+     ["cleanap"                       airwave-cleanap t]
+     ["cleanalldroppings"             airwave-clean-droppings t]
+     ["dbap"                          dbap :keys "M-x dbap"]
+     ["DB::single"                    dbs t]
+     ["Deparse Perl"                  airwave-deparse-perl t]
+     ["Insert Stack Trace Code"       airwave-stack-trace t]
+     ["oidinfo"                       airwave-oid-info t]
+     ["Readable TestOuput"            airwave-readable-testoutput t]
+     ["Restart Apache"                airwave-restart-apache t]
+     ["Restart Demons"                airwave-restart-daemons t]
+     ["Run 'perl -c'"                 airwave-perl-check t]
+     ["Set Test Count"                airwave-set-test-count t]
+     ["Start Debugger"                airwave-perldb t]
+     ["Test Count Down"               airwave-test-count-decrement t]
+     ["Test Count Up"                 airwave-test-count-increment t]
+     ["Test Filter Off (full test)"   airwave-test-filter-off t]
+     ["Test Filter On (partial test)" airwave-test-filter-on t]
+     ["Tests for Method"              airwave-tests-for-method t]
+     ["Translate OID"                 airwave-translate-oid t]
+     )
+    ("Make"
+     ["Make conf_common"              airwave-make-confcommon t]
+     ["Make lib_perl"                 airwave-make-libperl t]
+     ["Make frontendperl"             airwave-make-frontendperl t]
+     ["Make ui"                       airwave-uimake t]
+     )
+    ("Misc"
+     ["Font bigger"                   airwave-bigger-font t]
+     ["Font smaller"                  airwave-smaller-font t]
+     ["Font default"                  airwave-default-font-big t]
+     ["Help"                          airwave-help t]
+     ["Kill Least Significant Buffs"  airwave-kill-least-significant-buffers t]
+     ["Kill Old Buffers"              airwave-kill-old-buffers t]
+     ["perldoc"                       cperl-perldoc t]
+     ["Run a Shell Function"          airwave-shell-function t]
+     )
+    ))
+(define-key global-map [menu-bar airwave] (cons "Airwave" airwave-menu))
+
+;; smooth scrolling
+(setq scroll-step 3)
+(setq scroll-preserve-screen-position t)
+(setq scroll-conservatively 500)
+(setq next-screen-context-lines 1)
+(setq automatic-hscrolling 'nil)
+
+(setq aw-font-list (list
+  "-misc-fixed-medium-r-normal--6-60-75-75-c-40-iso8859-1"     ; teenier font 0
+  "-misc-fixed-medium-r-normal--8-60-100-100-c-50-iso8859-1"   ; teeny font   1
+  "-misc-fixed-medium-r-normal--10-100-75-75-c-60-iso8859-1"   ; tinier font  2
+  "-misc-fixed-medium-r-normal--14-130-75-75-c-70-iso8859-1"   ; tiny font    3
+  "-misc-fixed-medium-r-normal--16-160-75-75-c-80-iso8859-1"   ; small font   4
+  "-misc-fixed-bold-r-normal--15-120-100-100-c-90-iso8859-1"   ; medium font  5
+  "-misc-fixed-medium-r-normal--20-200-75-75-c-100-iso8859-1"  ; big font     6
+  "-vga-fixed-medium-r-normal--24-230-75-75-c-120-iso8859-1"   ; huge font    7
+  "-adobe-courier-bold-r-normal--24-240-75-75-m-150-iso8859-2" ; huge-wide    8
+  ))
+
+;; Distinguish between 'A' and 'a' in lisp searches (Ugh, someone resets this...)
+(setq case-fold-search 'nil)
+
+; c-mode works more like cperl-mode
+(defun my-c-mode-hook ()
+  (define-key c-mode-map [(shift f5)] 'airwave-c-toggle-code-test-buffer)
+  )
+(add-hook 'c-mode-hook 'my-c-mode-hook)
+
+(when (file-exists-p (mercmerc "/bin/ssh_for_emacs"))
+  (setenv "SVN_SSH" "ssh_for_emacs"))

@@ -1,0 +1,50 @@
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+	. ~/.bashrc
+fi
+
+# User specific environment and startup programs
+
+PATH=/usr/local/sbin:/usr/sbin:/sbin:$PATH:$HOME/bin
+BASH_ENV=$HOME/.bashrc
+USERNAME="root"
+
+shopt -s extglob
+
+export USERNAME BASH_ENV PATH
+
+CURRENT_SVN_ROOT=`cd /root/svn/mercury; svn info .|grep URL|perl -p -e 's/URL: //;'`
+
+echo "SVN Root: $CURRENT_SVN_ROOT"
+echo
+
+echo "Daemons:"
+daemons
+
+if [ -f /etc/amp_disabled ]; then
+  echo
+  echo "** Look out: /etc/amp_disabled"
+fi
+
+# XXX find a way to do this with subversion
+if (perl -e "exit 1 if '$CURRENT_SVN_ROOT' =~ /trunk/"); then
+  echo
+  echo "** SVN Stuck to: $CURRENT_SVN_ROOT"
+fi
+
+awprof_results_file=/tmp/awprof_test_results
+if [ -f $awprof_results_file ]; then
+  echo
+  echo "** build of run_relevant_test information:"
+  cat $awprof_results_file
+fi
+
+test_results_file=/tmp/amp_integration_test_results
+if [ -f $test_results_file ]; then
+  echo
+  echo "** amp-integration test information:"
+  cat $test_results_file
+  echo; echo
+fi

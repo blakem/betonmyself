@@ -1,0 +1,86 @@
+# -*- perl -*- 
+
+Tab Complete
+Mercury::AP::p
+Mercury::c
+Mercury::cv
+Mercury::
+Mercury::a
+Mercury::ap
+Mercury::am
+ddd
+
+airwave-follow
+$_->ap_radios
+$obj->ap_radios
+$_[0]->ap_radios
+Mercury::DB::AbstractAP->radios
+Mercury::AP->radios
+Mercury::AP::ProCurve420->radios
+Mercury::AP::ProCurve420::radios
+Mercury::AP::ProCurve420::_test_data
+Mercury::AP::ProCurve420->_test_data
+Mercury::AP::ProCurve420
+Inlined::Package
+'SelectBuilder::TransmitChannelPower'
+'SelectBuilder::Inlined'
+SelectBuilder::TransmitChannelPower
+$self->SUPER::apply_config()
+sub ap_radios { }
+AP_STATE_DELETED
+
+Mercury::DB::Q->scalar
+Mercury::DB::Q->new()->scalar
+Mercury::DB::Q->new->scalar
+Mercury::DB::Q->foo->scalar
+Mercury::DB::Q::scalar
+$dbp->scalar
+  
+comma_list('notinfile')
+use Mercury::Utility::DataManip qw(hashof expand_digits)
+infile('bar')
+snmp_get('this one needs more work')
+
+sub infile { 1 }
+
+{
+  package Inlined::Package
+  package Mercury::Handler::SelectBuilder::Inlined;
+}
+
+my @bar = ('abc', 'def', 'ghi', 'abc', 'def', 'ghi', 'abc', 'def', 'ghi',
+  'abc', 'def', 'ghi', 'abc', 'def', 'ghi', 'abc', 'def', 'ghi', 'jklmno',
+  'pqrst');
+my @foo = qw(aaaa bbbb cccc dddd eee aaaa bbbb cccc dddd eee aaaa bbbb cccc dddd
+  eee aaaa bbbb cccc dddd eee aaaa bbbb cccc dddd eee aaaa bbbb cccc dddd eee
+  aaaa bbbb cccc dddd eee aaaa bbbb cccc dddd eee aaaa bbbb cccc dddd eee fffff
+  dfd);
+my $hash = {'abc' => 'def', ghi => 'jkl', 345 => 789, 'abc' => 'def',
+  ghi => 'jkl', 345 => 789, 'abc' => 'def', ghi => 'jkl', 345 => 789,
+  'abc' => 'def', ghi => 'jkl', 345 => 789, 'abc' => 'def', ghi => 'jkl',
+  345 => 789};
+{
+  my @foo = ('aaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'bbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+    'cccccccccccccccccccccccccccc', 'dddddddddddddddddddddddddddd');
+  my @bar = qw(aaaaaaaaaaaaaaaaaaaaaaaaaaaa bbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    cccccccccccccccccccccccccccc dddddddddddddddddddddddddddd);
+  my %hash = (
+    aaaaaaaaaaaaaa => 'aaaaaaaaaaaaaa', bbbbbbbbbbbbbb => 'bbbbbbbbbbbbbb',
+    cccccccccccccc => 'cccccccccccccc', dddddddddddddd => 'dddddddddddddd',
+  );
+  my $ref = {
+    aaaaaaaaaaaaaa => 'aaaaaaaaaaaaaa', bbbbbbbbbbbbbb => 'bbbbbbbbbbbbbb',
+    cccccccccccccc => 'cccccccccccccc', dddddddddddddd => 'dddddddddddddd',
+    aaaaaaaaaaaaaaaaaaaaaaaaaaaa => 'bbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+    cccccccccccccccccccccccccccc => 'dddddddddddddddddddddddddddd',
+  };
+}
+                                                 {
+                                                   my $very = qw(abc def ghi
+                                                     jkl mno)  ;
+                                                   my $foo = ('abc', 'def',
+                                                     'ghi', 'jkl', 'mn', 'pqr');
+                                                   my %hash = ('key' => 'lue',
+                                                     123 => 'foo',
+                                                     bar => 'baz', bux => 345); 
+                                                 }

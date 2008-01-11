@@ -1,0 +1,1870 @@
+# .bashrc
+
+# Prevent loops in spawned subscripts
+saved_bash_env=$BASH_ENV
+export BASH_ENV=/dev/null
+
+# User specific aliases and functions
+
+[ "$root" = "" ] && export root="$HOME/svn/mercury"
+export jroot="$HOME/svn/visualrf"
+export amlroot="$HOME/svn/aml/aml"
+export toysroot="$HOME/svn/devtoys"
+
+export MIBS=all
+
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+alias ll='ls -lF'
+alias ls='ls -F'
+alias bc='bc ~/.bcrc'
+
+alias status='svn status'
+alias cad='cat > /dev/null'
+unset upn;
+alias upn='svn status'
+alias bigup='(root; up $*)'
+alias toys='cd $toysroot'
+
+function svnrm () {
+  echo "$*" | xargs -n1 /usr/bin/svn --force rm
+}
+
+alias bear_status="(condor_q -format 'Job #%s' ClusterID -format '!%d!\t' JobStatus -format 'Developer: %-12s' SubmittedByDeveloper -format '%s\n' Args -n svn.corp.airwave.com -constraint '(IntegrationSinRun == TRUE)') | perl -p -e 's/\!(\d)\!/\$1 == 5 ? \" *H*\" : \$1 == 2 ? \" *R*\" : \"\"/e' | cat -n"
+alias whats_on_the_farm="condor_status -schedd -constraint '(TotalIdleJobs > 0 || TotalRunningJobs > 0 || TotalHeldJobs > 0) && Name != \"svn.corp.airwave.com\"'"
+alias bear_hold="condor_hold -n svn.corp.airwave.com"
+alias bear_release="condor_release -n svn.corp.airwave.com"
+alias bear_history="ssh `$root/bin/towho`@svn.corp.airwave.com /opt/condor/bin/bear_history"
+
+alias collist="colgrep '%'"
+
+alias codediffstat="parseup . | egrep '\.pm$' | xargs svn diff | sorted_diffstat"
+function files_in_diff () {
+  diffstat -p0 $1 2> /dev/null | perl -ne 's{^\s+}{}; s{\s*\|.*}{} && print'
+}
+
+function up () {
+  if [ -z $1 ]; then
+    if [ -t 1 ]; then
+      if [ $(on_checkin_branch) -eq 1 ]; then
+         svnbase | grep mercury > /dev/null
+         if [ $? -eq 0 ]; then
+          echo -e "'up' on the checkins branch... are you sure? [y/N]: \c"
+          read confirm
+          case $confirm in
+            y|Y) ;;
+            *) return;;
+          esac
+         fi
+       fi
+    fi
+  fi
+
+  case $1 in
+    -C) shift;
+        file=$1; shift
+        file=$(_save_off_changes_file_parser "$file");
+        if [ $? -eq 187 ]; then
+          echo "~/$file already exists."
+          return
+        fi
+        proj=`svnproj`;
+        echo -e "As a precaution, saving $proj changes to ~/$file";
+        summarize_svn_diffs -u 3 -ld >~/$file;
+        echo "Done saving off local changes.";
+        if [ $# -ne 0 ]; then
+          svn revert -R $*
+        else
+          files_in_diff ~/$file | xargs -n1 svn revert;
+        fi
+        ;;
+     -r*)
+        rev=$(echo $1 | sed 's/^-r//');
+        if [ "$rev" = "" ]; then
+          rev=$2;
+        fi
+        svn update -r $rev;
+        ;;
+      *)
+        svn status .
+        svn update $* > /tmp/up_status
+        cat /tmp/up_status
+        if cat /tmp/up_status | grep 'UpdateDB.pm' > /dev/null; then
+          echo "Changes made to $(as_green UpdateDB.pm)."
+        fi
+        if grep '^C' /tmp/up_status > /tmp/conflicts; then
+          echo "$(as_red You had conflicts.) See /tmp/conflicts."
+        fi
+        ;;
+  esac
+}
+
+function svn () {
+  if pwd | grep 'mercury' > /dev/null; then
+    case $1 in
+      commit) svnci;
+              ;;
+      ci) shift;
+          svnci "$@";
+          ;;
+      rm) shift;
+          svnrm "$@";
+          ;;
+      mv) shift;
+          svnmv "$@";
+          ;;
+       *) /usr/bin/svn "$@";
+          ;;
+    esac
+  else
+    /usr/bin/svn "$@";
+  fi
+}
+
+function diff_for_revision () { 
+  change=$1;
+  if [ "$2" = "" ]; then
+    branch=trunk
+  else
+    branch=$2;
+  fi
+  let pre=change-1;
+  echo "svn diff -r $pre:$change `svnbase`/$branch" 1>&2;
+  svn diff -r $pre:$change `svnbase`/$branch;
+}
+
+function diff_to_tag () {
+  if [ "$2" = "" ]; then
+    branch=trunk
+  else
+    subdir=`echo $1 | sed -e 's|/.*||'`;
+    if [ "$subdir" != "branches" -a "$subdir" != "tags" ]; then
+      branch=tags/$1
+    else 
+      branch=$1
+    fi
+    shift;
+  fi
+  
+  for file in $*; do 
+    svn diff `svnbase`/$branch/`svnrelpath $file` `svnpath $file`;
+  done
+}
+
+function lsrpm () {
+  rpm2cpio $1 | cpio -itv
+}
+
+function db () {
+  ok=0
+  `hostname | grep amp-integration > /dev/null`
+  if [[ $? -eq 0 ]]; then
+    echo "You're on an amp-integration machine; accessing the database"
+    echo "might cause someone's run to get kicked off due to bootstrap failing."
+    as_red -e "Are you sure you want to do this? [y/N]: \c";
+    read confirm;
+    case $confirm in
+      y|Y) ok=1;;
+      *) ok=0;;
+    esac
+  else
+    ok=1
+  fi
+
+  if [ $ok -eq 1 ]; then
+    PGPASSWORD=airwave psql -Uairwave airwave
+  fi
+}
+alias ui_db='PGPASSWORD=airwave psql -Uairwave ui'
+
+function acap () {
+  echo "select config_template from advanced_template_config \
+    left outer join ap on ap.ap_group_id = advanced_template_config.ap_group_id \
+    where advanced_template_config.ap_type = ap.type and ap.id = $1 \
+  " | db | perl -ne 'next if /\s+config_template\s+/ or /^-+$/; print'
+}
+
+function dcap () {
+  echo "select name,value from device_config where ap_id = $1 order by name" | \
+    db | perl -ne 'next if /\s+name\s+/ or /^[-+]+$/; print';
+}
+
+function varbinds_for () {
+  perl -MMercury::AP::Factory -MMercury::AP::TestUtility -MData::Dumper \
+   -e '$ap = Mercury::AP::Factory->get_by_id('$1');
+    print Data::Dumper::Dumper [get_varbind_sets($ap)];'
+}
+function flattened_varbinds_for () {
+  perl -MMercury::AP::Factory -MMercury::AP::TestUtility -MData::Dumper \
+   -e '$ap = Mercury::AP::Factory->get_by_id('$1');
+    print Data::Dumper::Dumper [fetch_flattened_varbinds($ap)];'
+}
+
+function ecap () {
+  perl -MMercury::AP::Factory -MData::Dumper -e \
+    '$Data::Dumper::Sortkeys = $Data::Dumper::Indent = 1; 
+    print Data::Dumper->Dump([{ 
+      Mercury::AP::Factory->get_by_id('$1')->expanded_config()
+    }],["\$expanded_config"]);'
+}
+
+alias t='testrunner'
+alias ret='run_failed_tests'
+alias rett='ret -c && ret -c && ret -c && ret -c && ret -c' 
+alias halft='(cd $root; $root/bin/halft)'
+alias dbt='ret $root/bin/database.t'
+alias uimake='(root; make ui)'
+function rebrand () { 
+  brand=$1;
+  (cd $root/lib/conf && ln -sf $brand-brand.xml brand.xml);
+  rm -f /usr/local/airwave/lib/conf/brand.xml;
+  (cd $root && make copy_amp_files);
+  service httpd restart;
+}
+function run_a_testrunner() {
+  amp=`hostname -s`
+  if [ $amp = "amp-integration" ]; then
+    condor_testrunner
+  else
+    make && t
+  fi
+}
+
+alias ag='apachectl graceful'
+alias rrt='run_relevant_tests'
+alias rrrt='run_relevant_tests && rett'
+alias maket='run_a_testrunner'
+alias makett='echo -e "\nRunning: maket && rett\n"; sleep 1; maket && rett'
+alias makertt='echo -e "\nRunning: make && rrt && rett\n"; sleep 1; makert && rett'
+alias makerttp='echo -e "\nRunning: rrt -P && rett\n"; sleep 1; rrt -P && rett'
+alias makerrt='makertt'
+alias makerrtp='makerttp'
+alias force_awprof_sync='tests_for_method "foobar" > /dev/null'
+alias ml='(root; make libperl); telinit q'
+alias mf='(root; make frontendperl)'
+alias runtest='$amlroot/mutex java junit.textui.TestRunner'
+alias watch='airwave_watch'
+alias ioscfg="perl -w -MMercury::AP -e 'print Mercury::AP::Factory->get_by_id(@ARGV)->cso->get_cli->cmd(\"sh ru\")'"
+alias lancomcfg="perl -w -MMercury::AP -e 'print Mercury::AP::Factory->get_by_id(@ARGV)->cso->fetch_device_config_info->{config_file}'"
+alias subs='grep "^sub "'
+alias list_my_aps='list_aps $@ | grep `hostname -s`'
+alias up_and_make_devtoys='(toys; up; make)'
+function check_modified_files () {
+  (cd $root; svn status | \
+    perl -ne 's/[AM?] +// and not /\.swp$/ and 
+      (qx/file $_/ =~ /perl/i or $_ =~ /\.(pm|t)/) and print' | \
+    xargs check_use_lines);
+  perl -e 'my $dbsingle = `cd $ENV{root}; svn diff | \
+    grep -e "^+.*DB::single"`; \
+    print "\nWarning DB::single found:\n$dbsingle" if $dbsingle;'; 
+  perl -e 'my $dumper = `cd $ENV{root}; svn diff | \
+    grep -e "^+.*Dumper"`; \
+    print "\nWarning Dumper found:\n$dumper" if $dumper;'; 
+}
+alias root='cd $root'
+function svnbase () {
+  echo `svn info $root | perl -ne 's/^URL: (.*\/svnroot\/[\w-]+)\/?.*/$1/ && print'`
+}
+function svnpath () {
+  if [ "$1" = "" ]; then
+    file=$root
+  else
+    file=$1;
+  fi
+  echo `svn info $file | perl -ne 's/^URL: // && print'`
+}
+function svnrelpath () {
+  file=$1
+  rootpath=`svnpath`
+  fullpath=`svnpath $file`
+  perl -e '$x = "'$fullpath'"; $x =~ s{^\Q'$rootpath'/\E}{}; print $x'
+}
+
+function svnbranch () {
+  echo `svn info $root | perl -ne 's/^URL: .*\/svnroot\/// && print'`
+}
+function svnproj () {
+  if [ "$1" = "" ]; then
+    echo `svn info $root | perl -ne 's/^URL: .*\/svnroot\/([\w-]+)\/?.*/$1/ && print'`
+  else
+    export root=$HOME/svn/$1;
+  fi
+}
+function _svnproj_complete () {
+  string=''
+  if [ -d "$HOME/svn" ]; then
+    string=`(cd $HOME/svn; \ls -d $2*)`
+  fi
+  COMPREPLY=($( compgen -W "$string"));
+}
+complete -F _svnproj_complete svnproj
+
+function recent_checkin_comments () {
+   file=/tmp/recent_checkin_comments
+   filetrim=/tmp/recent_checkin_comments_trim
+   filegrep=/tmp/recent_checkin_comments_grep
+   filegrepnot=/tmp/recent_checkin_comments_grepnot
+   if [ "$1" = "" ]; then
+     comments=200
+     grepfor=""
+     grepnot=""
+   else
+     case $1 in
+         [0-9]*) comments=$1; grepfor=$2; grepnot=$3;;
+         r[0-9]*) older=$1; grepfor=$2; grepnot=$3;;
+         *) comments=500; grepfor=$1; grepnot=$2;;
+     esac;
+     if [ "$grepnot" = "branch" ]; then
+         grepnot='\n\[Branch';
+     fi
+   fi
+   if [ ! $older ]; then
+     let older=`svn info $root | grep Revision | perl -pe 's/Revision: //'`-$comments+1
+     test $older -le 1 && older=1;
+     older=r$older
+   fi
+   svn log -$older:HEAD `svnbase` > $file
+   perl -pe '$/=("-"x72); s/\n\n\n+/\n\n/g' $file > $filetrim
+   if [ "$grepfor" = "" ]; then
+     cat $filetrim
+   else
+     perl -e '$/=("-"x72); /'$grepfor'/i && print while <>; print "\n"' $filetrim > $filegrep
+     if [ "$grepnot" = "" ]; then
+         cat $filegrep
+     else
+         perl -e '$/=("-"x72); /'$grepnot'/i || print while <>; print "\n"' $filegrep > $filegrepnot
+         cat $filegrepnot
+     fi
+   fi
+}
+
+function recent_revisions () {
+  recent_checkin_comments $* | grep '^r[[:digit:]]' | f 1 | tr -d 'r'
+}
+
+function makert () {
+  echo $(hostname) | grep 'amp-integration' > /dev/null 2>&1 
+  if [ $? -eq 0 ]; then
+    echo "Sorry, you cannot makert on amp-integration"
+    return 0
+  else
+    force_awprof_sync && root && make && run_relevant_tests $*
+  fi
+}
+
+alias cleanemacsdroppings="cleandroppings '*~'"
+alias cleancvsdroppings="cleandroppings '.#*'"
+alias cleanpatchdroppings="cleandroppings '*.rej'; cleandroppings '*.orig'"
+alias cleanp="cleandroppings '*.prof'; cleandroppings 'tmon.out'; \
+  cleandroppings '*.awprof.?'; cleandroppings '*.awprof'"
+alias cleanreplcode="cleandroppings '*.replcode'"
+alias cleanalldroppings='cleanemacsdroppings; cleancvsdroppings; cleanpatchdroppings; cleanp; cleanreplcode';
+alias unreplcode="find $root -name \*.replcode | xargs rename .replcode ''"
+function cleandroppings () {
+  if [ "$1" = "" ]; then
+    echo "Usage: cleandroppings pattern";
+  else
+    (cd $root; find . -name "$1" -print0 | xargs -0 rm -f)
+  fi
+}
+
+alias untar='tar zxvpf'
+alias tarz='tar zcvpf'
+
+alias pd='perl -d'
+function modver () {
+  perl -M$1 -le "print $1->VERSION"
+}
+alias html='cd $root/lib/html'
+alias static='html; cd static'
+alias templates='cd $root/lib/templates/html'
+alias tmpl='cd $root/lib/templates/html'
+alias lib='cd $root/lib/perl/Mercury'
+alias libj='cd $root/lib/java'
+alias AP='lib; cd AP'
+alias DB='lib; cd DB'
+alias feature='lib; cd Feature'
+alias scripts='cd $root/scripts'
+alias tools='cd $root/tools'
+alias conf='cd $root/lib/conf'
+alias sql='cd $root/lib/sql'
+alias handler='cd $root/lib/perl/Mercury/Handler'
+alias data='cd /var/lib/pgsql/data'
+alias log='cd /var/log'
+alias logs='cd /var/log'
+alias mibs='cd /usr/local/airwave/share/snmp/mibs'
+alias bin='cd $root/bin'
+alias src='cd $root/src'
+alias bak='cd /var/airwave-backup'
+alias qatest='lib; cd Test/Acceptance'
+alias custom='cd /var/airwave/custom'
+
+# Visual RF stuff
+alias jroot='cd $jroot'
+alias jglobal='cd $jroot/global/visualrf'
+
+# create setup_properties.xml in global/ from the .example file
+alias jbuild='(jglobal; ant clean-all deploy)'
+
+# Set the test.site.id in global/module.xml before running the tests
+alias jtest='(jglobal; ant test-all)'
+
+alias jdeploy='(jglobal; cd deploy; \cp -fr * $root/lib/java; \rm -f $root/lib/java/*.bat; \rm -f $root/lib/java/visualrf_startup.sh; ml)'
+
+alias perldoc='perldoc -U'
+alias psa='ps auwwx'
+alias psg='ps auwwx | grep -i '
+alias pstests='psg perl | grep "\.t" | perl -pe "s/ +$//"'
+alias nc='nc -noask'
+alias ec='emacsclient --no-wait'
+alias tailf='tail -f'
+alias tailapache='tailf /var/log/httpd/*error*_log'
+alias "taillogs=(cd /var/log; file \$(ls -F . httpd/*log | grep -vE '[./]') | \
+      grep text | cut -f1 -d: | xargs tail -f)"
+
+alias gh='history | grep'
+alias gr='rpm -qa | grep'
+alias ra='service httpd restart'
+alias mr='ml; ra'
+alias rd='$root/scripts/restart_daemons.pl'
+alias cs='comparesub'
+alias doff='(touch /etc/amp_disabled; $root/scripts/restart_daemons.pl; service radiusd stop; service vsftpd status > /dev/null && service vsftpd stop)'
+alias alloff=stop_amp_services
+alias don=enable_amp
+alias dbstop='service httpd stop; service radiusd stop'
+
+alias disable_amp=stop_amp_services
+alias enable_amp='rm -f /etc/amp_disabled'
+alias amp_disable=stop_amp_services
+alias amp_enable=enable_amp
+alias duff='diff -ru --show-function-line=^[[:space:]]*sub'
+
+function psk () {
+  psg $1 | f 2 | xargs kill -9
+}
+
+function rs () {
+  service=$1
+  perl -MMercury::Daemon::Service::$service\
+    -e "Mercury::Daemon::Service::$service->new->restart"
+}
+
+AMPS=(sigma volt joule erg watt amp-integration dogg \
+    sim1 decibel lux farad mole kelvin newton tesla\
+    gauss scoville rad brix mu ratt catt hogshead hogg\
+    colossus helen rod pico fathom pixel shekel foe\
+    siriometer carat aangstroem point proof linja)
+FARM=(amp-integration amp-integration-2 amp-integration-3 \
+    amp-integration-4 amp-integration-5 amp-integration-6 \
+    amp-integration-7 amp-integration-8)
+
+for amp in ${AMPS[@]}; do 
+  alias $amp="ssh $amp"
+done
+function devamps () { 
+  file=/tmp/devamps
+  rm -f $file
+  for amp in ${AMPS[@]}; do 
+    echo $amp >> $file;
+  done
+  sort $file
+}
+
+function bear_tail () {
+  run=$(bear_status | grep '\\*R\\*' | head -1 | f -2)
+  if [ -z $run ]; then
+    echo "nothing to watch";
+    return;
+  else
+    echo -e "\n$(as_red Rawrrr! Watching $run!)\n\n" 1>&2
+    amp-integration 'while [ ! -f /var/log/bear/'$run' ]; do sleep 1; done; tail --pid=`ps -ef | grep [b]ear-wrapper | grep [p]erl | f 2` -f /var/log/bear/'$run
+    echo -e "\n$(as_green Growwl! Bears like honey!)\n\n" 1>&2
+  fi
+}
+function tail_bear () {
+  bear_tail
+}
+
+function cdiff () {
+  file='/tmp/current_dir_diff';
+  svn status "$@" | perl -ne '/^\?/ && print' > $file;
+  svn diff --diff-cmd diff --extensions '-u --show-function-line=^[[:space:]]*sub[[:space:]]' "$@" >> $file;
+  if [ -s $file ]; then
+    less $file;
+  else 
+    echo "Empty diff." 1>&2
+  fi
+}
+
+function delta_diff () {
+  if [ "$2" != "" ]; then
+    interdiff $@;
+    return
+  fi
+  old_diff=$1;
+  new_diff=~/diffs/diff_for_delta.diff;
+  delta_diff=~/diffs/delta_diff.diff;
+  if [ ! -e $old_diff ]; then
+    old_diff=~/diffs/$old_diff.diff;
+  fi
+  if [ ! -e $old_diff ]; then
+    echo "No such file '$old_diff'" > $delta_diff;
+  else
+    summarize_svn_diffs -u 3 -ld > $new_diff;
+    interdiff $old_diff $new_diff > $delta_diff 2>&1;
+  fi
+  cat $delta_diff;
+}
+
+function tags () {
+  if [ "$1" = "" ]; then
+    lines=15
+  else
+    lines=$1
+  fi
+  echo -e "\nRecent SVN tags:"
+  svn list --verbose `svnbase`/tags | \
+  sort -gr | \
+  head -$lines
+}
+
+function branches () {
+  if [ "$1" = "" ]; then
+    lines=15
+  else
+    lines=$1
+  fi
+  echo -e "\nRecent SVN branches:"
+  svn list --verbose `svnbase`/branches | \
+  sort -gr | \
+  head -$lines
+}
+
+function branchpoint_for () {
+  svn -q log --stop-on-copy `svnbase`/branches/$1 | perl -lne '/(\d+)/ && print $1' | tail -1
+}
+
+function comments_on_branch () {
+  svn log --stop-on-copy `svnbase`/branches/$1
+}
+
+function tag_the_trunk () {
+  if [ "$1" = "" ]; then
+    echo "Usage:"
+    echo "  tag_the_trunk NEW_INSTALL_TEST_TAG # tags NEW_INSTALL_TEST_TAG from top of trunk"
+    return;
+  else
+    echo "Tagging $1 from top of trunk"
+    svn copy `svnbase`/trunk `svnbase`/tags/$1 -m "Tagging $1 from top-of-trunk"
+  fi
+}
+
+function tag_a_branch () {
+  if [ "$1" = "" -o "$2" = "" ]; then
+    echo "Usage:"
+    echo "  tag_a_branch QA_X_X_BRANCH NEW_TAG # tags NEW_TAG from QA_X_X_BRANCH"
+    return;
+  else
+    branch=$1
+    tag=$2
+    echo "Tagging $tag on $branch"
+    svn copy `svnbase`/branches/$branch `svnbase`/tags/$tag -m "Tagging $tag on $branch"
+  fi
+}
+
+function copy_tag () {
+  if [ "$1" = "" -o "$2" = "" ]; then
+    echo "Usage:"
+    echo "  copy_tag INSTALL_TEST_4_3_A NEW_TAG # Copies INSTALL_TEST_4_3_A to NEW_TAG"
+    return;
+  else
+    src=$1
+    dst=$2
+    echo "Copying $src to $dst"
+    svn copy `svnbase`/tags/$src `svnbase`/tags/$dst -m "Copying $src to $dst"
+  fi
+}
+
+function branch_the_trunk () {
+  if [ "$1" = "" ]; then
+    echo "Usage:"
+    echo "  branch_the_trunk QA_BRANCH_3_2_1     # branches QA_BRANCH_3_2_1 from top of trunk"
+    echo "  branch_the_trunk QA_BRANCH_3_2_1 123 # branches QA_BRANCH_3_2_1 from top of r123"
+    return;
+  else
+    if [ "$2" = "" ]; then
+      echo "Branching $1 from top of trunk"
+      svn copy `svnbase`/trunk `svnbase`/branches/$1 -m "Branching $1 from top-of-trunk"
+    else
+      echo "Branching $1 from r$2"
+      svn copy `svnbase`/trunk `svnbase`/branches/$1 -r $2 -m "Branching $1 from r$2"
+    fi
+  fi
+}
+
+alias fp='perl -MCwd -le '\''$f = Cwd::abs_path($ARGV[0]); -e $f && print $f'\'''
+function apply_diff () {
+  diff=`fp $1`
+  cleanalldroppings
+  (cd $root; patch -p0 < $diff; grep 'RCS file: ' $diff |grep '\.t$'|awk '{print $3}'|xargs -r chmod 755)
+}
+function revert_diff () {
+  diff=`fp $1`
+  (cd $root; patch -p0 -R < $diff)
+} 
+
+function _gendiff () {
+  export FILE="/tmp/vidiff$$.diff";
+  DIFFCMDS="$1"; shift;
+  svn status "$@" | perl -ne '/^\?/ && print' > $FILE;
+  trap 'stty sane' 2
+  svn $DIFFCMDS --diff-cmd diff --extensions '-u --show-function-line=^[[:space:]]*sub[[:space:]]' "$@" >> $FILE;
+  trap - 2
+}
+
+function _vidiff () {
+  STATS="/tmp/diffstat$$.diff";
+  echo "Diff stats: " > $STATS;
+  diffstat $FILE >> $STATS;
+  echo "-------------------------------------------------------------------" \
+    >> $STATS;
+  echo >> $STATS;
+  cat $FILE >> $STATS;
+  vi $STATS; 
+  rm -f $FILE $STATS;
+}
+
+function bdiff () {
+  BRANCH="$1"; shift;
+  export FILE="/tmp/bdiff$$.diff";
+  (cd /tmp;
+    rm -rf bdiff1;
+    cvs -Q export -n -r HEAD -d bdiff1 mercury-code; # XXX
+    rm -rf bdiff2;
+    cvs -Q export -n -r "$BRANCH" -d bdiff2 mercury-code;
+  )
+  pushd /tmp/bdiff1
+  diff -r -u -N . ../bdiff2 > "$FILE"
+  _vidiff
+  popd
+}
+
+function vidiff () {
+  cd_back=0;
+  if [ "`pwd`" = $HOME ]; then
+    root;
+    cd_back=1;
+  fi
+  _gendiff diff "$@"
+  _vidiff
+  [ $cd_back -eq 1 ] && cd $HOME;
+}
+
+function virdiff () {
+  _gendiff rdiff "$@" mercury
+  _vidiff
+}
+
+function vdbf () {
+  _vdb '-f'
+}
+function vdb () {
+  _vdb
+}
+function _vdb () {
+  PGUSER=postgres vacuumdb $1 -v airwave 2>&1 | \
+  tee ~/.vdb.out | \
+  perl -ne '
+    $table = $1 if /--Relation (.*)--/;
+    next if $table =~ /^pg_/;
+    print "$table: $1\n" if /(Pages.*UnUsed.*)$/;
+  '
+}
+function rdiff () {
+  file=$1
+  if [ -d "$file" ]; then
+    echo "$file is a directory. I'm only smart enough to diff files..."
+    return
+  fi
+  svn diff -r PREV:COMMITTED $file
+}
+function url2handler () {
+  perl -MMercury::Preload -MMercury::Handler::DispatcherMap -e '
+    $url = lc("'$1'") or die "please provide a url\n"; 
+    $url =~ s|.*/||;
+    $url =~ s|\?.*||;
+    $url = "/$url";
+    $handler = Mercury::Handler::DispatcherMap->fetch_map->{$url}{class}; 
+    die "No Match Found\n" unless $handler and $handler !~ /::$/;
+    print "$url => $handler\n";
+  ';
+}
+
+function urlfromhandler () {
+  perl -MMercury::Handler::DispatcherMap -e '
+    $class = "'$1'" or die "please provide a class name\n"; 
+    $class =~ s|\s||;
+    $class =~ s|^(?!Mercury::Handler::)|Mercury::Handler::|;
+    $url = Mercury::Handler::DispatcherMap->path_for_class($class);
+    die "No Match Found\n" unless $url;
+    print "$class => http://$ENV{HOSTNAME}${url}\n";
+  ';
+}
+
+function awprof_make_full_test_script () {
+  scriptfile=/tmp/awprof_fulltests.sh
+  outputfile=/tmp/awprof_fulltests.out
+  echo "cd $root" > $scriptfile
+  chmod 755 $scriptfile;
+  echo "rm -f /tmp/awprof_fulltests.out" >> $scriptfile
+  for f in `(cd $root; find -name '*.t')`; do 
+    echo "echo \"running $f\" >> $outputfile" >> $scriptfile
+    echo "$f >> $outputfile 2>&1" >> $scriptfile
+  done
+  echo "Script is in $scriptfile"
+}
+
+function tests_matching () {
+   (root; find -name '*\.t' | grep -iE "$@")
+}
+function tests_containing () {
+  grepopt=l
+  regex=$1
+  if [ "$1" = "-v" ]; then
+    grepopt=L 
+    regex=$2
+  fi
+   (root; find -name '*\.t' | xargs grep -i"$grepopt"E "$regex")
+}
+function tests_for_cdiff () {
+  (root; svn diff --diff-cmd 'diff' --extensions '-U 2000 -b -B --show-function-line=^[[:space:]]*sub[[:space:]]')  > /tmp/current_changes
+  tests_for_diff "$@" /tmp/current_changes
+}
+function modified_tests () { 
+  (cd $root; parseup_saved 'ACM?GRX' | grep -E '\.t$')
+}
+function modified_lib_tests () {
+  (cd $root; parseup_saved 'ACM?' | grep -E '\.pm$' | perl -p -e 's/\.pm$/\.t/' | xargs -r find 2>/dev/null)
+}
+function add_delete_tests () {
+  if parseup_saved AD | grep . > /dev/null 2>&1; then
+    echo "lib/perl/Mercury/Handler/DispatcherMap.t"
+    echo "lib/perl/Mercury/DB/Factory.t"
+    echo "lib/perl/Mercury/DB/Insanity.t"
+    echo "lib/perl/Mercury/Handler/View/UpdateHiddenSecrets.t"
+  fi
+}
+function relevant_tests () {
+  save_status
+  modified_tests > /tmp/modified_tests;
+  modified_lib_tests > /tmp/modified_lib_tests;
+  tests_for_cdiff -q > /tmp/cdiff_tests;
+  add_delete_tests > /tmp/add_delete_tests
+  always_relevant_tests > /tmp/always_relevant_tests
+  /bin/rm /tmp/saved_status
+
+  perl -ne 'print unless $s{$_}++' /tmp/modified_tests \
+    /tmp/cdiff_tests /tmp/always_relevant_tests \
+    /tmp/modified_lib_tests /tmp/add_delete_tests > /tmp/relevant_tests
+  cat /tmp/relevant_tests >> /tmp/historical_relevant
+  cat /tmp/relevant_tests
+}
+
+function shared_relevant_tests () {
+  if [ "$1" = "" ]; then
+    echo "Usage: shared_relevant_tests <other_machine>";
+  else 
+    scp -q $1:/tmp/relevant_tests /tmp/$1_relevant_tests > /dev/null
+    relevant_tests > /dev/null
+    perl -ne 'print unless $s{$_}++' /tmp/relevant_tests \
+      /tmp/$1_relevant_tests > /tmp/shared_relevant_tests
+    cat /tmp/shared_relevant_tests
+  fi
+}
+
+function _run_tests () {
+  if [ "$1" = "" ]; then
+    echo "Usage: _run_tests <test1> <test2>";
+  else
+    (cd $root; ret "$@")
+  fi
+}
+alias tests_for_template=tests_for_file
+function run_tests_matching ()   { _run_tests `tests_matching "$@"`; }
+function run_tests_containing () { _run_tests `tests_containing "$@"`; }
+function run_tests_for_cdiff ()  { _run_tests -p `tests_for_cdiff -q "$@"`; }
+function run_modified_tests ()   { _run_tests "$@" `modified_tests`; }
+function run_always_relevant_tests ()   { _run_tests "$@" `always_relevant_tests`; }
+function run_relevant_tests ()   {
+  echo $(hostname) | grep 'amp-integration' > /dev/null 2>&1 
+  if [ $? -eq 0 ]; then
+    echo "Sorry, you cannot run_relevant_tests on amp-integration"
+    return 0
+  fi
+  _run_tests -p "$@" `relevant_tests`;
+}
+function run_tests_for_method () { _run_tests -p `tests_for_method -q "$@"`; }
+alias rtfm='run_tests_for_method'
+function run_tests_for_template () { _run_tests -p `tests_for_file -q "$@"`; }
+function run_tests_for_file ()   { _run_tests -p `tests_for_file -q "$@"`; }
+function run_tests_for_module () { _run_tests -p `tests_for_module -q "$@"`; }
+function run_tests_for_diff ()   { _run_tests -p `tests_for_diff -q "$@"`; }
+function run_shared_relevant_tests () { 
+  if [ "$1" = "" ]; then
+    echo "Usage: run_shared_relevant_tests <other_machine>";
+  else
+    _run_tests -p `shared_relevant_tests $@`;
+  fi
+}
+
+function show_rel_scores () {
+  tests_for_cdiff | perl -ne 's/\t//; print if $x; $x = 1 if /execute those/' | \
+    tac > /tmp/rel_scores;
+  cat /tmp/rel_scores;
+}
+
+function run_minscore_relevant_tests {
+  score="$1";
+  shift;
+  MIN_RELEVANT_SCORE=$score run_relevant_tests $@;
+}
+
+function settitle () {
+  if [ "$1" = "" ]; then
+    unset TERM_TITLE_PREFIX;
+  else 
+    export TERM_TITLE_PREFIX="$1:";
+  fi
+}
+
+function tl () { (log; tail -n 0 -f "$@") }
+function tll () { (log; tail -n 30 -f "$@") }
+
+function _tl_complete () {
+  string=`(cd /var/log; perl -e '\
+     @m = glob("'$2'*"); \
+     @m = glob("$m[0]/*") if @m == 1 and -d $m[0]; \
+     print join " ", \
+       grep { not /\.\d+$/ } \
+       map { -d $_ ? "$_/" : $_ } @m; \
+  ')`;
+  COMPREPLY=($( compgen -W "$string"));
+}
+complete -F _tl_complete tl
+complete -F _tl_complete tll
+
+function tvi () { (templates; vi "$1".tmpl; cd $root; make ui); }
+
+function dw () { while (true); do clear; date; daemons; sleep 3; done; }
+
+function _tvi_complete () { # XXX
+  string=`(templates; perl -e '\
+     @m = grep { not m|/CVS$| } glob("'$2'*"); \
+     @m = grep { not m|/CVS$| } glob("$m[0]/*") if @m == 1 and -d $m[0]; \
+     print join " ", \
+       map { s/\.tmpl$//; $_ } \
+       map { -d $_ ? "$_/" : $_ } @m; \
+  ')`;
+  COMPREPLY=($( compgen -W "$string"));
+}
+complete -F _tvi_complete tvi
+
+function dbq () {
+  perl -MMercury::DB::Q -de '$db = Mercury::DB::Q->new();' -e1
+}
+
+function sg () {
+  ip="$1"
+  community="$2"
+  shift; shift
+  /usr/bin/snmpget -v 1 -c "$community" "$ip" "$@"
+}
+
+function ss () {
+  ip="$1"
+  community="$2"
+  shift; shift
+  /usr/bin/snmpset -v 1 -c "$community" "$ip" "$@"
+}
+
+function sw () {
+  ip="$1"
+  community="$2"
+  shift; shift
+  /usr/bin/snmpwalk -v 1 -c "$community" "$ip" "$@"
+}
+
+function s2g () {
+  ip="$1"
+  community="$2"
+  shift; shift
+  /usr/bin/snmpget -v2c -c "$community" "$ip" "$@"
+}
+
+function s2s () {
+  ip="$1"
+  community="$2"
+  shift; shift
+  /usr/bin/snmpset -v2c -c "$community" "$ip" "$@"
+}
+
+function s2w () {
+  ip="$1"
+  community="$2"
+  shift; shift
+  /usr/bin/snmpbulkwalk -v2c -c "$community" "$ip" "$@"
+}
+
+function _psw () {
+  ip="$1"
+  community="$2"
+  version="$3"
+  shift; shift; shift
+  topic="/what/psw/$$"
+  ps_pub /what/snmp_fetcher_cmd ip "$ip" community "$community" port 161 \
+    version "$version" cmd fetch_table pub_topic "$topic" period 7 \
+    timeout 5 node_id $$ baseoids \[ $@ \]
+  ps_snoop "$topic"
+}
+function psw () {
+  ip="$1"
+  community="$2"
+  shift; shift
+  _psw "$ip" "$community" 1 $@
+}
+function ps2w () {
+  ip="$1"
+  community="$2"
+  shift; shift
+  _psw "$ip" "$community" 2 $@
+}
+
+function mibdiff() {
+  diff $1 $2 | grep '^[<>]' | grep -v Counter32 | grep -v Timeticks | grep -v Gauge
+}
+
+function dbap () {
+  perl -d -MMercury::AP::Factory -MData::Dumper \
+    -e '$DB::deep = 999;' \
+    -e '$ap = Mercury::AP::Factory->get_by_id('"$1"');' \
+    -e '$DB::single = 1;' \
+    -e'$ap->{_snmp_warn} = 1;' \
+    -e1
+}
+
+function dbrap () {
+  perl -d -MMercury::DB::RogueAP -MData::Dumper \
+    -e '$ap = Mercury::DB::RogueAP->get_by_id('"$1"');' \
+    -e'$ap->{_snmp_warn} = 1;' \
+    -e1
+}
+
+function dbw () {
+  perl -d -MMercury::DB::WLSE -MData::Dumper -MSOAP::Lite \
+    -e 'SOAP::Data->import('name');' \
+    -e '$w = Mercury::DB::WLSE->get_by_id('"$1"');' \
+    -e '$foo = "bar";' -e1
+}
+
+function findsub () {
+  findcode "sub $1"
+}
+function findcallers () {
+  findcode -C -X $@
+}
+function method_signature () {
+  method="$1"
+  comparesub -b $method | egrep '\-$|^ *sub |@_' | sed 's/^\(.*--*$\)/\n\1/' | tail -n +2
+}
+
+function _mercury_method_completion () {
+  perl -e '$f = "/tmp/mercury_methods"; if (not -e $f or -M $f > .2) {
+    system("subs_in_system -c |
+      perl -ne '\''push \@x, \$_} {print sort \@x'\'' > $f")
+  }';
+  string=`look $2 /tmp/mercury_methods`;
+  COMPREPLY=($( compgen -W "$string"));
+}
+complete -F _mercury_method_completion findcallers
+
+function perlp () {
+  perl -d:DProf "$@"
+  dprofpp -r -O 30 > "${1}.prof"
+  cat "${1}.prof"
+}
+
+function findconst () {
+  grep $1 $root/lib/perl/Mercury/Constants.pm
+}
+
+function jswat() {
+  LD_LIBRARY_PATH=/usr/local/jdk1.2.2/lib/i386 java -Djava.ext.dirs=/usr/local/jdk1.2.2/lib -jar /usr/local/jswat-1.7/jswat.jar "load junit.textui.TestRunner $1"
+}
+
+[ -f /usr/bin/vim ] && function vi () { /usr/bin/vim "$@"; }
+
+for d in jason blakem sujatha joel peter dcomfort jbjerk dasa belden sam aaron nate leah josh piotr katie srinivas psanford twhaples muir; do
+  alias to$d="_to_cvs $d";
+done
+alias todbishop='_to_cvs darrell'
+alias todana='_to_cvs dan'
+
+_to_cvs_dir () {
+  find $2 -name entries | xargs perl -pi -e 's{(?:http://|svn\+ssh://.*@)}{'$1'}g'
+}
+tocondor () {
+  _to_cvs_dir "http://" $root
+}
+_to_cvs_dir_rw () {
+  user=$1
+  dir=$2
+  _to_cvs_dir "svn+ssh://$user@" $dir
+}
+set_svn_server () {
+  server=$1
+  if [ "z$server" = "z" ]; then
+    server="svn.corp.airwave.com"
+  else
+    port=$(echo $server | cut -f 2 -d :)
+    export SVN_SSH="ssh -p $port"
+  fi
+  find $root -name entries | xargs perl -pi -e 's{(svn\+ssh://.*@).*?(/)}{$1'$server'$2}g'
+}
+function _to_cvs () {
+  _to_cvs_dir_rw $1 $root
+  [ -d $toysroot ] && _to_cvs_dir_rw $1 $toysroot
+  if [ "`pwd`" != "$root" -a "`pwd`" != "$toysroot" ]; then
+      _to_cvs_dir_rw $1 .
+  fi
+  export PS1='[\u@\h \W]\$ '
+  if [ -n "$2" ]; then
+    export SVN_PLUS_USER=$2 
+  else
+    unset SVN_PLUS_USER
+  fi
+  _source_custom_bashrc;
+}
+function wingman () {
+  if [ "$1" = "" ]; then
+    echo $SVN_PLUS_USER;
+  else
+    if [ "$1" = "none" ]; then
+      unset SVN_PLUS_USER;
+    else 
+      export SVN_PLUS_USER=$1
+    fi
+  fi
+}
+function _source_custom_bashrc () {
+  if [ -e $root/bin/towho ]; then
+    custom_bashrc=`$root/bin/towho -bi`;
+    if [ -e $custom_bashrc ]; then
+      if [ "$PS1" ]; then
+        echo "Sourcing $custom_bashrc";
+        . $custom_bashrc;
+        _setup_ssh_agent;
+      fi
+    fi
+  fi
+}
+function _setup_ssh_agent () {
+  to_user=$($root/bin/towho -i)
+  test -n "$SSH_AGENT_PID" || eval `ssh-agent`
+  ps -p $SSH_AGENT_PID | grep -q ssh-agent || eval `ssh-agent`
+  trap echo 2
+  ssh-add -l | grep -q "${to_user}_amp.dsa" || \
+    ssh-add /root/.ssh/"${to_user}_amp.dsa"
+  trap - 2
+}
+
+function save_off_changes {
+  file=$( _save_off_changes_file_parser $1 )
+  if [ $? -eq 187 ]; then
+    echo "~/$file already exists."
+    return;
+  fi
+  extra_machine=$2
+
+  proj=`svnproj`
+  echo -e "\nSaving $proj changes to ~/$file\n"
+  summarize_svn_diffs -u 3 -ld > ~/$file
+
+  if [ ! -s ~/$file ]; then
+    echo -e "\n** Bailing out, diff is empty! **\n";
+    return;
+  fi
+
+  if [ "$CHANGESDIR" = "" ]; then
+    subdir="";
+  else
+    subdir="$CHANGESDIR/.";
+  fi
+
+  who=`towho -i`
+  echo "scp to $who@cvs.dev.airwave.com:$subdir"
+  scp ~/$file $who@cvs.dev.airwave.com:$subdir
+
+  echo "scp to $who@mail.airwave.com:$subdir"
+  scp ~/$file $who@mail.airwave.com:$subdir
+
+  if [ "$extra_machine" != "" ]; then
+    echo "scp to $extra_machine.dev.airwave.com:/root/diffs/."
+    scp ~/$file $extra_machine.dev.airwave.com:/root/diffs/.
+  fi;
+
+  if [ `echo $file | grep spike` ]; then
+    echo "scp to $who@fs.corp.airwave.com:/exports/airwave/Dev/spikes/"
+    scp ~/$file $who@fs.corp.airwave.com:/exports/airwave/Dev/spikes/
+  fi;
+}
+
+function _save_off_changes_file_parser {
+  if [ "$1" = "" ]; then
+    file=`towho -i`_`date +%s`
+  else
+    file=$1
+  fi
+
+  if [ -d ~/diffs ]; then file="diffs/$file"; fi
+
+  if [ "${file##*.}" != "diff" ]; then
+    file=$file.diff  
+    if [ -e ~/$file ]; then
+      echo $file;
+      return 187;
+    fi
+  fi
+  echo $file;
+  return 0;
+}
+
+function make_diff_marker {
+  file=$( _save_off_changes_file_parser $1 )
+  if [ $? -eq 187 ]; then
+    echo "~/$file already exists."
+    return
+  fi
+  echo "Making diff marker: ~/$file"
+  echo "  summarize_svn_diffs -u 3 -ld"
+  summarize_svn_diffs -u 3 -ld > ~/$file
+}
+
+function daily_diffs () {
+  if [ "$1" = "" ]; then
+    days=1
+  else
+    days=$1
+  fi
+  echo "Broken, needs to be rewritten to work with svn";
+}
+
+function _diff_dir_complete () {
+  string=`(cd /root; perl -e '\
+     @m = map { s|^diffs/||; s|\.diff$||; $_ } \
+       ((glob("'$2'*.diff")), (glob("diffs/'$2'*.diff"))); \
+     print "@m"; \
+  ')`;
+  COMPREPLY=($( compgen -W "$string"));
+}
+complete -F _diff_dir_complete save_off_changes
+complete -F _diff_dir_complete delta_diff
+complete -F _diff_dir_complete make_diff_marker
+
+function split_local_diff () {
+  if [ "$1" = "" ]; then
+    file=local
+  else
+    file=$1
+  fi
+  file="diffs/$file"
+
+  if [ "${file##*.}" != "diff" ]; then
+    file=$file.diff  
+    if [ -e ~/$file ]; then
+      echo "~/$file already exists."
+      return
+    fi
+  fi
+
+  summarize_svn_diffs -u 3 -ld > ~/$file
+  sort_diff.pl ~/$file
+}
+complete -F _diff_dir_complete split_local_diff
+
+alias who_has_the_amps='onamps towho'
+function amp_board () {
+   _data_builder_amp_board $1 | cat > /tmp/amp_board
+   perl -ne '
+     chomp;
+     my ($machine, $line) = split(/\s*:\s*/, $_, 2);
+     next unless $line;
+     my ($hassvn, $person, $revision, $mod_files, $os, $upped_date, $owner, 
+          $tag, $license_type) = ("")x9;
+     if ($line =~ /;.*;.*;.*;/) {
+       ($hassvn, $person, $revision, $mod_files, $os, $upped_date, $owner, 
+         $tag, $license_type) = split(/\s*;\s*/, $line);
+     } else {
+       $line = "Unknown" if $line eq "NoSVN";
+       $person = $line;
+       $owner = "Airwave";
+     }
+     push @{$byperson{$person}}, $machine;
+     $bymachine{$machine} = {
+        hassvn => $hassvn,
+        towho => $person,
+        rev => $revision,
+        modified_files => $mod_files,
+        os => $os,
+        upped_date => $upped_date,
+        owner => $owner,
+        tag => $tag,
+        license => $license_type,
+     }
+   }{
+     print "By Person\n";
+     foreach my $key (sort keys %byperson) {
+       $count = () = grep { 
+         $_ ne "amp-integration" and 
+         $bymachine{$_}{owner} eq "Airwave" 
+       } @{$byperson{$key}};
+       $showcount = ($count != 1 or @{$byperson{$key}} != 1);
+       printf "%-13s: ", $showcount ? "$key($count)" : $key; 
+       print join ", ", @{$byperson{$key}};
+       print "\n";
+     }
+     print "\n";
+     print "By Machine (machine/towhom/svnrev/modified_sandbox_files/os/box-owner/license/tag/upped_date)\n";
+     foreach my $machine (sort {$bymachine{$a}{rev} <=> $bymachine{$b}{rev}} keys %bymachine) {
+       printf "%-15s: ", $machine;
+       my @keys = qw(towho rev modified_files os owner license upped_date tag);
+       printf "%-9s %5s %3s %5s %8s %-8s %-11s %s\n", @{$bymachine{$machine}}{@keys};
+     }
+   ' /tmp/amp_board
+}
+function _data_builder_amp_board () {
+  local i
+  for (( i = 0; i < ${#AMPS[@]} ; i++ )); do
+    if [ "$1" != "" ]; then echo "trying ${AMPS[$i]}"; fi
+    (ssh -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${AMPS[$i]} "if [ -e /root/svn/mercury/bin/devinfo -o -e /usr/local/bin/devinfo ]; then devinfo; else towho; fi" | perl -ne 'print "'${AMPS[$i]}':     \t$_"') &
+  done
+  wait
+}       
+
+function onamps () {
+  _data_builder_onamps $@ | cat 
+}
+
+function onfarm () {
+  _data_builder_onfarm $@ | cat
+}
+
+function _data_builder_onamps () {
+  echo "Running commands like: ssh AMPNAME sh -c '\"( $@ )\"'"
+  for amp in ${AMPS[@]}; do 
+    ping -c 2 $amp >/dev/null && \
+      (ssh  -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -q  $amp sh -c '"(' $@ ')"' 2>&1 | perl -ne 'printf "%-10s: %s", "'$amp'", $_;') &
+  done
+  wait
+}
+
+function _data_builder_onfarm () {
+  echo "Running commands like: ssh FARMBOX sh -c '\"( $@ )\"'"
+  for cow in ${FARM[@]}; do
+    ping -c 2 $cow && \
+      (ssh $cow sh -c '"(' $@ ')"' 2>&1 | perl -ne 'printf "%-10s: %s", "'$cow'", $_;') &
+  done
+  wait
+}
+
+function _try_ssh () {
+  amp=$1
+  ssh $amp -o BatchMode=yes -o StrictHostKeyChecking=no -o UserKnownHostsFile=/tmp/${amp}-ssh-key /bin/true > /dev/null 2>&1
+}
+
+
+function update_ssh_key () {
+  amp=$1;
+  rm -f /tmp/${amp}-ssh*
+  _try_ssh $amp
+  if [ $? != 0 ]; then
+    fix_ssh_known_hosts $amp
+    _try_ssh $amp
+  fi
+  if [ $? = 0 ]; then
+    perl -pe 's/^\b$amp\b(?:\S+)/$amp.*/;print' /tmp/${amp}-ssh-key > /tmp/${amp}-ssh-grep
+    grep -f /tmp/${amp}-ssh-grep ~/.ssh/known_hosts > /dev/null
+    if [ $? != 0 ]; then
+      echo "$amp ssh key is out of date or missing, fixing"
+      fix_ssh_known_hosts $amp
+      cat /tmp/${amp}-ssh-key >> ~/.ssh/known_hosts
+    else
+      echo "$amp ssh key is up to date"
+    fi
+  else
+    echo "error connecting to $amp"
+  fi
+}
+
+function fetch_and_save_all_ssh_known_hosts () {
+  for amp in ${AMPS[@]}; do
+    fix_ssh_known_hosts $amp
+  done
+  ssh-keyscan -t rsa,dsa ${AMPS[@]} >> ~/.ssh/known_hosts
+}
+
+function fetch_and_save_farm_known_hosts () {
+  for tractor in ${FARM[@]}; do
+    fix_ssh_known_hosts $tractor
+  done
+  ssh-keyscan -t rsa,dsa ${FARM[@]} >> ~/.ssh/known_hosts
+}
+
+function aps_that_define {
+  for ap in $(cd $root/lib/perl/Mercury/AP; ls *.pm | \
+      xargs grep -le '^sub class_type {'); do 
+    echo; echo "---$ap---";
+    (cd $root/lib/perl/Mercury/AP; isa $ap $1)
+  done
+}
+
+function hexifymac {
+  perl -le 'print join ":", map { sprintf "%02X", $_ } split /\D+/, "'$1'"';
+}
+function asciifyoid {
+  perl -le 'print join "", map { $c = chr($_); $c =~ /^[[:print:]]$/ ? $c : "?" } split /\D+/, "'$1'"';
+}
+function decodeoid {
+  perl -le 'print join "", map { $c = chr($_); $c =~ /^[A-Za-z_0-9]$/ ? $c : sprintf " %02X ", ord($c) } split /\D+/, "'$1'"';
+}
+function unasciifyoid {
+  perl -le 'print join ".", map { ord($_) } split //, "'$1'"';
+}
+
+function oidinfo {
+  if echo $1 | grep '[A-Za-z]'; then
+    snmptranslate -Td -IR $1
+  else
+    snmptranslate -Td $1
+  fi
+}
+function oidtranslate {
+  if echo $1 | grep '[A-Za-z]'; then
+    snmptranslate -IR -On $1
+  else
+    snmptranslate $1
+  fi
+}
+function save_status {
+  upn > /tmp/saved_status
+}
+function parseup {
+  save_status
+  parseup_saved $1
+}
+function parseup_saved {
+  if [ "$1" = "" ]; then
+    chars=?;
+  else
+    if [ "$1" = "." ]; then
+      chars="\\S"
+    else 
+      chars=$1;
+    fi
+  fi
+  [[ ! -f /tmp/saved_status ]] && save_status
+  cat /tmp/saved_status | perl -ne "s/^['$chars'].... +// && print"
+}
+function xargsmv {
+  dir="$1"
+  shift;
+  xargs mv --target-directory=$dir "$@"
+}
+
+alias apachelibdiff='(lib; grep -rhe "use [A-Z]" . | sort | uniq > /tmp/libdiff.tmp 2>&1; conf; grep -he "use [A-Z]" bootstrap.pl | sort | uniq | diff - /tmp/libdiff.tmp)'
+
+alias erase='stty erase ^H'
+
+alias resource='. ~/.bashrc'
+alias sbp='. ~/.bashrc_blakem'
+alias ascreen='screen -x -RR'
+alias pairscreen='(root; screen -e^\`\` -x -RR)'
+
+alias mountcvs='mount -tnfs fs.corp.airwave.com:/export/cvs /root/cvs'
+alias eth0='cat /etc/sysconfig/network-scripts/ifcfg-eth0'
+alias eth1='cat /etc/sysconfig/network-scripts/ifcfg-eth1'
+
+# Source global definitions
+for file in /etc/bashrc /etc/bash_completion /etc/bash_completion_svn; do
+  if [ -f $file ]; then
+	. $file
+  fi
+done
+
+export EDITOR=vim
+export CVSROOT=darrell@cvs.dev.airwave.com:/usr/local/cvsroot
+export CVS_RSH=ssh
+export PERL5LIB=$HOME/svn/mercury/common/lib/perl:$HOME/svn/mercury/lib/perl:$HOME/svn/devtoys/rally/lib:$HOME/svn/devtoys/bug_emails
+
+export PROMPT_COMMAND='do_before_every_prompt'
+export HISTSIZE=10000
+shopt -s histappend
+
+if [ "$(echo $PATH | grep '/sbin')" = "" ]; then
+  export PATH=$PATH:/usr/sbin:/sbin:/usr/local/bin
+fi
+
+export PATH=$PATH:/usr/local/sbin:/root/svn/mercury/bin:/usr/local/airwave/bin:/usr/java/jre/bin:/usr/java/jdk/bin:/var/airwave/support:/opt/condor/sbin:/opt/condor/bin
+export CLASSPATH=$CLASSPATH:/usr/local/jswat-1.7/jswat.jar:/root/svn/aml/aml/src/tests/junit.jar:/root/svn/aml/aml/classes:/usr/local/airwave/lib/java
+export OV_HOST=10.51.0.31
+alias aml='cd $amlroot'
+alias amltests='cd $amlroot/src/tests'
+alias crr='cat /etc/redhat-release'
+
+alias set_svn_executable="find -name '*.t' -and -not \( -perm +111 \) | xargs -i svn propset svn:executable 1 {}"
+
+function pxa() {
+  if [ "z$1" = "zrm" ]; then
+    for file in `parseup`; do
+      rm -i $file
+    done
+  else
+    status=$(parseup)
+    to_ignore='(\.(pm|t)\.replcode)|(core.[0-9]*)$'
+    echo $status | grep -E $to_ignore && (as_red "ignoring .replcode files"; echo "") 2>&1
+    status=$(echo $status | grep -vE $to_ignore)
+    if [ "z$status" != "z" ]; then
+      echo $status | xargs svn add
+      set_svn_executable
+      cleanalldroppings
+    else
+      echo "nothing to do, you probably have .replcode or core files; do something"
+    fi
+  fi
+}
+
+export MIBDIRS=/usr/local/airwave/share/snmp/mibs:/usr/share/snmp/mibs:$MIBDIRS
+
+if [ "X$TERM" = "Xdumb" ] ; then export VISUAL=emacsclient ; fi
+
+# Without next line, we don't get core files. This enables them up to 70Mb.
+if [ "$USER" = "root" ]; then ulimit -c 70000; fi
+
+# here because bash will not expand an alias until another line of code is read after this one
+# and everything inside of this if is considered the initial line.
+
+function can_have_dangerous_commands() {
+  hostname | grep 'dev.airwave.com' > /dev/null
+  is_airwave=$?
+  if [ $is_airwave -eq 0 -o -f /root/svn/mercury/dev_amp -o -f /root/svn/mercury/acceptance_amp ]; then
+    echo 1
+    return
+  else
+    echo 0
+    return
+  fi
+}
+
+if [ $(can_have_dangerous_commands) -eq 1 ]; then
+  alias deploy_after_svn_switch='ml && alloff && killall -q postmaster; sleep 2 && service postgresql start && bootstrap_db && make && amp_enable && echo -e "\nDone. You may want to '\''make dev_amp'\'' now"'
+fi
+# dev_amp only stuff: i.e. stuff too dangerous to have enabled on customer amps
+if [ $(can_have_dangerous_commands) -eq 1 ]; then
+  alias delete_clients='echo "delete from client; delete from client_first_last; delete from client_historical; delete from vpn_user;" | db; rm -f /var/airwave/rrd/client_bandwidth*/* /var/airwave/rrd/signal_quality*/*; rd; rm -f /var/airwave/dbm/async_logger.db; rd'
+  alias polling_off='echo "update ap_group set poll_rapids=0, poll_arp=0" | db; rd'
+  alias polling_on=' echo "update ap_group set poll_rapids=1, poll_arp=1" | db; rd'
+  alias discovery_off='echo "update seas_config set discover_intel_enabled = 0, discover_lucent_enabled = 0" | db; rd'
+  alias discovery_on='echo "update seas_config set discover_intel_enabled = 1, discover_lucent_enabled = 1" | db; rd'
+  alias dev_amp_aliases='perl -lne '"'"'if( /\s*if \[ -f .+dev_amp/ .. /^\s*fi/) { print $1 if /^\s*alias ([^=]+)/ }'"'"' < ~/.bashrc'
+  alias checkout_third_party='(cd /root/svn; svn co svn+ssh://`towho`@svn.corp.airwave.com/usr/local/svnroot/thirdparty/trunk thirdparty)'
+  function downgrade_to_branch() {
+      alloff
+      /bin/cp -f $root/scripts/install_old_rpms.pl /tmp
+      switch_to_branch "$@"
+      if [ $? -eq 0 ]; then
+          /tmp/install_old_rpms.pl && deploy_after_svn_switch
+      fi
+  }
+  function downgrade_to_tag() {
+      alloff
+      cp $root/scripts/install_old_rpms.pl /tmp
+      switch_to_tag "$@"
+      if [ $? -eq 0 ]; then
+          /tmp/install_old_rpms.pl && deploy_after_svn_switch
+      fi
+  }
+  function use_load_testing_db() {
+      if [ -e /etc/ui_db ]; then
+          echo "Looks like you are already using the load testing db. Doing nothing."
+          exit;
+      fi
+      echo "**switching over to ui db**"
+      alloff
+      touch /etc/ui_db
+      enable_amp
+  }
+  function use_normal_db() {
+      if [ ! -e /etc/ui_db ]; then
+          echo "Looks like you are already using the normal db. Doing nothing."
+          exit;
+      fi
+      echo "**switching over to normal db**"
+      alloff
+      rm -f /etc/ui_db
+      enable_amp
+  }
+fi
+
+delete_newest_schema_change() {
+    echo "select name from schema_change where id=(select max(id) from schema_change)" | db | head -3 | tail -1
+    echo "delete from schema_change where id=(select max(id) from schema_change)" | db
+}
+
+alias current_branch="svn info $root | perl -ne 's/URL: .*mercury// && print'"
+function on_checkin_branch () {
+  if current_branch | grep checkins > /dev/null; then
+    echo 1
+  else
+    echo 0
+  fi
+}
+
+function do_before_every_prompt () {
+  history -a
+  if [ -e /etc/amp_disabled ]; then
+    echo "AMP DISABLED!!!"
+  fi
+
+  if [ -e /etc/ui_db ]; then
+    echo "UI DATABASE!!"
+  fi
+
+  [ -e /root/svn/mercury/dev_amp ] && \
+    [ ! -e /root/svn/mercury/.svn ] && \
+    echo "DEV AMP HAS NO SVN REPOSITORY!!!"
+
+  case $TERM in
+    xterm*|linux)
+      if tty | grep -v tty 1> /dev/null; then
+        echo -ne "\033]0;${TERM_TITLE_PREFIX}${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/~}\007"
+      fi
+      ;;
+    screen)
+      echo -ne "\033_${TERM_TITLE_PREFIX}${USER}@${HOSTNAME%%.*}:${PWD/#$HOME/~}\033\\"
+      ;;
+  esac
+
+  [[ $(on_checkin_branch) -eq 1 ]] && echo "CHECKINS BRANCH!!!"
+}
+
+function amionthecheckinbranch {
+    if [ $(on_checkin_branch) -eq 1 ]; then
+        echo "Yep, looks like it!"
+    else
+        /bin/echo "I don't think so. Looks like you're on" $(as_green `current_branch`)
+    fi
+}
+
+function _merge_from_checkin_branch_hook () {
+  :
+}
+
+merge_from_checkin_branch() {
+  if [ "`current_branch | grep checkins`" != "" ]; then
+    echo "You're already on the checkins branch! Not merging."
+  else
+    root
+    merge $1 checkins/`current_branch`
+    _merge_from_checkin_branch_hook $1
+  fi
+}
+
+function grab_bear_log() {
+  [[ -z $1 ]] && echo "Usage: grab_bear_log <revision>" && return 1
+  echo "Grabbing $(as_green /var/log/bear/$1) from amp-integration..."
+  scp root@amp-integration:/var/log/bear/$1 /tmp/bear_log.$1
+  echo "bear log is $(as_green /tmp/bear_log.$1)"
+}
+
+switch_to_checkin_branch() {
+    root
+    if current_branch | grep checkins > /dev/null; then
+        echo "Looks like you're already on the checkin branch"
+    else
+        svn switch `svnbase`/checkins/`current_branch`
+    fi
+}
+
+switch_to_work_branch() {
+    root
+    if current_branch | grep checkins > /dev/null; then
+        work_branch=`current_branch|perl -ne 's|/checkins||; print'`
+        svn switch `svnbase`/$work_branch
+    else
+        echo "Looks like you're already on the work branch"
+    fi
+}
+
+switch_to_branch() {
+    root
+    if [ -z $1 ]; then
+      echo "gotta give me a branch to switch to!";
+      return 1;
+    fi
+    svn switch `svnbase`/branches/$1
+}
+
+switch_to_tag() {
+    root
+    if [ -z $1 ]; then
+      echo "gotta give me a tag to switch to!";
+      return 1;
+    fi
+    svn switch `svnbase`/tags/$1
+}
+
+switch_to_trunk() {
+    root
+    svn switch `svnbase`/trunk
+}
+
+
+function _svn_branch_completion() {
+  file=/tmp/svn_branches_`svnproj`
+  svnbase=`svnbase`
+  perl -e '$f = "'$file'"; if ((not -e $f) or (not -s $f) or (-M $f > .5)) {
+    system(q{svn list '$svnbase'/branches | tr -d / >} . $f)
+  }';
+  
+  if [ "$2" = "" ]; then
+    string=`cat $file`
+  else
+    string=`grep "^$2" $file`;
+  fi
+  COMPREPLY=($( compgen -W "$string"))
+}
+
+function _svn_tag_completion() {
+  file=/tmp/svn_tags
+  svnbase=`svnbase`
+  perl -e '$f = "'$file'"; if ((not -e $f) or (not -s $f) or (-M $f > .5)) {
+    system(q{svn list '$svnbase'/tags | tr -d / >} . $f)
+  }';
+  
+  if [ "$2" = "" ]; then
+    string=`cat $file`
+  else
+    string=`grep "^$2" $file`;
+  fi
+  COMPREPLY=($( compgen -W "$string"))
+}
+
+# Tab completion for branch and tag functions
+complete -F _svn_branch_completion switch_to_branch
+complete -F _svn_branch_completion branchpoint_for
+complete -F _svn_branch_completion branch_the_trunk
+complete -F _svn_branch_completion tag_a_branch
+complete -F _svn_branch_completion comments_on_branch
+complete -F _svn_tag_completion switch_to_tag
+complete -F _svn_tag_completion downgrade_to_tag
+complete -F _svn_branch_completion downgrade_to_branch
+
+recommit() {
+  if [ -f svn-commit.tmp ]; then
+    svn ci -F svn-commit.tmp
+    if [ $? -eq 0 ]; then
+      rm -f svn-commit.tmp
+    else
+      echo -e "\nsvn commit didn't work\n"
+    fi
+  else
+    echo -e "\ncouldn't find svn-commit.tmp\n"
+  fi
+}
+
+export emacs=/usr/bin/emacs
+function _emacs {
+  if [ "$(echo " $@ " | grep -- ' -nw ')" = "" ]; then
+    if [ "$DISPLAY" != "" ]; then
+      command $emacs "$@" &
+      return
+    fi
+  fi
+  command $emacs "$@"
+}
+
+function fix_all_devamps_ssh_auth () {
+  for amp in ${AMPS[@]}; do
+    update_ssh_key $amp
+    fix_devamps_ssh_auth $amp
+  done
+}
+
+function fix_devamps_ssh_auth () {
+  if [ "$1" = "" ]; then
+    echo "fix_devamps_ssh_auth devamp"
+    return;
+  fi
+  h=`hostname`
+  for amp in "$@"; do
+    pinged=`ping -c 1 $amp`;
+    if [ $? -eq 0 ]; then
+      ok=`ssh $amp sh -c "'mkdir -p ~/.ssh; chmod 700 ~/.ssh; ls ~/.ssh/id_dsa 2> /dev/null'"`
+      if [ "$ok" = "" ]; then
+          scp ~/.ssh/id_dsa ~/.ssh/id_dsa.pub $amp:.ssh/.
+          ssh $amp "cat ~/.ssh/id_dsa.pub >> ~/.ssh/authorized_keys"
+      fi
+      update_ssh_key $amp
+      update_ssh_key $amp.dev.airwave.com
+    else
+      echo -e "\nError: Can't connect to $amp\n";
+    fi
+  done
+}
+
+for color in reset red green brown blue magenta cyan white; do
+  case $color in
+    reset) console_code=0;;
+    red) console_code=31;;
+    green) console_code=32;;
+    brown) console_code=33;;
+    blue) console_code=34;;
+    magenta) console_code=35;;
+    cyan) console_code=36;;
+    white) console_code=37;;
+  esac;
+  alias "text-$color"="/bin/echo -n [${console_code}m"
+  eval "
+    function as_$color {
+      text-$color
+      /bin/echo -n \$*
+      text-reset
+    }
+  ";
+done
+
+function amionthetrunk {
+  if [ `current_branch` = "/trunk" ]; then
+    echo "Yep, looks like it!"
+  else
+    /bin/echo "I don't think so. Looks like you're on" $(as_green `current_branch`)
+  fi
+}
+
+function amionthe {
+  echo "You are on:" $(as_green `current_branch`)
+}
+
+function show_all_handlers {
+  echo 'update seas_config set show_all_handlers = 1' | db
+}
+
+function hide_all_handlers {
+  echo 'update seas_config set show_all_handlers = 0' | db
+}
+
+alias doit='(root && alloff && bigup && make && don)'
+alias "rebuild-export-cache"='exported_function -r'
+
+function diff_on {
+  remote_host=$1
+  ssh root@$remote_host "cd $root; cdiff"
+}
+
+function warn {
+  as_red $* 1>&2
+}
+
+function apply_diff_from {
+  remote_host=$1
+
+  diff=$(cdiff 2>&1)
+  if [ "$diff" = "Empty diff." ]; then
+    echo "ok, I'm working on it"
+    diff_on $remote_host > ~/diffs/diff_on_$remote_host.diff
+    if [ $? -eq 0 ]; then
+        apply_diff ~/diffs/diff_on_$remote_host.diff
+    fi
+  else
+    warn "Oh no, $(hostname -s) has an outstanding diff! Not applying from $remote_host!\n";
+    return 1
+  fi
+}
+
+function send_diff_to {
+  me=`hostname -s`
+  if [ `hostname -s | grep local` ]; then
+    echo "hostname -s returned '$me', should be a dev_amp name!"
+    exit 1
+  fi
+
+  if [ "z$*" = "z" ]; then
+    echo "usage: send_diff_to dev_amp1 dev_amp2 ..."
+    exit 1
+  fi
+  for dev_amp in $*; do
+    ssh root@$dev_amp "apply_diff_from $me"
+  done
+}
+
+function give_me_back_my_son {
+  echo 'update seas_config set backup_amp = 0' | db
+}
+
+function _merge () {
+  action=$1
+  if [ "$action" = "merge" ]; then
+    text="merge in"
+  else
+    text="revert"
+  fi
+
+  if [ "$2" = "" ]; then
+    echo "On trunk, $text changeset 9673 from QA_4_3_BRANCH"
+    echo "% $action 9673 branches/QA_4_3_BRANCH"
+    echo "On branch, $text changeset 9673 from trunk"
+    echo "% $action 9673"
+    return;
+  fi
+  change=$2;
+  if [ "$3" = "" ]; then
+    branch=trunk
+  else
+    branch=$3;
+  fi
+  if [ "$action" = "merge" ]; then
+    let pre=change-1;
+  else
+    pre=$change
+    let change=change-1;
+  fi
+  echo "svn merge -r $pre:$change `svnbase`/$branch";
+  svn merge -r $pre:$change `svnbase`/$branch
+  cleanalldroppings
+  set_svn_executable
+}
+
+function merge() {
+  _merge 'merge' $*
+}
+
+function unmerge() {
+  _merge 'unmerge' $*
+}
+
+function current_task () {
+  perl -lne 'print /(TA\d+)/}continue{exit' < /tmp/current_task
+}
+
+function ok() {
+  # used by run_bash_func.t
+  /usr/bin/perl -I/root/svn/mercury/lib/perl -MMercury::Test -e "BEGIN { plan tests => 1 } ok( $* );"
+}
+
+alias wcat='wget $* --no-check-certificate -O -'
+
+_source_custom_bashrc;
+
+# This export should be the last line in the file
+# (otherwise we can get into loops calling ourself while starting up)
+export BASH_ENV=$saved_bash_env

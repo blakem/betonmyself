@@ -1,0 +1,12 @@
+set bell-style visible
+set show-all-if-ambiguous on
+set visible-stats on
+set completion-ignore-case on
+
+$if Bash
+  Space: magic-space
+$endif
+
+"\M-o": "\C-p\C-a\M-f " # add option to previous command
+"\M-s": menu-complete   # cycle through completion options
+"\M-h": history-search-backward 
