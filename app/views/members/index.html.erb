@@ -1,4 +1,5 @@
  <center><h1><%= @user.login -%>'s Motivational Page</h1></center>
+ You have <b>$<%= @cash -%></b> to spend<br>
  <%= render :active_scaffold => :bet, 
             :constraints => { :user_id => @user.id, :state => BomConstant::BET_STATE_CURRENT } 
   %>

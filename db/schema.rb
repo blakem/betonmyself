@@ -12,10 +12,10 @@
 ActiveRecord::Schema.define(:version => 3) do
 
   create_table "bets", :force => true do |t|
-    t.integer  "user_id",    :null => false
-    t.integer  "state",      :null => false
+    t.integer  "user_id",                                  :null => false
+    t.integer  "state",                                    :null => false
     t.string   "descr"
-    t.string   "amount"
+    t.decimal  "price",      :precision => 8, :scale => 2
     t.string   "notes"
     t.string   "due_date"
     t.datetime "created_at"
@@ -24,7 +24,7 @@ ActiveRecord::Schema.define(:version => 3) do
 
   create_table "transactions", :force => true do |t|
     t.integer  "user_id",                                  :null => false
-    t.integer  "type",                                     :null => false
+    t.integer  "trans_type",                               :null => false
     t.decimal  "price",      :precision => 8, :scale => 2
     t.datetime "created_at"
     t.datetime "updated_at"

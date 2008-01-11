@@ -1,9 +1,9 @@
 class AccomplishmentsController < ApplicationController
   active_scaffold :bet do |config|
     config.label = "Accomplishments"
-    config.columns = [:descr, :amount, :due_date, :notes]
+    config.columns = [:descr, :price, :due_date, :notes]
     list.sorting = {:descr => 'ASC'}
     columns[:descr].label = "Goal"
-    columns[:amount].label = "Payoff"
+    columns[:price].label = "Payoff"
   end
 end

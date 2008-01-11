@@ -1,5 +1,8 @@
 require 'digest/sha1'
 class User < ActiveRecord::Base
+  has_many :transactions
+  has_many :bets
+
   # Virtual attribute for the unencrypted password
   attr_accessor :password
 
@@ -60,6 +63,23 @@ class User < ActiveRecord::Base
     self.remember_token_expires_at = nil
     self.remember_token            = nil
     save(false)
+  end
+
+  def ballance
+    total = 0
+    self.transactions.each do |t|
+      if t.trans_type == BomConstant::TRANSACTION_TYPE_IN
+        total += t.price
+      else
+        total -= t.price
+      end
+    end
+    self.bets.each do |b|
+      if b.state == BomConstant::BET_STATE_CURRENT
+        total -= b.price
+      end
+    end
+    return total
   end
 
   protected

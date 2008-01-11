@@ -16,7 +16,7 @@ class UsersController < ApplicationController
 
     @transaction = Transaction.new(:user_id => self.current_user.id)
     @transaction.price = BomConstant::INITIAL_BUY_IN
-    @transaction.type = BomConstant::TRANSACTION_TYPE_IN
+    @transaction.trans_type = BomConstant::TRANSACTION_TYPE_IN
     @transaction.save!
 
     redirect_back_or_default('/members')
