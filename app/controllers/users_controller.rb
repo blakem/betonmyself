@@ -13,6 +13,12 @@ class UsersController < ApplicationController
     @user = User.new(params[:user])
     @user.save!
     self.current_user = @user
+
+    @transaction = Transaction.new(:user_id => self.current_user.id)
+    @transaction.price = BomConstant::INITIAL_BUY_IN
+    @transaction.type = BomConstant::TRANSACTION_TYPE_IN
+    @transaction.save!
+
     redirect_back_or_default('/members')
     flash[:notice] = "Thanks for signing up!"
   rescue ActiveRecord::RecordInvalid

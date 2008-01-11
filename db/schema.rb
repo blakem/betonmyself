@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 2) do
+ActiveRecord::Schema.define(:version => 3) do
 
   create_table "bets", :force => true do |t|
     t.integer  "user_id",    :null => false
@@ -18,6 +18,14 @@ ActiveRecord::Schema.define(:version => 2) do
     t.string   "amount"
     t.string   "notes"
     t.string   "due_date"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "transactions", :force => true do |t|
+    t.integer  "user_id",                                  :null => false
+    t.integer  "type",                                     :null => false
+    t.decimal  "price",      :precision => 8, :scale => 2
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -34,5 +42,7 @@ ActiveRecord::Schema.define(:version => 2) do
   end
 
   add_foreign_key "bets", ["user_id"], "users", ["id"], :name => "bets_user_id_fkey"
+
+  add_foreign_key "transactions", ["user_id"], "users", ["id"], :name => "transactions_user_id_fkey"
 
 end
