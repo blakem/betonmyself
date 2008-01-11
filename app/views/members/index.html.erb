@@ -1,8 +1,8 @@
  <center><h1><%= @user.login -%>'s Motivational Page</h1></center>
  <%= render :active_scaffold => :bet, 
-            :constraints => { :user_id => @user.id, :state => 1 } 
+            :constraints => { :user_id => @user.id, :state => BomConstant::BET_STATE_CURRENT } 
   %>
  <%= render :active_scaffold => :accomplishments, 
-            :constraints => { :user_id => @user.id, :state => 2 } 
+            :constraints => { :user_id => @user.id, :state => BomConstant::BET_STATE_SUCCESS } 
   %>
  <p><%= link_to "Log Out", :controller => "logout" %></p>

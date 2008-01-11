@@ -1,0 +1,4 @@
+module BomConstant
+  BET_STATE_CURRENT=1
+  BET_STATE_SUCCESS=2
+end
