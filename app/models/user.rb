@@ -67,19 +67,56 @@ class User < ActiveRecord::Base
 
   def ballance
     total = 0
-    self.transactions.each do |t|
-      if t.trans_type == BomConstant::TRANSACTION_TYPE_IN
+    self.transactions_in.each do |t|
         total += t.price
-      else
-        total -= t.price
-      end
     end
-    self.bets.each do |b|
-      if b.state == BomConstant::BET_STATE_CURRENT
-        total -= b.price
-      end
+    self.transactions_out.each do |t|
+      total -= t.price
+    end
+    self.current_bets.each do |b|
+      total -= b.price
     end
     return total
+  end
+
+  def accomplishments
+    accomplishments = []
+    self.bets.each do |b|
+      if b.state == BomConstant::BET_STATE_SUCCESS
+        accomplishments.push b
+      end
+    end
+    return accomplishments
+  end
+
+  def current_bets
+    current_bets = []
+    self.bets.each do |b|
+      if b.state == BomConstant::BET_STATE_CURRENT
+        current_bets.push b
+      end
+    end
+    return current_bets
+  end
+
+  def transactions_in
+    transactions_in = []
+    self.transactions.each do |t|
+      if t.trans_type == BomConstant::TRANSACTION_TYPE_IN
+        transactions_in.push t
+      end
+    end
+    return transactions_in
+  end
+
+  def transactions_out
+    transactions_out = []
+    self.transactions.each do |t|
+      if t.trans_type == BomConstant::TRANSACTION_TYPE_OUT
+        transactions_out.push t
+      end
+    end
+    return transactions_out
   end
 
   protected

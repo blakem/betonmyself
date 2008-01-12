@@ -1,0 +1,2 @@
+module CashOutHelper
+end

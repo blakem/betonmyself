@@ -2,8 +2,9 @@ ActionController::Routing::Routes.draw do |map|
 
   map.resource :session
   map.resources :users
-  map.resources :purchases, 'purchase'
 
+  map.purchase '/purchase', :controller => 'purchase'
+  map.cash_out '/cash_out', :controller => 'cash_out'
   map.signup '/signup', :controller => 'users', :action => 'new'
   map.login  '/login', :controller => 'sessions', :action => 'new'
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'

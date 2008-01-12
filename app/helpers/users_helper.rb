@@ -1,5 +1,6 @@
 module UsersHelper
+ include BomUtility
  def price_column(record)
-    return sprintf "<b>$%.02f</b>", record.price / 100
+    return '<b>$' + money_format(record.price) + '</b>'
  end
 end
