@@ -11,4 +11,7 @@ class BetController < ApplicationController
 
     list.sorting = {:descr => 'ASC'}
   end
+  def before_create_save(record)
+    record.price = record.price * 100
+  end
 end
