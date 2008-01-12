@@ -1,8 +1,9 @@
 ActionController::Routing::Routes.draw do |map|
 
-  map.resource :session, 'session'
+  map.resource :session
   map.resources :users
-  map.resources :bets
+  map.resources :purchases, 'purchase'
+
   map.signup '/signup', :controller => 'users', :action => 'new'
   map.login  '/login', :controller => 'sessions', :action => 'new'
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'

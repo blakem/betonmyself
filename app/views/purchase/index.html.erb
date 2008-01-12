@@ -1,0 +1,9 @@
+Add more money...
+<% form_for :transaction, :url => { :action => :create } do |form| -%>
+  Amount: 
+  <%= form.select('price', [ [ '$20',  2000],
+                             [ '$50',  5000],
+                             ['$100', 10000] ]) 
+  %></br>
+  <%= submit_tag 'Purchase' -%></br>
+<% end %>
