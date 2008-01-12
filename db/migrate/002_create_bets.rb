@@ -4,7 +4,7 @@ class CreateBets < ActiveRecord::Migration
       t.integer :user_id, :null => false, :references => :users
       t.integer :state, :null => false
       t.string :descr
-      t.decimal :price, :precision => 8, :scale => 2
+      t.integer :price
       t.string :notes
       t.string :due_date
       t.timestamps
