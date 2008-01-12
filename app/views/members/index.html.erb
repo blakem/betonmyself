@@ -6,6 +6,7 @@
  <%= render :active_scaffold => :accomplishments, 
             :constraints => { :user_id => @user.id, :state => BomConstant::BET_STATE_SUCCESS } 
   %>
- <p><%= link_to "Add More Money", :controller => "purchase" %></p>
- <p><%= link_to "Log Out", :controller => "logout" %></p>
- <p><%= link_to "Cash Out", :controller => "cash_out" %></p>
+ <p><%= link_to "Add More Money", :controller => "purchase" %> |
+    <%= link_to "Log Out", :controller => "logout" %> |
+    <%= link_to "Cash Out", :controller => "cash_out" %> |
+    <%= link_to "Help", :controller => "help" %></p>
