@@ -17,7 +17,7 @@ ActiveRecord::Schema.define(:version => 3) do
     t.string   "descr"
     t.integer  "price"
     t.string   "notes"
-    t.string   "due_date"
+    t.date     "due_date"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
