@@ -4,6 +4,7 @@ class BetController < ApplicationController
     columns[:descr].label = "Goal"
     columns[:price].label = "Payoff"
 
+    config.action_links.add 'complete', :label => 'Complete', :type => :record
     config.actions.exclude :delete
     config.actions.exclude :search
     config.label = "Current Goals"
@@ -15,5 +16,11 @@ class BetController < ApplicationController
     if not record.price.nil?
       record.price *= 100
     end
+  end
+
+  def complete
+    do_edit # finds @record
+    @record.state = BomConstant::BET_STATE_SUCCESS
+    @record.save!
   end
 end
