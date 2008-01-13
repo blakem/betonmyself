@@ -338,8 +338,7 @@
   (chomp (airwave-shell-function-eval "svnbase")))
 (defun svnurl (&rest proj)
   (concat (string-replace-match "\\/[^/\n]+$" (svnbase) "/") (apply 'concat proj)))
-(defun svnproj ()
-  (chomp (airwave-shell-function-eval "svnproj")))
+(defun svnproj () "betonmyself")
 (defun towho ()
   (chomp (airwave-shell-function-eval "towho")))
 (defun devamps ()
@@ -408,6 +407,28 @@
         (progn
           (setq he-num -1)
           (cperl-indent-command))))))
+
+(defun airwave-indent-ruby-region-or-line ()
+  (interactive)
+  (if mark-active 
+      (progn  ; set beg end to marked region
+        (if (< (point) (mark)) (exchange-point-and-mark))
+        (ruby-indent-region (mark) (1- (point)))
+        )
+    (let ((previous-key (previous-key)))
+      (if (and (or (looking-at "\\>")
+                   (empty-line-suffix)
+                   (char-equal (previous-char) ":")
+                   (eq previous-key 'left)
+                   (eq previous-key 'right))
+               (not (eq previous-key 'down))
+               (not (eq previous-key 'up))
+               (not (and (eolp) (string-match "[\]\)\}\,]" (previous-char))))
+               (not (empty-line-prefix)))
+          (hippie-expand 'nil)
+        (progn
+          (setq he-num -1)
+          (ruby-indent-command))))))
 
 (defun airwave-indent-lisp-region-or-line ()
   (interactive)
@@ -1680,42 +1701,7 @@
         (let ((key (car keyvalue)) (value (cadr keyvalue)))
           (puthash key value hash))))
 
-(defun airwave-generate-perlclass-list ()
-  (let (str name-part dir-part dir-list class-list class-prefix class)
-   (setq str (buffer-substring-no-properties (he-perlclass-beg) (point)))
-   (and (not (string-equal str "")) 
-        (progn
-          (if (string-match "[^:]:\$" str) (setq str (format "%s:" str)))
-          (setq dir-part (reverse (string-split "::" str)))
-          (setq name-part (pop dir-part))
-          (setq dir-part (reverse dir-part))
-          (setq class-prefix (list-join dir-part "::"))
-          (setq dir-part (list-join dir-part "/"))
-          (if (not dir-part) (setq dir-part ""))
-          (setq dir-part (mercmerc (format "/lib/perl/%s" dir-part)))
-          (setq dir-list 
-                (sort (file-name-all-completions name-part dir-part)
-                      'string-lessp))
-          ;; (message "'%s'" (list-join dir-list "\n"))
-          (loop for class in dir-list do
-                (if (and (not (string-match "^\\." class))
-                         (or (< (length dir-list) 3)
-                             (not 
-                              (string-match "^\\(CVS/\\|AMPRoot\\.pm\\)\$" 
-                                            class))))
-                    (progn
-                      (setq class (or 
-                                   (string-replace-match "\\.pm$" class "")
-                                   (string-replace-match "\\/$" class "::"))
-                            )
-                      (if class (push 
-                                 (if class-prefix 
-                                     (format "%s::%s" class-prefix class) 
-                                   class)  
-                                 class-list)))))
-          (setq class-list (reverse class-list))
-          ;; (message "%s" (list-join class-list "\n"))
-          class-list))))
+(defun airwave-generate-perlclass-list () nil)
 
 (defun he-perlclass-beg () 
   (save-excursion (skip-chars-backward "A-Za-z0-9:") (point)))
@@ -2730,7 +2716,7 @@ The characters copied are inserted in the buffer before point."
         (progn
           (when sort
             (erase-buffer)
-            (insert-file (airwave-sort-diff-file "/tmp/current_cdiff.diff"))
+            (insert-file "/tmp/current_cdiff.diff")
             )
           (switch-to-buffer buffername)
           (airwave-diffstat-on-buffer)
@@ -2744,7 +2730,7 @@ The characters copied are inserted in the buffer before point."
   (let ((sort_file file))
     (setq sort_file (or (string-replace-match "\\.diff$" file "-sorted.diff")
                         (concat file ".sorted")))
-    (shell-command (format "sort_diff.pl -o %s %s" sort_file file))
+    (shell-command (format "cat %s > %s" sort_file file))
     sort_file))
   
 (defun nonempty-file-p (filename)
@@ -2759,7 +2745,7 @@ The characters copied are inserted in the buffer before point."
 
 (defun airwave-diffstat-on-buffer ()
   (interactive)
-  (shell-command-on-region (point-min) (point-max) "sorted_diffstat" "*diffstat*"))
+  (shell-command-on-region (point-min) (point-max) "diffstat" "*diffstat*"))
 
 (defun airwave-save-and-save-some-buffers ()
   (if (buffer-file-name) (save-buffer))
@@ -2907,7 +2893,7 @@ The characters copied are inserted in the buffer before point."
         bufname tokill modfiles buffile)
     (setq modfiles 
           (string-split "\n" 
-           (shell-command-to-string "sorted_diffstat -q -p /tmp/current_cdiff")))
+           (shell-command-to-string "diffstat -q -p /tmp/current_cdiff")))
     (loop for buf in (buffer-list) do
           (setq bufname (buffer-name buf))
           ;; (message "buffer: %s" bufname)

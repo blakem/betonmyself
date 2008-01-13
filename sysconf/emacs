@@ -634,6 +634,13 @@
   )
 (add-hook 'cperl-mode-hook 'my-cperl-mode-hook)
 
+;; code to run in ruby-mode
+(defun my-ruby-mode-hook ()
+  (define-key ruby-mode-map "\t" 'airwave-indent-ruby-region-or-line)
+  (define-key ruby-mode-map "\C-j" 'iswitchb-buffer)
+  )
+(add-hook 'ruby-mode-hook 'my-ruby-mode-hook)
+
 ; uimake when you save a template or some javascript
 (defun file-needs-uimake ()
   (or (in-template-dir) (in-html-dir)))
@@ -767,34 +774,16 @@
   (cond
      ; local directories
      ((looking-at "roo") (setq directory (root "/")))
-     ((looking-at "mib") (setq directory (mercmerc "/mibs/")))
-     ((looking-at "con") (setq directory (mercmerc "/lib/conf/")))
-     ((looking-at "onf") (setq directory (mercmerc "/lib/conf/")))
-     ((looking-at "eli") (setq directory (mercmerc "/lib/conf/elisp/")))
-     ((looking-at "lis") (setq directory (mercmerc "/lib/conf/elisp/")))
-     ((looking-at "isp") (setq directory (mercmerc "/lib/conf/elisp/")))
-     ((looking-at "dev") (setq directory (mercmerc "/lib/perl/Devel/")))
-     ((looking-at "lib") (setq directory
-       (root (if (string= (svnproj) "devtoys") "/rally/lib/" "/lib/perl/Mercury/"))))
-     ((looking-at ".ap") (setq directory (mercmerc "/lib/perl/Mercury/AP/")))
-     ((looking-at "han") (setq directory (mercmerc "/lib/perl/Mercury/Handler/")))
-     ((looking-at "vie") (setq directory (mercmerc "/lib/perl/Mercury/Handler/View/")))
-     ((looking-at ".db") (setq directory (mercmerc "/lib/perl/Mercury/DB/")))
-     ((looking-at "rrd") (setq directory (mercmerc "/lib/perl/Mercury/RRD/")))
-     ((looking-at "dae") (setq directory (mercmerc "/lib/perl/Mercury/Daemon/")))
-     ((looking-at "tem") (setq directory (mercmerc "/lib/templates/html/")))
-     ((looking-at "log") (setq directory "/var/log/"))
-     ((looking-at "rol") (setq directory (mercmerc "/lib/perl/Mercury/Role/")))
-     ((looking-at "sha") (setq directory "/usr/share/emacs/21.3/lisp/"))
-     ((looking-at "bin") (setq directory 
-       (root (if (string= (svnproj) "devtoys") "/rally/bin/" "/bin/"))))
-     ((looking-at "scr") (setq directory (mercmerc "/scripts/")))
-     ((looking-at "too") (setq directory (mercmerc "/tools/")))
-     ((looking-at "iff") (setq directory (home "/diffs/")))
-     ((looking-at "dif") (setq directory (home "/diffs/")))
-     ((looking-at "src") (setq directory (mercmerc "/src/")))
-     ((looking-at "svn") (setq directory (home "/svn/")))
-     ((looking-at "toy") (setq directory (home "/svn/devtoys/")))
+     ((looking-at "app") (setq directory (root "/app/")))
+     ((looking-at "con") (setq directory (root "/app/controllers/")))
+     ((looking-at "vie") (setq directory (root "/app/views/")))
+     ((looking-at "iew") (setq directory (root "/app/views/")))
+     ((looking-at "mod") (setq directory (root "/app/models/")))
+     ((looking-at "ode") (setq directory (root "/app/models/")))
+     ((looking-at "hel") (setq directory (root "/app/helpers/")))
+     ((looking-at ".db") (setq directory (root "/db")))
+     ((looking-at "mig") (setq directory (root "/db/migrate/")))
+     ((looking-at "lib") (setq directory (root "/lib/")))
      (t (setq found nil)))
   (cond (found (beginning-of-line)
                (delete-region (line-beginning-position) (line-end-position))
@@ -983,7 +972,7 @@
 (setq diff-switches "-u")
 (setq vc-diff-switches diff-switches)
 (setq vc-svn-diff-switches (list "--diff-cmd" "diff" "-x" "-u --show-function-line=^[[:space:]]*sub[[:space:]]"))
-(setq vc-root (home "/svn/mercury"))
+(setq vc-root (root))
 (setq vc-suppress-confirm 't)  ;; save buffer before diffing
 (setq vc-cvs-stay-local nil)   ;; Dont save cvs files locally
 ; (setq debug-on-error t)
@@ -1183,5 +1172,5 @@
   )
 (add-hook 'c-mode-hook 'my-c-mode-hook)
 
-(when (file-exists-p (mercmerc "/bin/ssh_for_emacs"))
+(when (file-exists-p "/usr/local/bin/ssh_for_emacs")
   (setenv "SVN_SSH" "ssh_for_emacs"))
