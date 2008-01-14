@@ -20,4 +20,7 @@ class Bet < ActiveRecord::Base
       end
     end
   end
+  def to_s
+    return 'Notes for "' + self.descr + '"'
+  end
 end
