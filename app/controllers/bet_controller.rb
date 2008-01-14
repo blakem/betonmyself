@@ -4,10 +4,10 @@ class BetController < ApplicationController
     columns[:descr].label = "Goal"
     columns[:price].label = "Payoff"
 
-    config.action_links.add 'complete', :label => 'Complete', :type => :record
     config.create.label = "Enter Your New Goal"
-    config.actions.exclude :delete
-    config.actions.exclude :search
+    config.delete.link.label = 'Complete'
+    config.delete.link.confirm = 'Yay! Click OK to complete task.'
+    config.actions = [:create, :delete, :update, :show, :list]
     config.label = "Current Goals"
     config.update.columns = [:notes]
 
@@ -15,7 +15,7 @@ class BetController < ApplicationController
     list.sorting = {:due_date => 'ASC'}
   end
  
-  def complete
+  def do_destroy # called by complete...
     do_edit # finds @record
     @record.state = BomConstant::BET_STATE_SUCCESS
     @record.completion_date = Date.today

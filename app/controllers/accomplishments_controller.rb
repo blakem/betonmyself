@@ -8,8 +8,7 @@ class AccomplishmentsController < ApplicationController
     columns[:descr].label = "Goal"
     columns[:price].label = "Payoff"
 
-    config.actions.exclude :create
-    config.actions.exclude :delete
+    config.actions = [:update, :show, :list]
     config.columns.add :checked
     config.label = "Accomplishments"
     config.update.columns = [:notes]
