@@ -13,6 +13,6 @@ class AccomplishmentsController < ApplicationController
     config.label = "Accomplishments"
     config.update.columns = [:notes]
 
-    list.sorting = {:descr => 'ASC'}
+    list.sorting = {:completion_date => 'DESC'}
   end
 end

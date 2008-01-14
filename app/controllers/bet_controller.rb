@@ -21,6 +21,7 @@ class BetController < ApplicationController
   def complete
     do_edit # finds @record
     @record.state = BomConstant::BET_STATE_SUCCESS
+    @record.completion_date = Date.today
     @record.save!
   end
 end
