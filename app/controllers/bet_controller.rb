@@ -10,7 +10,7 @@ class BetController < ApplicationController
     config.label = "Current Goals"
     config.update.columns = [:notes]
 
-    list.sorting = {:descr => 'ASC'}
+    list.sorting = {:due_date => 'ASC'}
   end
   def before_create_save(record)
     if not record.price.nil?

@@ -12,12 +12,13 @@
 ActiveRecord::Schema.define(:version => 3) do
 
   create_table "bets", :force => true do |t|
-    t.integer  "user_id",    :null => false
-    t.integer  "state",      :null => false
+    t.integer  "user_id",         :null => false
+    t.integer  "state",           :null => false
     t.string   "descr"
     t.integer  "price"
     t.string   "notes"
     t.date     "due_date"
+    t.date     "completion_date"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

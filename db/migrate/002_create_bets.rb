@@ -7,6 +7,7 @@ class CreateBets < ActiveRecord::Migration
       t.integer :price
       t.string :notes
       t.date :due_date
+      t.date :completion_date
       t.timestamps
     end
   end

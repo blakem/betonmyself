@@ -1,10 +1,10 @@
 class AccomplishmentsController < ApplicationController
   active_scaffold :bet do |config|
-    config.columns = [:checked, :descr, :price, :due_date, :notes]
+    config.columns = [:checked, :descr, :price, :completion_date, 
+      :due_date, :notes]
 
     columns[:checked].label = ""
     columns[:descr].label = "Goal"
-    columns[:price].label = "Payoff"
     columns[:price].label = "Payoff"
 
     config.actions.exclude :create
