@@ -5,6 +5,7 @@ class BetController < ApplicationController
     columns[:price].label = "Payoff"
 
     config.action_links.add 'complete', :label => 'Complete', :type => :record
+    config.create.label = "Enter Your New Goal"
     config.actions.exclude :delete
     config.actions.exclude :search
     config.label = "Current Goals"
