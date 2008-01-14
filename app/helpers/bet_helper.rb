@@ -1,10 +1,11 @@
 module BetHelper
   def price_form_column(record, input_name)
-    if record.price.nil?
+    if record.price.nil? or record.price < BomConstant::MINIMUM_BET
       value = money_format(BomConstant::DEFAULT_BET)
     else 
       value = money_format(record.price)
     end
+    value = '$' + value
     text_field :record, :price, 
       active_scaffold_input_text_options(:name => input_name, :value => value)
   end

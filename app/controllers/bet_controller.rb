@@ -13,12 +13,7 @@ class BetController < ApplicationController
     list.per_page = BomConstant::RECORDS_PER_PAGE
     list.sorting = {:due_date => 'ASC'}
   end
-  def before_create_save(record)
-    if not record.price.nil?
-      record.price *= 100
-    end
-  end
-
+ 
   def complete
     do_edit # finds @record
     @record.state = BomConstant::BET_STATE_SUCCESS
@@ -30,5 +25,12 @@ class BetController < ApplicationController
     @record.price = BomConstant::DEFAULT_BET
     apply_constraints_to_record(@record)
     @record
+  end
+  def do_create
+    price = params[:record]['price']
+    price = price.sub(/\$/, "")
+    price = price.to_f * 100
+    params[:record]['price'] = price
+    super
   end
 end
