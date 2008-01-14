@@ -13,4 +13,9 @@ module BetHelper
    def notes_form_column(record, input_name)
      text_area :record, :notes, :name => input_name, :cols => 80
    end
+   def due_date_form_column(record, input_name) 
+     date_select :record, :due_date, 
+       :name => input_name, :order => [:month, :day, :year],
+       :start_year => Date.today.year 
+   end
 end
