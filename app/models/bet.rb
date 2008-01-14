@@ -15,9 +15,6 @@ class Bet < ActiveRecord::Base
                    " is too low. Minimum is $" + 
                    money_format(BomConstant::MINIMUM_BET) + ".")
       end
-      if errors.count > 0
-        self.price /= 100
-      end
     end
   end
   def to_s

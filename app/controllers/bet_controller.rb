@@ -25,4 +25,10 @@ class BetController < ApplicationController
     @record.completion_date = Date.today
     @record.save!
   end
+  def do_new
+    @record = active_scaffold_config.model.new
+    @record.price = BomConstant::DEFAULT_BET
+    apply_constraints_to_record(@record)
+    @record
+  end
 end
