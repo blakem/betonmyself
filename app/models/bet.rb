@@ -2,7 +2,7 @@ class Bet < ActiveRecord::Base
   include BomUtility
   belongs_to :user
   validates_presence_of :user_id, :state, :descr, :price, :due_date
-  def validate
+  def validate_on_create
     if not price.nil?
       if price > self.user.ballance
         errors.add(:price, "is more than you have in your incentive bank.")
