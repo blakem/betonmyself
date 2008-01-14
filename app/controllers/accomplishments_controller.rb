@@ -14,6 +14,7 @@ class AccomplishmentsController < ApplicationController
     config.label = "Accomplishments"
     config.update.columns = [:notes]
 
+    list.per_page = BomConstant::RECORDS_PER_PAGE
     list.sorting = {:completion_date => 'DESC'}
   end
 end

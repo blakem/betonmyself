@@ -10,6 +10,7 @@ class BetController < ApplicationController
     config.label = "Current Goals"
     config.update.columns = [:notes]
 
+    list.per_page = BomConstant::RECORDS_PER_PAGE
     list.sorting = {:due_date => 'ASC'}
   end
   def before_create_save(record)

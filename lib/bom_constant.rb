@@ -9,4 +9,6 @@ module BomConstant
   
   MINIMUM_BET=100
   DEFAULT_BET=500
+
+  RECORDS_PER_PAGE=50000
 end
