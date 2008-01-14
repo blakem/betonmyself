@@ -66,10 +66,12 @@ var ActiveScaffold = {
   decrement_record_count: function(scaffold_id) {
     count = $$('#' + scaffold_id + ' span.active-scaffold-records').first();
     count.innerHTML = parseInt(count.innerHTML) - 1;
+    update_user_ballance();
   },
   increment_record_count: function(scaffold_id) {
     count = $$('#' + scaffold_id + ' span.active-scaffold-records').first();
     count.innerHTML = parseInt(count.innerHTML) + 1;
+    update_user_ballance();
   },
 
   server_error_response: '',
