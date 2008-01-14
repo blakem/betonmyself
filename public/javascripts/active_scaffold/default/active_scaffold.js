@@ -355,6 +355,7 @@ ActiveScaffold.ActionLink.Record.prototype = Object.extend(new ActiveScaffold.Ac
         if (this.target.hasClassName('even-record')) new_target.addClassName('even-record');
         this.target = new_target;
         this.close();
+        update_user_ballance();
       }.bind(this),
 
       onFailure: function(request) {

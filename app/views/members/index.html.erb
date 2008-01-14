@@ -1,5 +1,11 @@
  <center><h1><%= @user.first_name -%>'s Incentives</h1></center>
- You have <b>$<%= @cash -%></b> to spend<br>
+ <div id="user_ballance"><%= @ballance_text -%></div>
+ <script>
+ function update_user_ballance() {
+ <%= remote_function :url => {:action => 'get_account_ballance' },
+    :update => 'user_ballance' %>
+ }
+ </script>
  <%= render :active_scaffold => :bet, 
             :constraints => { :user_id => @user.id, :state => BomConstant::BET_STATE_CURRENT } 
   %>
