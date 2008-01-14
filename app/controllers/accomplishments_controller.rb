@@ -2,6 +2,7 @@ class AccomplishmentsController < ApplicationController
   active_scaffold :bet do |config|
     config.columns = [:checked, :descr, :price, :completion_date, 
       :due_date, :notes]
+    config.show.columns.exclude :checked  
 
     columns[:checked].label = ""
     columns[:descr].label = "Goal"
