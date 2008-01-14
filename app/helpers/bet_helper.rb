@@ -10,4 +10,7 @@ module BetHelper
             'id="record_price_' + eid + '" name="record[price]" size="20" ' +
             'type="text" value="' + value + '">'
    end
+   def notes_form_column(record, input_name)
+     text_area :record, :notes, :name => input_name, :cols => 80
+   end
 end
