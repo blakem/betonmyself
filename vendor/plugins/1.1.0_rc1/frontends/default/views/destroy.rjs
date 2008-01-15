@@ -2,16 +2,7 @@ if controller.send(:successful?)
   page.remove element_row_id(:action => 'list', :id => params[:id])
   page << "ActiveScaffold.reload_if_empty('#{active_scaffold_tbody_id}','#{url_for(params_for :action => 'update_table', :id => nil, :page => [active_scaffold_config.list.user.page.to_i - 1, 1].max, :escape => false)}');"
   page << "ActiveScaffold.stripe('#{active_scaffold_tbody_id}');"
-
-  @record.completion_date = Date.today
-  new_row = self.render :partial => 'list_record', 
-                        :locals  => {:record => @record}
-  page.insert_html :top, 'accomplishments-tbody', new_row
-
-  page << "ActiveScaffold.stripe($('accomplishments-tbody'))"
-  page << "ActiveScaffold.hide_empty_message('accomplishments-tbody','accomplishments-empty-message');"
-
-  page << "update_user_ballance();"
+  page << "ActiveScaffold.decrement_record_count('#{active_scaffold_id}');"
   page.replace active_scaffold_calculations_id, :partial => 'list_calculations' if active_scaffold_config.list.columns.any? {|c| c.calculation?}
 end
 
