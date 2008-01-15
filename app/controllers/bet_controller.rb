@@ -5,6 +5,7 @@ class BetController < ApplicationController
     columns[:price].label = "Payoff"
 
     config.create.label = "Enter Your New Goal"
+    config.create.link.label = 'Create New Goal'
     config.delete.link.label = 'Complete'
     config.delete.link.confirm = 'Yay! Click OK to complete task.'
     config.actions = [:create, :delete, :update, :show, :list]
