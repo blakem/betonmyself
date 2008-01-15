@@ -64,10 +64,8 @@ var ActiveScaffold = {
     });
   },
   decrement_record_count: function(scaffold_id) {
-    update_user_ballance();
   },
   increment_record_count: function(scaffold_id) {
-    update_user_ballance();
   },
 
   server_error_response: '',
