@@ -77,6 +77,9 @@ class User < ActiveRecord::Base
     self.current_bets.each do |b|
       total -= b.price
     end
+    self.failed_bets.each do |b|
+      total -= b.price
+    end
     return total
   end
 
@@ -98,6 +101,16 @@ class User < ActiveRecord::Base
       end
     end
     return current_bets
+  end
+
+  def failed_bets
+    failed_bets = []
+    self.bets.each do |b|
+      if b.state == BomConstant::BET_STATE_FAILURE
+        failed_bets.push b
+      end
+    end
+    return failed_bets
   end
 
   def transactions_in
