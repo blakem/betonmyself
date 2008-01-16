@@ -7,5 +7,12 @@ goal<%= @accomplishments.length == 1 ? '' : 's' -%>, including:<br>
 </ul>
 You currently have $<%= money_format(self.current_user.ballance) %> in the incentive bank.<br>
 <p></p>
-Are you sure you want to <%= link_to "Cash Out", :action => "cash_out" %> or
-go back and <%= link_to "Play some More!", :controller => "members" %>
+
+You can fill out this optional Feedback form and we'll cash you out, or you 
+can <p><%= link_to "Play some More!", :controller => "members" %></p>
+
+<%= form_tag :action => 'cash_out' %>
+   <p>Question 1: <%= text_field "q1", "value" %></p>
+   <p>Question 2: <%= text_field "q2", "value" %></p>
+   <%= submit_tag 'Cash Out'%>
+</form>
