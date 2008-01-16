@@ -1,9 +1,8 @@
 # This controller handles the login/logout function of the site.  
 class SessionsController < ApplicationController
-  # render new.rhtml
+  skip_before_filter :login_required
   def new
   end
-  skip_before_filter :login_required
 
   def create
     self.current_user = User.authenticate(params[:login], params[:password])

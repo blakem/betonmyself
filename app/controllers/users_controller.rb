@@ -1,8 +1,7 @@
 class UsersController < ApplicationController
-  # render new.rhtml
+  skip_before_filter :login_required
   def new
   end
-  skip_before_filter :login_required
 
   def create
     cookies.delete :auth_token
