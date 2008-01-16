@@ -3,6 +3,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resource :session
   map.resources :users
 
+  map.support '/support', :controller => 'support'
   map.donate '/lost_password', :controller => 'lost_password'
   map.donate '/donate', :controller => 'donate'
   map.help '/help', :controller => 'help'
