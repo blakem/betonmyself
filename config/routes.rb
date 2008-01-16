@@ -3,6 +3,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resource :session
   map.resources :users
 
+  map.donate '/donate', :controller => 'donate'
   map.help '/help', :controller => 'help'
   map.purchase '/purchase', :controller => 'purchase'
   map.cash_out '/cash_out', :controller => 'cash_out'

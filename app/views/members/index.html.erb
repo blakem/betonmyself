@@ -15,7 +15,9 @@
  <p><%= link_to "Add More Money", :controller => "purchase" %> |
     <%= link_to "Log Out", :controller => "logout" %> |
     <%= link_to "Cash Out", :controller => "cash_out" %> |
-    <%= link_to "Help", :controller => "help" %></p>
+    <%= link_to "Help", :controller => "help" %> |
+    <%= link_to "Donate", :controller => "donate" %>
+ </p>
 <% if ENV["RAILS_ENV"] != "production" %>
 <hr>Running in <%= ENV["RAILS_ENV"] -%> mode</hr>
 <% end %>
