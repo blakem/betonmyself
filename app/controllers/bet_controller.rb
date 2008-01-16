@@ -15,12 +15,20 @@ class BetController < ApplicationController
     list.per_page = BomConstant::RECORDS_PER_PAGE
     list.sorting = {:due_date => 'ASC'}
   end
- 
+
   def complete
-    do_edit # finds @record
-    @record.state = BomConstant::BET_STATE_SUCCESS
-    @record.completion_date = Date.today
-    @record.save!
+    do_edit
+  end
+ 
+  def complete_submit
+    if params['commit'] == "Complete Task"
+      do_edit # finds @record
+      @record.state = BomConstant::BET_STATE_SUCCESS
+      @record.congrats = params[:bet]['congrats']
+      @record.completion_date = Date.today
+      @record.save!
+    end
+    redirect_to :controller => 'members'
   end
   def do_new
     @record = active_scaffold_config.model.new

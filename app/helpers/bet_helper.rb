@@ -10,15 +10,20 @@ module BetHelper
       active_scaffold_input_text_options(:name => input_name, :value => value)
   end
   def notes_form_column(record, input_name)
-    text_area :record, :notes, {
-      :cols => 40,
-      :style => 'letter-spacing: -1px;border: solid 1px #1F7F00;' +
-                'font: bold 16px arial'
-    }
+    my_text_area(:notes)
+  end
+  def congrats_form_column(record, input_name)
+    my_text_area(:congrats)
   end
   def due_date_form_column(record, input_name) 
     date_select :record, :due_date, 
     :name => input_name, :order => [:month, :day, :year],
     :start_year => Date.today.year 
+  end
+  def price_column(record)
+    return '<b>$' + money_format(record.price) + '</b>'
+  end
+  def congrats_column(record)
+    record.congrats.nil? ? '' : '<b>' + record.congrats + '</b>'
   end
 end

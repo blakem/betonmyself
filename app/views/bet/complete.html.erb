@@ -1,2 +1,32 @@
-Yay! Way to go.
-<%= link_to "See the new page", :controller => "members" %>
+<h2>Yay! Way to go.</h2>
+<p>
+  Give your self a pat on the back and a high five!
+</p>
+<p>
+  After finishing <b><em>"<%= @record.descr %>"</em></b> you deserve 
+  some praise.
+</p>
+<p>
+  Make a Congratulatory Note to yourself and
+  bask in the glow of accomplishment.
+</p>
+
+<% form_for :bet, 
+   :url => {:action => :complete_submit, :id => @record.id} do |form| %>
+ <p>
+  <label for="congrats">
+    Congratulatory Message for finishing <b><em>"<%= @record.descr %>"</em></b>
+  </label>
+  <br></br>
+  <%= form.text_area :congrats,
+      :cols => 40,
+      :rows => 4,
+      :style => 'letter-spacing: -1px;border: solid 1px #1F7F00;' +
+                'font: bold 16px arial'
+  %>
+ </p>
+ <p>
+  <%= submit_tag 'Cancel' %>
+  <%= submit_tag 'Complete Task' %>
+ </p>
+<% end %> 
