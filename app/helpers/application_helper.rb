@@ -8,4 +8,9 @@ module ApplicationHelper
                 'font: bold 16px arial'
     }
   end
+
+  def main_menu
+    render :file => "#{RAILS_ROOT}/app/views/menu_items/_menubar.rhtml", :use_full_path => false, :locals => {:level => 0, :depth => 0, :class_attr => nil}
+  end
+
 end
