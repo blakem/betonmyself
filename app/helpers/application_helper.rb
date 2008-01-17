@@ -51,7 +51,7 @@ module ApplicationHelper
       },
       'donate' => {
         'text' => 'Donate',
-        'link' => '/',
+        'link' => '/donate',
         'selected' => 0
       },
       'logout' => {
