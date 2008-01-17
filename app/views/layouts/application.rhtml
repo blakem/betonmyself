@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 
 <head>
-<title>I BetOnMyself</title>
+<title><%= BomConstant::TITLE_TEXT -%></title>
 
 <meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
 
@@ -20,8 +20,8 @@
 <div class="header">
 
 <img class="logo_right" src="/goldberg/images/logo_right.jpg"/>
-<h1>BetOnMyself</h1>
-<p>Helping people get shit done</p>
+<h1><%= BomConstant::HEADER_TEXT -%></h1>
+<p><%= BomConstant::HEADER_NOTE -%></p>
 
 <!-- Could put something here like some top links -->
 <!--p class="right_text"></p-->
@@ -63,6 +63,6 @@
 
 </div>  <!-- class="container" -->
 
-<div class="footer">Goldberg.settings.footer_message</div>
+<div class="footer"><%= BomConstant::FOOTER_TEXT -%></div>
 </body>
 </html>
