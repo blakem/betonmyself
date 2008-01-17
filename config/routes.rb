@@ -3,8 +3,8 @@ ActionController::Routing::Routes.draw do |map|
   map.resource :session
   map.resources :users
 
-  map.support '/support', :controller => 'support'
-  map.donate '/lost_password', :controller => 'lost_password'
+
+  map.lost_password '/lost_password', :controller => 'lost_password'
   map.donate '/donate', :controller => 'donate'
   map.help '/help', :controller => 'help'
   map.purchase '/purchase', :controller => 'purchase'
@@ -12,6 +12,13 @@ ActionController::Routing::Routes.draw do |map|
   map.signup '/signup', :controller => 'users', :action => 'new'
   map.login  '/login', :controller => 'sessions', :action => 'new'
   map.logout '/logout', :controller => 'sessions', :action => 'destroy'
+
+  map.support '/support', :controller => 'support'
+  map.update_account '/update_account', :controller => 'update_account'
+  map.provide_testimonial '/provide_testimonial', :controller => 'provide_testimonial'
+  map.feedback '/feedback', :controller => 'feedback'
+  map.report_problem '/report_problem', :controller => 'report_problem'
+  map.summarize_transactions '/summarize_transactions', :controller => 'summarize_transactions'
 
   # The priority is based upon order of creation: first created -> highest priority.
 
