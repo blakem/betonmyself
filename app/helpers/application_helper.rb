@@ -17,42 +17,42 @@ module ApplicationHelper
       'welcome' => {
         'text' => 'Welcome',
         'link' => '/',
-        'selected' => 1
+        'selected' => 1,
       },
       'members' => {
         'text' => 'Members',
         'link' => '/members',
-        'selected' => 0
+        'selected' => 0,
       },
       'play' => {
         'text' => 'Play!',
         'link' => '/members',
-        'selected' => 0
+        'selected' => 1,
       },
       'signup' => {
         'text' => 'SignUp',
         'link' => '/signup',
-        'selected' => 0
+        'selected' => 0,
       },
       'help' => {
         'text' => 'Help',
         'link' => '/help',
-        'selected' => 0
+        'selected' => 0,
       },
       'support' => {
         'text' => 'Support',
         'link' => '/support',
-        'selected' => 0
+        'selected' => 0,
       },
       'purchase' => {
         'text' => 'Add Money',
         'link' => '/purchase',
-        'selected' => 0
+        'selected' => 0,
       },
       'donate' => {
         'text' => 'Donate',
         'link' => '/donate',
-        'selected' => 0
+        'selected' => 0,
       },
       'logout' => {
         'text' => 'Log Out',

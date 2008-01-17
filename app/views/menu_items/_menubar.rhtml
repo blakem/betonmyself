@@ -2,7 +2,7 @@
 <ul<%= if class_attr then " class=\"#{class_attr}\"" end%>>
   <% for item in menu_data do 
        selected = item['selected'] %>
-  <li<%= if selected then ' class="selected"' end %>>
+  <li<%= if selected == 1 then ' class="selected"' end %>>
     <a href="<%= item['link'] %>"><%= item['text'] %></a>
     <%= if selected and depth > 0 
 	  render :file => "#{RAILS_ROOT}/app/views/menu_items/_menubar.rhtml", :use_full_path => false, :locals => {:level => level + 1, :depth => depth - 1,
