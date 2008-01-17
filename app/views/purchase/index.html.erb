@@ -1,9 +1,8 @@
-Add more money...
+<h1>Get some more incentive money...</h1>
 <% form_for :transaction, :url => { :action => :create } do |form| -%>
-  Amount: 
-  <%= form.select('price', [ [ '$20',  2000],
-                             [ '$50',  5000],
-                             ['$100', 10000] ]) 
-  %></br>
-  <%= submit_tag 'Purchase' -%></br>
+  <p><b>Amount:</b> <%= form.select('price', [ [ '$20',  2000],
+                                   [ '$50',  5000],
+                                   ['$100', 10000] ]) 
+  %></p>
+  <p><%= submit_tag 'Purchase' -%></br></p>
 <% end %>

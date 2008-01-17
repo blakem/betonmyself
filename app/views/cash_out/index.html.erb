@@ -1,5 +1,6 @@
-So far you've accomplished <%= @accomplishments.length %>
-goal<%= @accomplishments.length == 1 ? '' : 's' -%>, including:<br>
+<h1>So soon?</h1>
+<h2>So far you've accomplished <%= @accomplishments.length %>
+goal<%= @accomplishments.length == 1 ? '' : 's' -%>, including:<br></h2>
 <ul>
 <% @accomplishments.each do |a| %>
   <li><%= a.descr %></li>
@@ -9,7 +10,9 @@ You currently have $<%= money_format(self.current_user.ballance) %> in the incen
 <p></p>
 
 You can fill out this optional Feedback form and we'll cash you out, or you 
-can <p><%= link_to "Play some More!", :controller => "members" %></p>
+can <p>
+  <%= link_to "Play some more!", {:controller => "members"}, 
+    :class => "red_link"%></p>
 
 <%= form_tag :action => 'cash_out' %>
    <p>Question 1: <%= text_field "q1", "value" %></p>
