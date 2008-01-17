@@ -12,8 +12,8 @@ module BomConstant
   DEFAULT_BET=500
 
   RECORDS_PER_PAGE=50000
-
-  FOOTER_TEXT="Copyright 2007-2008, BetOnYourself Inc."
+               
+  FOOTER_TEXT="Copyright &copy; 2007-2008, BetOnYourself, Inc."
   TITLE_TEXT="BetOnMyself"
   HEADER_TEXT="BetOnMyself"
   HEADER_NOTE="Helping People Get Things Done"
