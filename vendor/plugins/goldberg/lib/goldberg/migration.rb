@@ -6,12 +6,7 @@ module Goldberg
         
         def self.prefix
           if not @prefix
-            if self.pg_conn?
-              self.create_goldberg_schema
-              @prefix = 'goldberg.'
-            else
-              @prefix = 'goldberg_'
-            end
+            @prefix = 'goldberg_'
           end
           @prefix
         end

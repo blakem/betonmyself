@@ -14,12 +14,7 @@ module Goldberg
         
         def self.prefix
           if not @prefix
-            if self.connection.class.to_s == 
-                'ActiveRecord::ConnectionAdapters::PostgreSQLAdapter'
-              @prefix = 'goldberg.'
-            else
-              @prefix = 'goldberg_'
-            end
+            @prefix = 'goldberg_'
           end
           @prefix
         end
