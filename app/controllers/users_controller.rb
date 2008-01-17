@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
   skip_before_filter :login_required
   def new
+    @selected_button = 'signup'
   end
 
   def create

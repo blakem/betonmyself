@@ -1,5 +1,6 @@
 class PurchaseController < ApplicationController
   def index
+    @selected_button = 'purchase'
   end
   def create
     @transaction = Transaction.new(

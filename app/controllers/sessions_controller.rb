@@ -2,6 +2,7 @@
 class SessionsController < ApplicationController
   skip_before_filter :login_required
   def new
+    @selected_button = 'members'
   end
 
   def create
@@ -14,8 +15,8 @@ class SessionsController < ApplicationController
       redirect_back_or_default('/')
       flash[:notice] = "Logged in successfully"
     else
-#     flash[:notice] = "Failed Authentication"
-#     flash.now[:error] = "Authentication Failed"
+      flash[:notice] = "Failed Authentication"
+      flash.now[:error] = "Authentication Failed"
       render :action => 'new'
     end
   end

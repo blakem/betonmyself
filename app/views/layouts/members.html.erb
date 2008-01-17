@@ -31,7 +31,7 @@
 
 <!-- Horizontal menu, along top -->
 <div class="mainmenu">
-  <%= main_menu -%>
+  <%= main_menu(@selected_button) -%>
 </div>  <!-- class="mainmenu" -->
  
 <div class="wrap">
@@ -43,7 +43,7 @@
 <% elsif flash[:error] -%>
 <div class="flash_error"><h1>Error!</h1><%= flash[:error] %></div>
 <% end -%>
-<%= yield %>
+<%= yield :layout %>
 </div>  <!-- class="wide_content" -->
 
 <div class="clearingdiv">&nbsp;</div>

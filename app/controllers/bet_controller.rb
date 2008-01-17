@@ -17,6 +17,7 @@ class BetController < ApplicationController
   end
 
   def complete
+    @selected_button = 'play'
     do_edit
   end
  

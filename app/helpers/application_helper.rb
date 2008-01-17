@@ -9,15 +9,15 @@ module ApplicationHelper
     }
   end
 
-  def main_menu
-    render :file => "#{RAILS_ROOT}/app/views/menu_items/_menubar.rhtml", :use_full_path => false, :locals => {:level => 0, :depth => 0, :class_attr => nil, :menu_data => self.menu_data }
+  def main_menu(selected_button)
+    render :file => "#{RAILS_ROOT}/app/views/menu_items/_menubar.rhtml", :use_full_path => false, :locals => {:level => 0, :depth => 0, :class_attr => nil, :menu_data => menu_data(selected_button) }
   end
-  def menu_data
+  def menu_data(selected_button)
     buttons = {
       'welcome' => {
         'text' => 'Welcome',
         'link' => '/',
-        'selected' => 1,
+        'selected' => 0,
       },
       'members' => {
         'text' => 'Members',
@@ -27,7 +27,7 @@ module ApplicationHelper
       'play' => {
         'text' => 'Play!',
         'link' => '/members',
-        'selected' => 1,
+        'selected' => 0,
       },
       'signup' => {
         'text' => 'SignUp',
@@ -65,6 +65,11 @@ module ApplicationHelper
         'selected' => 0,
       },
     };
+
+    if selected_button and buttons[selected_button]
+      buttons[selected_button]['selected'] = 1
+    end
+      
     if not logged_in?
       [
        buttons['welcome'],
