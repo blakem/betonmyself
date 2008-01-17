@@ -1,7 +1,7 @@
 <h1>Yay! Way to go.</h1>
 <h2>Give your self a pat on the back and a high five!</h2>
 <p>
-  After finishing <b><em>"<%= @record.descr %>"</em></b> you deserve 
+  After finishing <b><em>"<%= h(@record.descr) %>"</em></b> you deserve 
   some praise.
 </p>
 <p>
@@ -13,7 +13,7 @@
    :url => {:action => :complete_submit, :id => @record.id} do |form| %>
  <p>
   <label for="congrats">
-    Congratulatory Message for finishing <b><em>"<%= @record.descr %>"</em></b>
+    Congratulatory Message for finishing <b><em>"<%= h(@record.descr) %>"</em></b>
   </label>
   <br></br>
   <%= form.text_area :congrats,

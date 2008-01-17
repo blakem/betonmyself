@@ -3,7 +3,7 @@
 goal<%= @accomplishments.length == 1 ? '' : 's' -%>, including:<br></h2>
 <ul>
 <% @accomplishments.each do |a| %>
-  <li><%= a.descr %></li>
+  <li><%= h(a.descr) %></li>
 <% end %>
 </ul>
 You currently have $<%= money_format(self.current_user.ballance) %> in the incentive bank.<br>

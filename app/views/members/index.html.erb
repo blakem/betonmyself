@@ -1,4 +1,4 @@
- <center><h1><%= @user.first_name -%>'s Incentives</h1></center>
+ <center><h1><%= h(@user.first_name) -%>'s Incentives</h1></center>
  <div id="user_ballance"><%= @ballance_text -%></div>
  <script>
  function update_user_ballance() {
