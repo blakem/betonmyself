@@ -10,7 +10,20 @@ module ApplicationHelper
   end
 
   def main_menu
-    render :file => "#{RAILS_ROOT}/app/views/menu_items/_menubar.rhtml", :use_full_path => false, :locals => {:level => 0, :depth => 0, :class_attr => nil}
+    render :file => "#{RAILS_ROOT}/app/views/menu_items/_menubar.rhtml", :use_full_path => false, :locals => {:level => 0, :depth => 0, :class_attr => nil, :menu_data => self.menu_data }
   end
-
+  def menu_data 
+    return [
+      {   
+        'text' => 'Home',
+        'link' => '/',
+        'selected' => 1
+      },
+      {
+        'text' => 'Members',
+        'link' => '/members',
+        'selected' => 0
+      }
+    ]
+  end
 end
