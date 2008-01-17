@@ -219,7 +219,7 @@ text-decoration:none;
 
 /*** Content ***/
 
-.content {
+.content, .wide_content {
 background-color:#fafcff;
 border:1px solid #909090;
 color:#2a2a2a;
@@ -227,8 +227,9 @@ padding:15px 20px 5px;
 }
 
 .content {margin:0 200px;}
+.wide_content {margin:0 80px;}
 
-div.content h1, div.content h2 {
+div.content h1, div.content h2, div.wide_content h1, div.wide_content h2 {
 background-color:inherit;
 color:#606060;
 font-size:1.8em;
@@ -238,12 +239,12 @@ margin:0 0 15px;
 padding:0;
 }
 
-div.content h2 {
+div.content h2, div.wide_content h2 {
 font-size:1.6em;
 margin-bottom:10px;
 }
 
-div.content img {
+div.content img, div.wide_content img {
 border:1px solid #b0b0b0;
 }
 
