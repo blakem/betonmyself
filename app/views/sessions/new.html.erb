@@ -1,14 +1,18 @@
+<h1>Login</h1>
+<p> Please enter your username and password to access the site.</p>
+
 <% form_tag session_path do -%>
 <p><label for="login">Login</label><br/>
-<%= text_field_tag 'login' %></p>
+<%= text_field_tag 'login', nil, :size => 30 %></p>
 
 <p><label for="password">Password</label><br/>
-<%= password_field_tag 'password' %></p>
+<%= password_field_tag 'password', nil, :size => 30 %></p>
 
 <p><label for="remember_me">Remember me:</label>
 <%= check_box_tag 'remember_me' %></p>
 
-<p><%= submit_tag 'Log in' %></p>
+<p><%= submit_tag 'Login' %></p>
 <% end -%>
 
-<p><%= link_to "Lost Password?", :controller => "lost_password" %></p>
+<h2> Forgot your password? </h2>
+<p><%= link_to "Click Here", :controller => "lost_password" %> for further instructions.</p>
