@@ -26,4 +26,11 @@ module BetHelper
   def congrats_column(record)
     record.congrats.nil? ? '' : '<b>' + record.congrats + '</b>'
   end
+  def due_date_column(record)
+    if record.state == BomConstant::BET_STATE_CURRENT and record.due_date == Date.today
+      '<span class="red_link">' + format_date(record.due_date) + '</span>'
+    else
+      format_date(record.due_date)
+    end
+  end
 end

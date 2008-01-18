@@ -13,7 +13,8 @@ module BomConstant
 
   RECORDS_PER_PAGE=50000
                
-  FOOTER_TEXT="Copyright &copy; 2007-2008, BetOnYourself, Inc."
+  CURRENT_YEAR=Date.today.year.to_s 
+  FOOTER_TEXT="Copyright &copy; 2007-" + CURRENT_YEAR + ", BetOnYourself, Inc."
   TITLE_TEXT="BetOnMyself"
   HEADER_TEXT="Bet On Myself . . ."
   HEADER_NOTE="Helping People Get Things Done"
