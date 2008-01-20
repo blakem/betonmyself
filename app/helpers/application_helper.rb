@@ -64,6 +64,16 @@ module ApplicationHelper
         'link' => '/cash_out',
         'selected' => 0,
       },
+      'faq' => {
+        'text' => 'FAQ',
+        'link' => '/faq',
+        'selected' => 0,
+      },
+      'contact' => {
+        'text' => 'Contact',
+        'link' => '/contact',
+        'selected' => 0,
+      },
     };
 
     if selected_button and buttons[selected_button]
@@ -75,6 +85,8 @@ module ApplicationHelper
        buttons['welcome'],
        buttons['signup'],
        buttons['members'],
+       buttons['faq'],
+       buttons['contact'],
       ]
     else
       [
@@ -84,6 +96,8 @@ module ApplicationHelper
        buttons['help'],
        buttons['support'],
        buttons['donate'],
+       buttons['faq'],
+       buttons['contact'],
        buttons['logout'],
       ]
     end
