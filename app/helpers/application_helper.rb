@@ -76,20 +76,20 @@ module ApplicationHelper
       },
     };
 
-    if selected_button and buttons[selected_button]
+    if not selected_button.nil? and buttons[selected_button]
       buttons[selected_button]['selected'] = 1
     end
-      
+
     if not logged_in?
-      [
-       buttons['welcome'],
-       buttons['signup'],
-       buttons['members'],
-       buttons['faq'],
-       buttons['contact'],
+      display_buttons = [
+        buttons['welcome'],
+        buttons['signup'],
+        buttons['members'],
+        buttons['faq'],
+        buttons['contact'],
       ]
     else
-      [
+      display_buttons = [
        buttons['play'],
        buttons['purchase'],
        buttons['cashout'],
@@ -100,6 +100,10 @@ module ApplicationHelper
        buttons['contact'],
        buttons['logout'],
       ]
+      if not selected_button.nil? and selected_button == 'welcome'
+        display_buttons.unshift buttons['welcome']
+      end
     end
+    return display_buttons
   end
 end
