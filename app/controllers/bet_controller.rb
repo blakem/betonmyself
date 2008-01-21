@@ -33,7 +33,11 @@ class BetController < ApplicationController
   end
   def do_new
     @record = active_scaffold_config.model.new
-    @record.price = BomConstant::DEFAULT_BET
+    price = self.current_user.ballance
+    if price > BomConstant::DEFAULT_BET 
+      price = BomConstant::DEFAULT_BET
+    end
+    @record.price = self.current_user.ballance
     apply_constraints_to_record(@record)
     @record
   end
