@@ -9,7 +9,9 @@ class AccomplishmentsController < ApplicationController
     columns[:descr].label = "Goal"
     columns[:price].label = "Payoff"
 
-    config.actions = [:update, :show, :list, :search]
+    config.actions = [:update, :delete, :show, :list, :search]
+    config.delete.link.confirm = 
+      'Really?! Deleting this Accomplishment.  Are you Sure?';
     config.columns.add :checked
     config.label = "Accomplishments"
     config.update.columns = [:notes, :congrats]
@@ -17,4 +19,11 @@ class AccomplishmentsController < ApplicationController
     list.per_page = BomConstant::RECORDS_PER_PAGE
     list.sorting = {:completion_date => 'DESC'}
   end
+
+  def do_destroy
+    @record = find_if_allowed(params[:id], :destroy)
+    @record.state = BomConstant::BET_STATE_DELETED
+    @record.save!
+  end
+
 end
