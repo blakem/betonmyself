@@ -37,7 +37,7 @@ class BetController < ApplicationController
     if price > BomConstant::DEFAULT_BET 
       price = BomConstant::DEFAULT_BET
     end
-    @record.price = self.current_user.ballance
+    @record.price = price
     apply_constraints_to_record(@record)
     @record
   end
