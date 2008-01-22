@@ -8,7 +8,8 @@ class Bet < ActiveRecord::Base
     end
     if not price.nil?
       if price > self.user.ballance
-        errors.add(:price, "is more than you have in your incentive bank.")
+        errors.add(:price, "is more than you have in your incentive bank. " +
+                           "<a href=\"/purchase\">Add More Money</a>");
       end
       if price < BomConstant::MINIMUM_BET
         errors.add(:price, "of $" + money_format(price) + 

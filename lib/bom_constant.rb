@@ -18,5 +18,5 @@ module BomConstant
   FOOTER_TEXT="Copyright &copy; 2007-" + CURRENT_YEAR + ", BetOnYourself, Inc."
   TITLE_TEXT="BetOnMyself"
   HEADER_TEXT="Bet On Myself . . ."
-  HEADER_NOTE="Helping People Get Things Done"
+  HEADER_NOTE="Helping You Get Things Done"
 end
