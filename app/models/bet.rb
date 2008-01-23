@@ -18,7 +18,7 @@ class Bet < ActiveRecord::Base
       end
     end
   end
-  def to_s
-    return 'Notes for "' + self.descr + '"'
+  def to_label
+    "Notes for \"#{descr}\""
   end
 end
