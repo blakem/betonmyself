@@ -19,6 +19,10 @@ class Bet < ActiveRecord::Base
     end
   end
   def to_label
-    "Notes for \"#{descr}\""
+    if state == BomConstant::BET_STATE_CURRENT
+      "Fields for \"#{descr}\""
+    else
+      "Notes for \"#{descr}\""
+    end
   end
 end

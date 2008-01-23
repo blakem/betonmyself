@@ -1,4 +1,11 @@
 module BetHelper
+  def descr_form_column(record, input_name)
+    options = active_scaffold_input_text_options(
+       :name => input_name, 
+       :value => record.descr)
+    options[:size] = 43
+    text_field :record, :descr, options
+  end
   def price_form_column(record, input_name)
     if record.price.nil? or record.price < BomConstant::MINIMUM_BET
       value = money_format(BomConstant::DEFAULT_BET)
@@ -6,8 +13,10 @@ module BetHelper
       value = money_format(record.price)
     end
     value = '$' + value
-    text_field :record, :price, 
-      active_scaffold_input_text_options(:name => input_name, :value => value)
+    options = active_scaffold_input_text_options(:name => input_name, :value => value) 
+    options[:size] = 9
+    text_field :record, :price, options
+      
   end
   def notes_form_column(record, input_name)
     my_text_area(:notes)
