@@ -17,6 +17,6 @@ module BomConstant
   CURRENT_YEAR=Date.today.year.to_s 
   FOOTER_TEXT="Copyright &copy; 2007-" + CURRENT_YEAR + ", BetOnYourself, Inc."
   TITLE_TEXT="BetOnMyself"
-  HEADER_TEXT="Bet On Myself . . ."
+  HEADER_TEXT="Bet On Myself . com"
   HEADER_NOTE="Helping You Get Things Done"
 end
