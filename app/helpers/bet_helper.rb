@@ -16,9 +16,11 @@ module BetHelper
     my_text_area(:congrats)
   end
   def due_date_form_column(record, input_name) 
-    date_select :record, :due_date, 
-    :name => input_name, :order => [:month, :day, :year],
-    :start_year => Date.today.year 
+    date_select :record, :due_date, {
+      :name => input_name, 
+      :order => [:month, :day, :year],
+      :default => Date.today + 1,
+    } 
   end
   def price_column(record)
     return '<b>$' + money_format(record.price) + '</b>'
