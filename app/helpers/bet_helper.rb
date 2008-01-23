@@ -23,7 +23,14 @@ module BetHelper
     } 
   end
   def price_column(record)
-    return '<b>$' + money_format(record.price) + '</b>'
+    '<b>$' + money_format(record.price) + '</b>'
+  end
+  def render_price_sum(sum)
+    '<b>$' + money_format(sum) + '</b>'
+  end
+  def render_descr_count(count)
+    plural = count == 1 ? '' : 's'
+    '<b>' + count.to_s + ' Completed Accomplishment' + plural + '!</b>'
   end
   def congrats_column(record)
     record.congrats.nil? ? '' : '<b>' + record.congrats + '</b>'

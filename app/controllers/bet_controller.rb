@@ -1,6 +1,7 @@
 class BetController < ApplicationController
   active_scaffold :bet do |config|
     config.columns = [:descr, :price, :due_date, :notes]
+    config.columns[:price].calculate = :sum
     columns[:descr].label = "Goal"
     columns[:price].label = "Payoff"
 
@@ -11,6 +12,7 @@ class BetController < ApplicationController
     config.actions = [:create, :update, :show, :list]
     config.label = "Current Goals"
     config.update.columns = [:notes]
+
 
     list.per_page = BomConstant::RECORDS_PER_PAGE
     list.sorting = {:due_date => 'ASC'}

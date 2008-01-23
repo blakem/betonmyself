@@ -2,6 +2,8 @@ class AccomplishmentsController < ApplicationController
   active_scaffold :bet do |config|
     config.columns = [:checked, :descr, :due_date, :completion_date, 
       :price, :congrats]
+    config.columns[:price].calculate = :sum
+    config.columns[:descr].calculate = :count
     config.show.columns.exclude :checked  
     config.show.columns.add :notes  
 
