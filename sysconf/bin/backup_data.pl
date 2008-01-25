@@ -1,6 +1,9 @@
 #!/usr/bin/perl -w
 use strict;
+
 use Getopt::Std;
+use Utility::SQL;
+
 my %opts;
 getopts('r', \%opts);
 
@@ -23,6 +26,8 @@ sub backup_data {
 sub restore_data {
   my ($env) = @_;
   print "Restoring betonmyself_$env\n";
+  Utility::SQL->init($env);
+
   my @lines = split /\n/, `pg_restore -l /tmp/bom_$env.tar`;
   my ($user_line) = grep { /TABLE DATA public users/ } @lines;
   open OUT, ">/tmp/bom_$env.list" or die;
@@ -37,4 +42,15 @@ sub restore_data {
   }
   close OUT;
   system("pg_restore -d betonmyself_$env -L /tmp/bom_$env.list /tmp/bom_$env.tar");
+  my @primary_keys = Utility::SQL->list("
+    select conname from pg_constraint where conname like '%_pkey'
+  ");
+  foreach my $pkey (@primary_keys) {
+    my $table = $pkey;
+    $table =~ s/_pkey$//;
+    my $seq = "${table}_id_seq";
+    Utility::SQL->execute("
+      select setval('$seq', (select max(id) from $table))
+    ");
+  }
 }

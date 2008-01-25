@@ -5,6 +5,7 @@ use constant BET_STATE_CURRENT => 1;
 use constant BET_STATE_SUCCESS => 2;
 use constant BET_STATE_FAILURE => 3;
 use Data::Dumper;
+use Utility::SQL;
 
 Utility::SQL->init;
 
@@ -51,31 +52,4 @@ sub get_expired_bets {
     'select * from bets where due_date<current_date and state=?',
     BET_STATE_CURRENT,
   );
-}
-
-package Utility::SQL;
-use DBI;
-use DBD::Pg;
-use Data::Dumper;
-
-our ($dbh, $environment);
-
-sub dbh { $dbh }
-sub environment { $environment }
-
-sub init {
-  my ($class, $environment_arg) = @_;
-  $environment ||= $environment_arg || $ENV{RAILS_ENV} || 'development';
-  $dbh = DBI->connect("dbi:Pg:db=betonmyself_$environment", 'root', 'root');
-}
-sub rows {
-  my ($class, $statement, @params) = @_;
-  my $sth = $class->execute($statement, @params);
-  return $sth->fetchall_arrayref({});
-}
-sub execute {
-  my ($class, $statement, @params) = @_;
-  my $sth = $dbh->prepare($statement);
-  $sth->execute(@params);
-  return $sth;
 }
