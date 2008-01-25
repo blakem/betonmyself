@@ -33,9 +33,19 @@ end -%>
 
   <%= render :partial => 'form', :locals => { :columns => active_scaffold_config.create.columns } %>
 
+<ol class="form">
+  <li class="form-element">
+    <dt>
+      After taking a deep breath:
+    </dt> 
+    <dd>
+      <%= submit_tag as_('I Proimse Myself That I\'ll Complete This Goal, By This Date'), :class => "submit" %>
+    </dd>
+  </li> 
+</ol>
+
   <p class="form-footer">
-    <%= submit_tag as_('I Agree To Complete This Goal'), :class => "submit" %>
-    <%= link_to as_('Cancel'), params_for(:action => 'list'), :class => 'cancel' %>
+    <%= link_to as_(''), params_for(:action => 'list'), :class => 'cancel' %>
     <%= loading_indicator_tag(:action => :create, :id => params[:id]) %>
   </p>
 
