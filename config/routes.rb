@@ -4,6 +4,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resources :users
 
 
+  map.intro '/intro', :controller => 'intro'
   map.faq '/faq', :controller => 'faq'
   map.contact '/contact', :controller => 'contact'
   map.lost_password '/lost_password', :controller => 'lost_password'

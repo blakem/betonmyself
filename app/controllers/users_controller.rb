@@ -19,7 +19,7 @@ class UsersController < ApplicationController
     @transaction.trans_type = BomConstant::TRANSACTION_TYPE_IN
     @transaction.save!
 
-    redirect_back_or_default('/members')
+    redirect_back_or_default('/intro')
     flash[:notice] = "Thanks for signing up!"
   rescue ActiveRecord::RecordInvalid
     render :action => 'new'

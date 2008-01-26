@@ -29,6 +29,11 @@ module ApplicationHelper
         'link' => '/members',
         'selected' => 0,
       },
+      'intro' => {
+        'text' => 'Intro',
+        'link' => '/intro',
+        'selected' => 0,
+      },
       'signup' => {
         'text' => 'SignUp',
         'link' => '/signup',
@@ -90,6 +95,7 @@ module ApplicationHelper
       ]
     else
       display_buttons = [
+       buttons['intro'],
        buttons['play'],
        buttons['purchase'],
        buttons['cashout'],
