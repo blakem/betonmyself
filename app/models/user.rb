@@ -145,6 +145,10 @@ class User < ActiveRecord::Base
     def password_required?
       crypted_password.blank? || !password.blank?
     end
-    
-    
+
+    def validate_on_update
+      if not encrypt(old_password) == crypted_password
+        errors.add(:old_password, " does not match current password")
+      end
+    end    
 end
