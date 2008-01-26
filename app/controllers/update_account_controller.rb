@@ -11,6 +11,7 @@ class UpdateAccountController < ApplicationController
     @user.last_name = new_fields[:last_name]
     @user.email = new_fields[:email]
     @user.password = new_fields[:password]
+    @user.password_confirmation = new_fields[:password_confirmation]
     @user.save!
     redirect_to('/members')
   rescue ActiveRecord::RecordInvalid
