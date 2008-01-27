@@ -9,7 +9,7 @@ class PurchaseController < ApplicationController
       :trans_type => BomConstant::TRANSACTION_TYPE_IN
     )
     @transaction.save!
-    log_transaction(@transaction)
+    log_transaction_in(@transaction)
     redirect_to('/members')
   end
 end

@@ -134,6 +134,16 @@ class User < ActiveRecord::Base
     return transactions_out
   end
 
+  def to_s
+    "#<User: " +
+    "id:" + id.to_s + "," +
+    "login:" + login.to_s + "," +
+    "email:" + email.to_s + "," +
+    "first_name:" + first_name.to_s + "," +
+    "last_name:" + last_name.to_s + 
+    " >"
+  end
+
   protected
     # before filter 
     def encrypt_password

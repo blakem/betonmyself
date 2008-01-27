@@ -50,6 +50,8 @@ class BetController < ApplicationController
     price = price.to_f * 100
     params[:record]['price'] = price
     super
-    log_bets_create(@record)
+    if successful?
+      log_bets_create(@record)
+    end
   end
 end

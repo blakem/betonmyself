@@ -16,21 +16,13 @@ module BomUtility
     log('bets', msg)
   end
   def log_users_create(user)
-    log_users("Created user: " + 
-              user.id.to_s + ":" + 
-              user.login + ':' + 
-              user.email + ':' +
-              user.first_name + ':' +
-              user.last_name
-              );
+    log_users("Created user: " + user.to_s)
   end
-  def log_transaction(transaction)
-    log_users("Created transaction: " +
-              transaction.id.to_s + ":" +
-              transaction.user_id.to_s + ":" +
-              transaction.trans_type.to_s + ":" +
-              transaction.price.to_s
-              );
+  def log_transaction_in(transaction)
+    log_users("Created transaction in: " + transaction.to_s)
+  end
+  def log_transaction_out(transaction)
+    log_users("Created transaction out: " + transaction.to_s)
   end
   def log_bets_create(bet)
     log_bets("Created bet: " + bet.to_s) 
@@ -42,6 +34,6 @@ module BomUtility
     log_bets("Failed bet: " + bet.to_s) 
   end
   def log_bets_delete(bet)
-    log_bets("Failed bet: " + bet.to_s) 
+    log_bets("Deleted bet: " + bet.to_s) 
   end
 end

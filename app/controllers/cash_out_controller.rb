@@ -10,6 +10,6 @@ class CashOutController < ApplicationController
     @transaction.price = @ballance
     @transaction.trans_type = BomConstant::TRANSACTION_TYPE_OUT
     @transaction.save!
-    log_transaction(@transaction)
+    log_transaction_out(@transaction)
   end
 end
