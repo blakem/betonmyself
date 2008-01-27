@@ -12,6 +12,7 @@ class UsersController < ApplicationController
     # reset_session
     @user = User.new(params[:user])
     @user.save!
+    log_users_create(@user)
     self.current_user = @user
 
     @transaction = Transaction.new(:user_id => self.current_user.id)

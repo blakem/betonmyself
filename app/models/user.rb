@@ -70,7 +70,7 @@ class User < ActiveRecord::Base
   def ballance
     total = 0
     self.transactions_in.each do |t|
-        total += t.price
+      total += t.price
     end
     self.transactions_out.each do |t|
       total -= t.price
