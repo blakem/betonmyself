@@ -14,11 +14,19 @@ module BomUtility
   end
   def log_users_create(user)
     log_users("Created user: " + 
-              @user.id.to_s + ":" + 
-              @user.login + ':' + 
-              @user.email + ':' +
-              @user.first_name + ':' +
-              @user.last_name
+              user.id.to_s + ":" + 
+              user.login + ':' + 
+              user.email + ':' +
+              user.first_name + ':' +
+              user.last_name
+              );
+  end
+  def log_transaction(transaction)
+    log_users("Created transaction: " +
+              transaction.id.to_s + ":" +
+              transaction.user_id.to_s + ":" +
+              transaction.trans_type.to_s + ":" +
+              transaction.price.to_s
               );
   end
 end
