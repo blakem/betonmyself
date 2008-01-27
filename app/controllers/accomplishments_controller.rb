@@ -28,5 +28,11 @@ class AccomplishmentsController < ApplicationController
     @record.save!
     log_bets_delete(@record)
   end
+  def do_update
+    super
+    if successful?
+      log_bets_update(@record)
+    end
+  end
 
 end

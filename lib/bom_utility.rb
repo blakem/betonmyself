@@ -18,6 +18,9 @@ module BomUtility
   def log_users_create(user)
     log_users("Created user: " + user.to_s)
   end
+  def log_users_update(user)
+    log_users("Updated user: " + user.to_s)
+  end
   def log_transaction_in(transaction)
     log_users("Created transaction in: " + transaction.to_s)
   end
@@ -35,5 +38,8 @@ module BomUtility
   end
   def log_bets_delete(bet)
     log_bets("Deleted bet: " + bet.to_s) 
+  end
+  def log_bets_update(bet)
+    log_bets("Updated bet: " + bet.to_s)
   end
 end

@@ -14,6 +14,7 @@ class UpdateAccountController < ApplicationController
     @user.password_confirmation = new_fields[:password_confirmation]
     @user.old_password = new_fields[:old_password]
     @user.save!
+    log_users_update(@user)
     redirect_to('/members')
   rescue ActiveRecord::RecordInvalid
     render :action => 'index'

@@ -22,7 +22,6 @@ class BetController < ApplicationController
     @selected_button = 'play'
     do_edit
   end
- 
   def complete_submit
     if params['commit'] == "Complete Task"
       do_edit # finds @record
@@ -52,6 +51,12 @@ class BetController < ApplicationController
     super
     if successful?
       log_bets_create(@record)
+    end
+  end
+  def do_update
+    super
+    if successful?
+      log_bets_update(@record)
     end
   end
 end
