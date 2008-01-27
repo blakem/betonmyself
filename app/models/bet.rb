@@ -25,4 +25,17 @@ class Bet < ActiveRecord::Base
       "Notes for \"#{descr}\""
     end
   end
+  def to_s
+    "#<Bet: " +
+    "id:" + id.to_s + "," +
+    "user_id:" + user_id.to_s + "," +
+    "state:" + state.to_s + "," +
+    "price:" + price.to_s + "," +
+    "descr:" + descr.to_s + "," +
+    "due_date:" + due_date.to_s + "," +
+    "completion_date:" + completion_date.to_s + "," +
+    "notes:" + notes.to_s + "," +
+    "congrats:" + congrats.to_s +
+    " >"
+  end
 end

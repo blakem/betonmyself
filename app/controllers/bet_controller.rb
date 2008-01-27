@@ -30,6 +30,7 @@ class BetController < ApplicationController
       @record.congrats = params[:bet]['congrats']
       @record.completion_date = Date.today
       @record.save!
+      log_bets_complete(@record)
     end
     redirect_to :controller => 'members'
   end
@@ -49,5 +50,6 @@ class BetController < ApplicationController
     price = price.to_f * 100
     params[:record]['price'] = price
     super
+    log_bets_create(@record)
   end
 end

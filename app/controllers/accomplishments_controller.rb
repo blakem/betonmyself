@@ -26,6 +26,7 @@ class AccomplishmentsController < ApplicationController
     @record = find_if_allowed(params[:id], :destroy)
     @record.state = BomConstant::BET_STATE_DELETED
     @record.save!
+    log_bets_delete(@record)
   end
 
 end
