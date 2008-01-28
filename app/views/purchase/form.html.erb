@@ -1,0 +1,49 @@
+<h1>Add $<%= money_format(@amount) -%> to your account</h1>
+
+<%= content_tag('div', "There was an error processing your payment: #{@paypal_error}", :class => 'error') if @paypal_error %>
+
+<% if @creditcard.errors.any? %>
+  <div class="error">
+    Errors encountered with your credit card information:
+    <ul>
+      <%= @creditcard.errors.full_messages.map {|m| content_tag('li', m)} %>
+    </ul>
+  </div>
+<% end %>
+
+<p>
+  Pay by credit card...
+</p>
+
+<% form_for :creditcard, @creditcard, :url => { :action => 'credit' } do |f| %>
+<p>
+  <label>Card Number</label>
+  <%= f.text_field :number %>
+</p><p>
+  <label>Card Type</label>
+  <%= f.select :type, [["Visa", "visa"], ["MasterCard", "master"], ["Discover", "discover"], ["American Express", "american_express"]] %>
+</p><p>
+  <label>Expiration</label>
+  <%= f.select :month, (1 .. 12) %>
+  <%= f.select :year, (Time.now.year .. 10.years.from_now.year) %>
+</p><p>
+  <label>CVV</label>
+  <%= f.text_field :verification_value, :size => 4 %>
+</p><p>
+  <label>Name on Card (first, last)</label>
+  <%= f.text_field :first_name, :size => 15 %>
+  <%= f.text_field :last_name, :size => 15 %>
+  <%= f.hidden_field :price, :value => @amount %>  
+</p><p>
+  <%= submit_tag 'Transfer Funds' %>
+</p>
+<% end %>
+
+<p>
+  ...or by PayPal
+</p>
+
+<% form_tag :action => 'express' do %>
+  <input type="hidden" name="price" value="<%= @amount -%>">
+  <input type="image" src="<%= image_path('paypal.gif') %>">
+<% end %>
