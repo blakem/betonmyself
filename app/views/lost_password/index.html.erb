@@ -1,2 +1,13 @@
 <h1>Reset Password</h1>
-This is where you will be able to reset your password....
+<p>
+Please enter the email address that you used to sign up for your betonmyself account.
+</p><p>
+We will send you instructions on how to reset your password.
+</p>
+
+<%= error_messages_for :user %>
+<% form_for :user, :url => { :action => :email } do |f| -%>
+<p><label for="email">Email</label><br/>
+<%= f.text_field :email %></p>
+<p><%= submit_tag 'Submit' %></p>
+<% end -%>
