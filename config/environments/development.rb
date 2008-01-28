@@ -16,3 +16,13 @@ config.action_view.cache_template_extensions         = false
 
 # Don't care if the mailer can't send
 config.action_mailer.raise_delivery_errors = false
+
+config.after_initialize do
+  ActiveMerchant::Billing::Base.gateway_mode = :test
+end
+
+PAYPAL_API_CREDENTIALS = {
+  :login => 'betonm_1201486734_biz_api1.gmail.com',
+  :password => '1201486747',
+  :signature => 'AO4N-Lr2uO9Z.1GgpJfVqhSdxwOxAoz2O-p4TPpPLnFsvOHmIXVga0Wj',
+}
