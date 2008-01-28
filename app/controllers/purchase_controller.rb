@@ -6,18 +6,21 @@ class PurchaseController < ApplicationController
   
   filter_parameter_logging :creditcard
   
-  BILL_AMOUNT = 1200
-  
   def index
     @selected_button = 'purchase'
+  end
+  def form
+    @selected_button = 'purchase'
+    @amount = params[:transaction][:price]
   end
   
   # Use the DirectPayment API
   def credit
     @selected_button = 'purchase'
     render :action => 'index' and return unless @creditcard.valid?
+    bill_amount = param[:transaction][price]
     
-    @response = paypal_gateway.purchase(BILL_AMOUNT, @creditcard, 
+    @response = paypal_gateway.purchase(bill_amount, @creditcard, 
       :ip => request.remote_ip)
       
     if @response.success?
@@ -31,8 +34,9 @@ class PurchaseController < ApplicationController
   # Use the Express Checkout API
   def express
     gateway = paypal_gateway(:paypal_express)
-    
-    @response = gateway.setup_purchase(BILL_AMOUNT,
+    bill_amount = params['price'].to_i
+
+    @response = gateway.setup_purchase(bill_amount,
       :return_url => url_for(:action => 'express_complete'),
       :cancel_return_url => url_for(:action => 'index'),
       :description => "PayPal Website Payments Pro Guide"
@@ -52,14 +56,24 @@ class PurchaseController < ApplicationController
     @selected_button = 'purchase'
     gateway = paypal_gateway(:paypal_express)
     @details = gateway.details_for(params[:token])
+
+    bill_amount = 1000 # somehow get from token???
     
     if @details.success?
-      @response = gateway.purchase(BILL_AMOUNT, 
+      @response = gateway.purchase(bill_amount, 
         :token => @details.params['token'], 
         :payer_id => @details.params['payer_id'])
       if @response.success?
-        @purchase = Transaction.create(:response => @response)
-        redirect_to :action => "complete", :id => @purchase
+        @transaction = Transaction.new(
+          :price => bill_amount,
+          :user_id => self.current_user.id,
+          :trans_type => BomConstant::TRANSACTION_TYPE_IN
+        )
+        @transaction.save!
+        log_transaction_in(@transaction)
+#       redirect_to('/members')
+#       @purchase = Transaction.create(:response => @response)
+       redirect_to :action => "complete", :id => @transaction
       else
         paypal_error(@response)
       end
@@ -69,7 +83,7 @@ class PurchaseController < ApplicationController
   end
   
   def complete
-    raise ActiveRecord::RecordNotFound unless @purchase = Purchase.find_by_token(params[:id])
+    raise ActiveRecord::RecordNotFound unless @purchase = Transaction.find_by_token(params[:id])
   end
   
   protected
@@ -92,13 +106,5 @@ end
 
 # class PurchaseController < ApplicationController
 #   def create
-#     @transaction = Transaction.new(
-#       :price => params[:transaction]['price'],
-#       :user_id => self.current_user.id,
-#       :trans_type => BomConstant::TRANSACTION_TYPE_IN
-#     )
-#     @transaction.save!
-#     log_transaction_in(@transaction)
-#     redirect_to('/members')
 #   end
 # end
