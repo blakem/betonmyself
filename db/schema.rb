@@ -25,9 +25,13 @@ ActiveRecord::Schema.define(:version => 3) do
   end
 
   create_table "transactions", :force => true do |t|
-    t.integer  "user_id",    :null => false
-    t.integer  "trans_type", :null => false
+    t.integer  "user_id",        :null => false
+    t.integer  "trans_type",     :null => false
     t.integer  "price"
+    t.string   "transaction_id"
+    t.string   "cvv2_code"
+    t.string   "avs_code"
+    t.string   "token"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -48,5 +52,6 @@ ActiveRecord::Schema.define(:version => 3) do
   add_foreign_key "bets", ["user_id"], "users", ["id"], :name => "bets_user_id_fkey"
 
   add_foreign_key "transactions", ["user_id"], "users", ["id"], :name => "transactions_user_id_fkey"
+  add_foreign_key "transactions", ["transaction_id"], "transactions", ["id"], :name => "transactions_transaction_id_fkey"
 
 end
