@@ -5,6 +5,7 @@ class ApplicationController < ActionController::Base
   include AuthenticatedSystem
   include BomConstant
   include BomUtility
+#  include DebugHelper
   helper :all # include all helpers, all the time
 
   # See ActionController::RequestForgeryProtection for details
