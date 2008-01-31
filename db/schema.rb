@@ -32,6 +32,7 @@ ActiveRecord::Schema.define(:version => 3) do
     t.string   "cvv2_code"
     t.string   "avs_code"
     t.string   "token"
+    t.string   "token2"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

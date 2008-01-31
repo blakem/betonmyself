@@ -9,6 +9,9 @@ class PurchaseController < ApplicationController
   def index
     @selected_button = 'purchase'
   end
+  def error
+    @selected_button = 'purchase'
+  end
   def form
     @selected_button = 'purchase'
     @amount = params[:transaction][:price]
@@ -45,6 +48,13 @@ class PurchaseController < ApplicationController
     if @response.success?
       # The useraction=commit in the redirect URL tells PayPal there won't
       # be an additional review step at our site before a charge is made
+      @transaction = Transaction.new(
+        :user_id => self.current_user.id, 
+        :trans_type => BomConstant::TRANSACTION_TYPE_IN,
+        :price => bill_amount,
+        :token2 => @response.params['token']
+      )
+      @transaction.save!
       redirect_to "#{gateway.redirect_url_for(@response.params['token'])}&useraction=commit"
     else
       paypal_error(@response)
@@ -57,23 +67,17 @@ class PurchaseController < ApplicationController
     gateway = paypal_gateway(:paypal_express)
     @details = gateway.details_for(params[:token])
 
-    bill_amount = 1000 # somehow get from token???
+    @transaction = Transaction.find_by_token2(@details.params['token']);
+    bill_amount = @transaction.price
     
     if @details.success?
       @response = gateway.purchase(bill_amount, 
         :token => @details.params['token'], 
         :payer_id => @details.params['payer_id'])
       if @response.success?
-        @transaction = Transaction.new(
-          :price => bill_amount,
-          :user_id => self.current_user.id,
-          :trans_type => BomConstant::TRANSACTION_TYPE_IN
-        )
-        @transaction.save!
-        log_transaction_in(@transaction)
-#       redirect_to('/members')
-#       @purchase = Transaction.create(:response => @response)
-       redirect_to :action => "complete", :id => @transaction
+        @transaction.trans_type = BomConstant::TRANSACTION_TYPE_IN;
+        @transaction.save!;
+        redirect_to :action => "complete", :id => @transaction
       else
         paypal_error(@response)
       end
@@ -94,7 +98,7 @@ class PurchaseController < ApplicationController
 
     def paypal_error(response)
       @paypal_error = response.message
-      render :action => 'index'
+      render :action => 'error'
     end
     
     def load_card
@@ -102,9 +106,3 @@ class PurchaseController < ApplicationController
     end
   
 end
-
-
-# class PurchaseController < ApplicationController
-#   def create
-#   end
-# end

@@ -8,6 +8,7 @@ class CreateTransactions < ActiveRecord::Migration
       t.string  :cvv2_code
       t.string  :avs_code
       t.string  :token
+      t.string  :token2
       t.timestamps
     end
   end
