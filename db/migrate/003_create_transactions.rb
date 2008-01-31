@@ -2,7 +2,9 @@ class CreateTransactions < ActiveRecord::Migration
   def self.up
     create_table :transactions do |t|
       t.integer :user_id, :null => false, :references => :users
-      t.integer :trans_type, :null => false
+      t.integer :direction, :null => false
+      t.integer :state, :null => false
+      t.integer :trans_type
       t.integer :price
       t.string  :transaction_id
       t.string  :cvv2_code

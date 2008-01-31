@@ -50,7 +50,9 @@ class PurchaseController < ApplicationController
       # be an additional review step at our site before a charge is made
       @transaction = Transaction.new(
         :user_id => self.current_user.id, 
-        :trans_type => BomConstant::TRANSACTION_TYPE_IN,
+        :trans_type => BomConstant::TRANSACTION_TYPE_PAYPAL_EXPRESS,
+        :direction => BomConstant::TRANSACTION_DIRECTION_IN,
+        :state => BomConstant::TRANSACTION_STATE_INIT,
         :price => bill_amount,
         :token2 => @response.params['token']
       )
@@ -63,7 +65,6 @@ class PurchaseController < ApplicationController
   
   # PayPal Express redirects from PayPal back to this action with a token
   def express_complete
-    @selected_button = 'purchase'
     gateway = paypal_gateway(:paypal_express)
     @details = gateway.details_for(params[:token])
 
@@ -75,7 +76,7 @@ class PurchaseController < ApplicationController
         :token => @details.params['token'], 
         :payer_id => @details.params['payer_id'])
       if @response.success?
-        @transaction.trans_type = BomConstant::TRANSACTION_TYPE_IN;
+        @transaction.state = BomConstant::TRANSACTION_STATE_SUCCESS;
         @transaction.save!;
         redirect_to :action => "complete", :id => @transaction
       else
@@ -87,6 +88,7 @@ class PurchaseController < ApplicationController
   end
   
   def complete
+    @selected_button = 'purchase'
     raise ActiveRecord::RecordNotFound unless @purchase = Transaction.find_by_token(params[:id])
   end
   

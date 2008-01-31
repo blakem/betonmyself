@@ -8,7 +8,8 @@ class CashOutController < ApplicationController
     @ballance = self.current_user.ballance
     @transaction = Transaction.new(:user_id => self.current_user.id)
     @transaction.price = @ballance
-    @transaction.trans_type = BomConstant::TRANSACTION_TYPE_OUT
+    @transaction.direction = BomConstant::TRANSACTION_DIRECTION_OUT
+    @transaction.state = BomConstant::TRANSACTION_STATE_SUCCESS
     @transaction.save!
     log_transaction_out(@transaction)
   end

@@ -117,7 +117,7 @@ class User < ActiveRecord::Base
   def transactions_in
     transactions_in = []
     self.transactions.each do |t|
-      if t.trans_type == BomConstant::TRANSACTION_TYPE_IN
+      if t.direction == BomConstant::TRANSACTION_DIRECTION_IN and t.state == BomConstant::TRANSACTION_STATE_SUCCESS
         transactions_in.push t
       end
     end
@@ -127,7 +127,7 @@ class User < ActiveRecord::Base
   def transactions_out
     transactions_out = []
     self.transactions.each do |t|
-      if t.trans_type == BomConstant::TRANSACTION_TYPE_OUT
+      if t.direction == BomConstant::TRANSACTION_DIRECTION_OUT and t.state == BomConstant::TRANSACTION_STATE_SUCCESS
         transactions_out.push t
       end
     end

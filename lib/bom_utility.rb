@@ -21,11 +21,14 @@ module BomUtility
   def log_users_update(user)
     log_users("Updated user: " + user.to_s)
   end
+  def log_transaction_init(transaction)
+    log_users("Initialized transaction: " + transaction.to_s)
+  end
   def log_transaction_in(transaction)
-    log_users("Created transaction in: " + transaction.to_s)
+    log_users("Successful transaction in: " + transaction.to_s)
   end
   def log_transaction_out(transaction)
-    log_users("Created transaction out: " + transaction.to_s)
+    log_users("Successful transaction in: " + transaction.to_s)
   end
   def log_bets_create(bet)
     log_bets("Created bet: " + bet.to_s) 
