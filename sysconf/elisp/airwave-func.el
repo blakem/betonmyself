@@ -975,10 +975,11 @@
 (defun airwave-findcode  (findcode-command)
    "Run a findcode in separate buffer"
    (interactive
-    (list (read-string "Run findcode as: "
-                       (format "findcode %s" (current-keyword-or-quoted-active-region)))))
-   (grep findcode-command)
-   (airwave-rename-other-buffer (format "*%s*" findcode-command)))
+    (list (read-string "Run findcode as: findcode "
+                       (format "%s" (current-keyword-or-quoted-active-region)))))
+   (grep (format "%s%s" "cd /var/www/rails/betonmyself; find -type f -path ./app/\\* -a ! -path \\*/.svn/\\* -o -type f -path ./config/\\* -a ! -path \\*/.svn/\\* -o -type f -path ./db/\\* -a ! -path \\*/.svn/\\* -o -type f -path ./lib/\\* -a ! -path \\*/.svn/\\* -o -type f -path ./test/\\* -a ! -path \\*/.svn/\\* | egrep -v '~$' | xargs grep -n " findcode-command))
+
+   (airwave-rename-other-buffer (format "*findcode %s*" findcode-command)))
 
 (defun airwave-findcallers (method)
    "Run a findcallers in separate buffer"
@@ -2177,12 +2178,7 @@
           (when (not (eq (point) beg))
             (setq linenum (string-to-int (buffer-substring beg (point))))))))
     (setq dirs (cons default-directory (list
-      (mercmerc "/lib/perl/Mercury")
-      (mercmerc "/lib/perl")
-      (mercmerc "/lib/templates/html")
-      (mercmerc "/lib/templates")
-      (mercmerc "/lib/html")
-      (mercmerc "")
+      "/var/www/rails/betonmyself"                                  
       (home)
       ""
     )))
