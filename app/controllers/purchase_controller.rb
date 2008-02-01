@@ -57,6 +57,7 @@ class PurchaseController < ApplicationController
         :token2 => @response.params['token']
       )
       @transaction.save!
+      log_transaction_init(@transaction)
       redirect_to "#{gateway.redirect_url_for(@response.params['token'])}&useraction=commit"
     else
       paypal_error(@response)
@@ -78,11 +79,16 @@ class PurchaseController < ApplicationController
       if @response.success?
         @transaction.state = BomConstant::TRANSACTION_STATE_SUCCESS;
         @transaction.save!;
+        log_transaction_in(@transaction)
         redirect_to :action => "complete", :id => @transaction
       else
+        log_transaction_fail(@transaction)
+        log_transaction_fail(@response)
         paypal_error(@response)
       end
     else
+      log_transaction_fail(@transaction)
+      log_transaction_fail(@details)
       paypal_error(@details)
     end
   end

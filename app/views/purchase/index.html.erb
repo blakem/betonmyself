@@ -2,7 +2,9 @@
 <% form_for :transaction, :url => { :action => :form } do |form| -%>
   <p><b>Amount:</b> <%= form.select('price', [ [ '$20',  2000],
                                                [ '$50',  5000],
-                                               ['$100', 10000] ],
+                                               ['$100', 10000],
+                                               ['$250', 25000],
+                                               ['$500', 50000] ],
                                     :selected => 5000 ) 
   %></p>
   <p><%= submit_tag 'Purchase' -%></br></p>

@@ -15,34 +15,60 @@ module BomUtility
   def log_bets(msg)
     log('bets', msg)
   end
+  def log_transactions(msg)
+    log('transactions', msg)
+  end
+
+  def log_msg_for_object(string, obj)
+    obj.reload
+    string + ": " + obj.inspect
+  end
+  def log_users_obj(string, obj)
+    log_users(log_msg_for_object(string, obj))
+  end
+  def log_bets_obj(string, obj)
+    log_bets(log_msg_for_object(string, obj))
+  end
+  def log_transactions_obj(string, obj)
+    log_transactions(log_msg_for_object(string, obj))
+  end
+  def log_object(obj)
+    log('objects', log_msg_for_object('Object', obj))
+  end
+
   def log_users_create(user)
-    log_users("Created user: " + user.to_s)
+    log_users_obj("Created user", user)
   end
   def log_users_update(user)
-    log_users("Updated user: " + user.to_s)
+    log_users_obj("Updated user", user)
   end
-  def log_transaction_init(transaction)
-    log_users("Initialized transaction: " + transaction.to_s)
-  end
-  def log_transaction_in(transaction)
-    log_users("Successful transaction in: " + transaction.to_s)
-  end
-  def log_transaction_out(transaction)
-    log_users("Successful transaction in: " + transaction.to_s)
-  end
+
   def log_bets_create(bet)
-    log_bets("Created bet: " + bet.to_s) 
+    log_bets_obj("Created bet", bet) 
   end
   def log_bets_complete(bet)
-    log_bets("Completed bet: " + bet.to_s) 
+    log_bets_obj("Completed bet", bet) 
   end
   def log_bets_fail(bet)
-    log_bets("Failed bet: " + bet.to_s) 
+    log_bets_obj("Failed bet", bet) 
   end
   def log_bets_delete(bet)
-    log_bets("Deleted bet: " + bet.to_s) 
+    log_bets_obj("Deleted bet", bet) 
   end
   def log_bets_update(bet)
-    log_bets("Updated bet: " + bet.to_s)
+    log_bets_obj("Updated bet", bet)
+  end
+
+  def log_transaction_init(transaction)
+    log_transactions_obj("Initialized transaction", transaction)
+  end
+  def log_transaction_in(transaction)
+    log_transactions_obj("Successful transaction in", transaction)
+  end
+  def log_transaction_out(transaction)
+    log_transactions_obj("Successful transaction out", transaction)
+  end
+  def log_transaction_fail(obj)
+    log_transactions_obj("Failed transaction", obj)
   end
 end
