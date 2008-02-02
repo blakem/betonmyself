@@ -18,6 +18,9 @@ module BomUtility
   def log_transactions(msg)
     log('transactions', msg)
   end
+  def log_feedback(msg)
+    log('feedback', msg)
+  end
 
   def log_msg_for_object(string, obj)
     obj.reload
@@ -31,6 +34,9 @@ module BomUtility
   end
   def log_transactions_obj(string, obj)
     log_transactions(log_msg_for_object(string, obj))
+  end
+  def log_feedback_obj(string, obj)
+    log_feedback(log_msg_for_object(string, obj))
   end
   def log_object(obj)
     log('objects', log_msg_for_object('Object', obj))
@@ -70,5 +76,9 @@ module BomUtility
   end
   def log_transaction_fail(obj)
     log_transactions_obj("Failed transaction", obj)
+  end
+
+  def log_feedback_create(feedback)
+    log_feedback_obj("Created Feedback", feedback)
   end
 end

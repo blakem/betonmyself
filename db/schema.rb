@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 3) do
+ActiveRecord::Schema.define(:version => 4) do
 
   create_table "bets", :force => true do |t|
     t.integer  "user_id",         :null => false
@@ -20,6 +20,17 @@ ActiveRecord::Schema.define(:version => 3) do
     t.string   "congrats"
     t.date     "due_date"
     t.date     "completion_date"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "feedbacks", :force => true do |t|
+    t.integer  "user_id",       :null => false
+    t.integer  "feedback_type", :null => false
+    t.string   "subject",       :null => false
+    t.string   "feedback",      :null => false
+    t.string   "name"
+    t.string   "location"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -53,6 +64,8 @@ ActiveRecord::Schema.define(:version => 3) do
   end
 
   add_foreign_key "bets", ["user_id"], "users", ["id"], :name => "bets_user_id_fkey"
+
+  add_foreign_key "feedbacks", ["user_id"], "users", ["id"], :name => "feedbacks_user_id_fkey"
 
   add_foreign_key "transactions", ["user_id"], "users", ["id"], :name => "transactions_user_id_fkey"
   add_foreign_key "transactions", ["transaction_id"], "transactions", ["id"], :name => "transactions_transaction_id_fkey"

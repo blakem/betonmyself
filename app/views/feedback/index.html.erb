@@ -1,1 +1,23 @@
 <h1>Feedback</h1>
+<h2>We'd love to hear from you....</h2> 
+<%= error_messages_for :feedback %>
+<% form_for :feedback, @feedback, :url => { :action => 'submit' } do |f| %>
+<p><label>Subject</label>
+</p><p>
+<%= f.text_field :subject, :class => 'text-input', 
+    :size => 60,
+    :style => @style
+ %>
+</p>
+<p>
+<label>Feedback</label>
+</p><p>
+  <%= f.text_area :feedback,
+      :cols => 58,
+      :rows => 10,
+      :style => @style 
+  %>
+</p><p>
+<%= submit_tag 'Send' %>
+</p>
+<% end %>
