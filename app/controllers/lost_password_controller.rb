@@ -3,4 +3,25 @@ class LostPasswordController < ApplicationController
   def index
     @selected_button = 'members'
   end
+  def email
+    email = params[:user]['email']
+    if email.nil? or email == ""
+      error = "Email cannot be blank"
+    else
+      user = User.find_by_email(params[:user]['email'])
+      if user.nil?
+        error = "Can't find Email Address"
+      end
+    end
+
+    if error
+      flash.now[:error] = error
+      render :action => 'index'
+    else 
+      redirect_to :action => 'sent'
+    end
+  end
+  def sent
+    @selected_button = 'members'
+  end
 end
