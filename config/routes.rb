@@ -8,7 +8,6 @@ ActionController::Routing::Routes.draw do |map|
   map.faq '/faq', :controller => 'faq'
   map.contact '/contact', :controller => 'contact'
   map.lost_password '/lost_password', :controller => 'lost_password'
-  map.donate '/donate', :controller => 'donate'
   map.help '/help', :controller => 'help'
   map.purchase '/purchase', :controller => 'purchase'
   map.cash_out '/cash_out', :controller => 'cash_out'

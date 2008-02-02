@@ -54,11 +54,6 @@ module ApplicationHelper
         'link' => '/purchase',
         'selected' => 0,
       },
-      'donate' => {
-        'text' => 'Donate',
-        'link' => '/donate',
-        'selected' => 0,
-      },
       'logout' => {
         'text' => 'Log Out',
         'link' => '/logout',
@@ -101,7 +96,6 @@ module ApplicationHelper
        buttons['cashout'],
        buttons['help'],
        buttons['support'],
-       buttons['donate'],
        buttons['faq'],
        buttons['contact'],
        buttons['logout'],
