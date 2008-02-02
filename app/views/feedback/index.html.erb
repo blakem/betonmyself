@@ -2,16 +2,14 @@
 <h2>We'd love to hear from you....</h2> 
 <%= error_messages_for :feedback %>
 <% form_for :feedback, @feedback, :url => { :action => 'submit' } do |f| %>
-<p><label>Subject</label>
-</p><p>
+<p><label>Subject</label><br>
 <%= f.text_field :subject, :class => 'text-input', 
     :size => 60,
     :style => @style
  %>
 </p>
 <p>
-<label>Feedback</label>
-</p><p>
+<label>Feedback</label><br>
   <%= f.text_area :feedback,
       :cols => 58,
       :rows => 10,

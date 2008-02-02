@@ -84,4 +84,7 @@ module BomUtility
   def log_testamonial_create(feedback)
     log_feedback_obj("Created Testamonial", feedback)
   end
+  def log_problem_create(feedback)
+    log_feedback_obj("Created ReportedProblem", feedback)
+  end
 end
