@@ -1,1 +1,29 @@
 <h1>Provide a Testimonial</h1>
+<h2>Glad to hear its working so well!</h2> 
+Let us know how this site has helped you get stuff done.  You may find your
+quote on the site someday...
+<%= error_messages_for :feedback %>
+<% form_for :feedback, @feedback, :url => { :action => 'submit' } do |f| %>
+<p></p>
+<p><label>Name</label><br>
+<%= f.text_field :name, :class => 'text-input', 
+    :size => 30,
+    :style => @style
+ %>
+</p>
+<p><label>Location</label><br>
+<%= f.text_field :location, :class => 'text-input', 
+    :size => 30,
+    :style => @style
+ %>
+</p>
+<p><label>Testamonial</label><br>
+  <%= f.text_area :feedback,
+      :cols => 58,
+      :rows => 3,
+      :style => @style 
+  %>
+</p><p>
+<%= submit_tag 'Send' %>
+</p>
+<% end %>
