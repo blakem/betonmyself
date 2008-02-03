@@ -21,11 +21,16 @@ module ApplicationHelper
       },
       'members' => {
         'text' => 'Members',
-        'link' => '/members',
+        'link' => 'https://members.betonmyself.com/members',
         'selected' => 0,
       },
       'play' => {
         'text' => 'Play!',
+        'link' => '/members',
+        'selected' => 0,
+      },
+      'demo' => {
+        'text' => 'Demo',
         'link' => '/members',
         'selected' => 0,
       },
@@ -87,6 +92,7 @@ module ApplicationHelper
         buttons['members'],
         buttons['faq'],
         buttons['contact'],
+        buttons['demo'],
       ]
     else
       display_buttons = [
