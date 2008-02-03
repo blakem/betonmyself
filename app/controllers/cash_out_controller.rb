@@ -1,4 +1,7 @@
 class CashOutController < ApplicationController
+  def authorized?
+    logged_in? and not current_user.is_demo
+  end
   def index
     @accomplishments = self.current_user.accomplishments
     @selected_button = 'cashout'

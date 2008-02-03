@@ -1,4 +1,7 @@
 class PurchaseController < ApplicationController
+  def authorized?
+    logged_in? and not current_user.is_demo
+  end
 #  include SslRequirement
 #  ssl_required :index, :credit
   

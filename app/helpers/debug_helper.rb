@@ -18,25 +18,25 @@ module DebugHelper
       
       script << add( "<tr bgcolor=#cccccc><td colspan=2><b>assigned template variables:</b></td></tr>" )      
       @controller.assigns.each do |key, value|
-          script << add ("<tr bgcolor=#eeeeee><td valign=top><tt><font color=blue>#{h key}</font></tt></td><td><tt><font color=green>#{dump_obj(value)}</font></tt></td></tr>")  unless IGNORE.include?(key)
+          script << add("<tr bgcolor=#eeeeee><td valign=top><tt><font color=blue>#{h key}</font></tt></td><td><tt><font color=green>#{dump_obj(value)}</font></tt></td></tr>")  unless IGNORE.include?(key)
       end unless  @controller.assigns.nil?
 
 
       script << add( "<tr bgcolor=#cccccc><td colspan=2><b>request parameters:</b></td></tr>" )
       @controller.params.each do |key, value|
-          script << add ("<tr bgcolor=#eeeeee><td valign=top><tt><font color=blue>#{h key}</font></tt></td><td><tt><font color=green>#{dump_obj(value)}</font></tt></td></tr>")  unless IGNORE.include?(key)          
+          script << add("<tr bgcolor=#eeeeee><td valign=top><tt><font color=blue>#{h key}</font></tt></td><td><tt><font color=green>#{dump_obj(value)}</font></tt></td></tr>")  unless IGNORE.include?(key)          
       end unless  @controller.params.nil?
 
 
       script << add( "<tr bgcolor=#cccccc><td colspan=2><b>session variables:</b></td></tr>" )
       @controller.session.instance_variable_get("@data").each do |key, value|      
-          script << add ("<tr bgcolor=#eeeeee><td valign=top><tt><font color=blue>#{h key}</font></tt></td><td><tt><font color=green>#{dump_obj(value)}</font></tt></td></tr>")  unless IGNORE.include?(key)          
+          script << add("<tr bgcolor=#eeeeee><td valign=top><tt><font color=blue>#{h key}</font></tt></td><td><tt><font color=green>#{dump_obj(value)}</font></tt></td></tr>")  unless IGNORE.include?(key)          
       end unless  @controller.session.instance_variable_get("@data").nil?
 
 
       script << add( "<tr bgcolor=#cccccc><td colspan=2><b>flash variables:</b></td></tr>" )
       @controller.instance_variable_get("@flash").each do |key, value|
-          script << add ("<tr bgcolor=#eeeeee><td valign=top><tt><font color=blue>#{h key}</font></tt></td><td><tt><font color=green>#{dump_obj(value)}</font></tt></td></tr>")  unless IGNORE.include?(key)
+          script << add("<tr bgcolor=#eeeeee><td valign=top><tt><font color=blue>#{h key}</font></tt></td><td><tt><font color=green>#{dump_obj(value)}</font></tt></td></tr>")  unless IGNORE.include?(key)
       end unless @controller.instance_variable_get("@flash").nil?
         
     end

@@ -1,4 +1,7 @@
 class UpdateAccountController < ApplicationController
+  def authorized?
+    logged_in? and not current_user.is_demo
+  end
   def index
     @selected_button = 'support'
     @user = self.current_user

@@ -1,4 +1,7 @@
 class MembersController < ApplicationController
+  def authorized?
+    logged_in? and not current_user.is_demo
+  end
   def index
     @user = User.find(session[:user_id])
     @ballance_text = self.account_ballance_text(@user)

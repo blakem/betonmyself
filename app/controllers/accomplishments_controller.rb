@@ -34,5 +34,4 @@ class AccomplishmentsController < ApplicationController
       log_bets_update(@record)
     end
   end
-
 end

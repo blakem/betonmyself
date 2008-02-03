@@ -1,4 +1,7 @@
 class ProvideTestimonialController < ApplicationController
+  def authorized?
+    logged_in? and not current_user.is_demo
+  end
   def index
     @selected_button = 'support'
     @style = 'border: solid 1px #1F7F00; font: 16px arial'

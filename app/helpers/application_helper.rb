@@ -31,12 +31,12 @@ module ApplicationHelper
       },
       'faq' => {
         'text' => 'FAQ',
-        'link' => '/faq',
+        'link' => 'http://www.betonmyself.com/faq',
         'selected' => 0,
       },
       'contact' => {
         'text' => 'Contact',
-        'link' => '/contact',
+        'link' => 'http://www.betonmyself.com/contact',
         'selected' => 0,
       },
       'demo' => {
@@ -74,6 +74,16 @@ module ApplicationHelper
         'link' => 'https://members.betonmyself.com/support',
         'selected' => 0,
       },
+      'member_faq' => {
+        'text' => 'FAQ',
+        'link' => 'https://members.betonmyself.com/faq',
+        'selected' => 0,
+      },
+      'member_contact' => {
+        'text' => 'Contact',
+        'link' => 'https://members.betonmyself.com/contact',
+        'selected' => 0,
+      },
       'logout' => {
         'text' => 'Log Out',
         'link' => 'https://members.betonmyself.com/logout',
@@ -102,8 +112,8 @@ module ApplicationHelper
        buttons['cashout'],
        buttons['help'],
        buttons['support'],
-       buttons['faq'],
-       buttons['contact'],
+       buttons['member_faq'],
+       buttons['member_contact'],
        buttons['logout'],
       ]
       if not selected_button.nil? and selected_button == 'welcome'
