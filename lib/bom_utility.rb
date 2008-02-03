@@ -23,7 +23,9 @@ module BomUtility
   end
 
   def log_msg_for_object(string, obj)
-    obj.reload
+    if obj.respond_to? 'reload'
+      obj.reload
+    end
     string + ": " + obj.inspect
   end
   def log_users_obj(string, obj)
