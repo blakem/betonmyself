@@ -116,9 +116,6 @@ module ApplicationHelper
        buttons['member_contact'],
        buttons['logout'],
       ]
-      if not selected_button.nil? and selected_button == 'welcome'
-        display_buttons.unshift buttons['welcome']
-      end
     end
     return display_buttons
   end
