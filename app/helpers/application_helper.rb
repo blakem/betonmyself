@@ -21,7 +21,7 @@ module ApplicationHelper
       },
       'signup' => {
         'text' => 'SignUp',
-        'link' => 'http://www.betonmyself.com/signup',
+        'link' => 'https://members.betonmyself.com/signup',
         'selected' => 0,
       },
       'members' => {

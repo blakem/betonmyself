@@ -9,11 +9,11 @@ class ProvideTestimonialController < ApplicationController
   def submit
     @selected_button = 'support'
     @feedback = Feedback.new(params[:feedback])
-    @feedback.subject = 'Testamonial'
+    @feedback.subject = 'Testimonial'
     @feedback.feedback_type = BomConstant::FEEDBACK_TYPE_TESTAMONIAL
     @feedback.user_id = self.current_user.id
     @feedback.save!
-    log_testamonial_create(@feedback)
+    log_testimonial_create(@feedback)
     redirect_to :action => 'thanks'
   rescue ActiveRecord::RecordInvalid
     render :action => 'index'

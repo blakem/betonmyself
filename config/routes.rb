@@ -1,26 +1,65 @@
 ActionController::Routing::Routes.draw do |map|
-
+  map.root :controller => "welcome"
   map.resource :session
-  map.resources :users
+  #  map.resources :users
 
-  map.demo '/demo', :controller => 'demo'
-  map.intro '/intro', :controller => 'intro'
-  map.faq '/faq', :controller => 'faq'
-  map.contact '/contact', :controller => 'contact'
-  map.lost_password '/lost_password', :controller => 'lost_password'
-  map.help '/help', :controller => 'help'
-  map.purchase '/purchase', :controller => 'purchase'
-  map.cash_out '/cash_out', :controller => 'cash_out'
-  map.signup '/signup', :controller => 'users', :action => 'new'
-  map.login  '/login', :controller => 'sessions', :action => 'new'
-  map.logout '/logout', :controller => 'sessions', :action => 'destroy'
+  map.connect '/faq',     :controller => 'faq'
+  map.connect '/contact', :controller => 'contact'
+  map.connect '/intro',   :controller => 'intro'
 
-  map.support '/support', :controller => 'support'
-  map.update_account '/update_account', :controller => 'update_account'
-  map.provide_testimonial '/provide_testimonial', :controller => 'provide_testimonial'
-  map.feedback '/feedback', :controller => 'feedback'
-  map.report_problem '/report_problem', :controller => 'report_problem'
-  map.summarize_transactions '/summarize_transactions', :controller => 'summarize_transactions'
+  map.connect '/signup',  :controller => 'users', :action => 'new'
+  map.connect '/signup/create', :controller => 'users', :action => 'create'
+
+  map.connect '/demo', :controller => 'demo'
+  map.connect '/demo/get_account_ballance', :controller => 'demo', :action => 'get_account_ballance'
+
+  map.connect '/members', :controller => 'members'
+  map.connect '/members/get_account_ballance', :controller => 'members', :action => 'get_account_ballance'
+
+  map.connect '/bet/new', :controller => 'bet', :action => 'new'
+  map.connect '/bet/update_table', :controller => 'bet', :action => 'update_table'
+  map.connect '/bet/complete', :controller => 'bet', :action => 'complete'
+  map.connect '/bet/edit', :controller => 'bet', :action => 'edit'
+  map.connect '/bet/show', :controller => 'bet', :action => 'show'
+  map.connect '/bet/row', :controller => 'bet', :action => 'row'
+
+  map.connect '/accomplishments/show_search', :controller => 'accomplishments', :action => 'show_search'
+  map.connect '/accomplishments/update_table', :controller => 'accomplishments', :action => 'update_table'
+  map.connect '/accomplishments/edit', :controller => 'accomplishments', :action => 'edit'
+  map.connect '/accomplishments/destroy', :controller => 'accomplishments', :action => 'destroy'
+  map.connect '/accomplishments/show', :controller => 'accomplishments', :action => 'show'
+  map.connect '/accomplishments/row', :controller => 'accomplishments', :action => 'row'
+
+  map.connect '/logout', :controller => 'sessions', :action => 'destroy'
+
+  map.connect '/help', :controller => 'help'
+  map.connect '/support', :controller => 'support'
+  map.connect '/update_account', :controller => 'update_account'
+  map.connect '/update_account/change', :controller => 'update_account', :action => 'change'
+  map.connect '/summarize_transactions', :controller => 'summarize_transactions'
+  map.connect '/feedback', :controller => 'feedback'
+  map.connect '/feedback/submit', :controller => 'feedback', :action => 'submit'
+  map.connect '/feedback/thanks', :controller => 'feedback', :action => 'thanks'
+  map.connect '/report_problem', :controller => 'report_problem'
+  map.connect '/report_problem/submit', :controller => 'report_problem', :action => 'submit'
+  map.connect '/report_problem/thanks', :controller => 'report_problem', :action => 'thanks'
+  map.connect '/provide_testimonial', :controller => 'provide_testimonial'
+  map.connect '/provide_testimonial/submit', :controller => 'provide_testimonial', :action => 'submit'
+  map.connect '/provide_testimonial/thanks', :controller => 'provide_testimonial', :action => 'thanks'
+
+  map.connect '/purchase', :controller => 'purchase'
+  map.connect '/purchase/form', :controller => 'purchase', :action => 'form'
+  map.connect '/purchase/credit', :controller => 'purchase', :action => 'credit'
+  map.connect '/purchase/express', :controller => 'purchase', :action => 'express'
+  map.connect '/purchase/express_complete', :controller => 'purchase', :action => 'express_complete'
+  map.connect '/purchase/complete', :controller => 'purchase', :action => 'express'
+
+  map.connect '/cash_out', :controller => 'cash_out'
+  map.connect '/cash_out/cash_out', :controller => 'cash_out', :action => 'cash_out'
+
+  map.connect '/lost_password', :controller => 'lost_password'
+
+
 
   # The priority is based upon order of creation: first created -> highest priority.
 
@@ -48,11 +87,10 @@ ActionController::Routing::Routes.draw do |map|
   #   end
 
   # You can have the root of your site routed with map.root -- just remember to delete public/index.html.
-  map.root :controller => "welcome"
 
   # See how all your routes lay out with "rake routes"
 
   # Install the default routes as the lowest priority.
-  map.connect ':controller/:action/:id'
-  map.connect ':controller/:action/:id.:format'
+  #  map.connect ':controller/:action/:id'
+  #  map.connect ':controller/:action/:id.:format'
 end
