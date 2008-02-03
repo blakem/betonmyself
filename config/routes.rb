@@ -16,19 +16,26 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/members', :controller => 'members'
   map.connect '/members/get_account_ballance', :controller => 'members', :action => 'get_account_ballance'
 
-  map.connect '/bet/new', :controller => 'bet', :action => 'new'
   map.connect '/bet/update_table', :controller => 'bet', :action => 'update_table'
-  map.connect '/bet/complete', :controller => 'bet', :action => 'complete'
   map.connect '/bet/edit', :controller => 'bet', :action => 'edit'
+  map.connect '/bet/update', :controller => 'bet', :action => 'update'
   map.connect '/bet/show', :controller => 'bet', :action => 'show'
   map.connect '/bet/row', :controller => 'bet', :action => 'row'
+  map.connect '/bet/list', :controller => 'bet', :action => 'list'
+  map.connect '/bet/create', :controller => 'bet', :action => 'create'
+  map.connect '/bet/complete', :controller => 'bet', :action => 'complete'
+  map.connect '/bet/complete_submit', :controller => 'bet', :action => 'complete_submit'
+  map.connect '/bet/new', :controller => 'bet', :action => 'new'
 
-  map.connect '/accomplishments/show_search', :controller => 'accomplishments', :action => 'show_search'
   map.connect '/accomplishments/update_table', :controller => 'accomplishments', :action => 'update_table'
   map.connect '/accomplishments/edit', :controller => 'accomplishments', :action => 'edit'
-  map.connect '/accomplishments/destroy', :controller => 'accomplishments', :action => 'destroy'
+  map.connect '/accomplishments/update', :controller => 'accomplishments', :action => 'update'
   map.connect '/accomplishments/show', :controller => 'accomplishments', :action => 'show'
   map.connect '/accomplishments/row', :controller => 'accomplishments', :action => 'row'
+  map.connect '/accomplishments/list', :controller => 'accomplishments', :action => 'list'
+  map.connect '/accomplishments/destroy', :controller => 'accomplishments', :action => 'destroy'
+  map.connect '/accomplishments/show_search', :controller => 'accomplishments', :action => 'show_search'
+
 
   map.connect '/logout', :controller => 'sessions', :action => 'destroy'
 
