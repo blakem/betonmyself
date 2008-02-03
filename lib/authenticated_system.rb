@@ -64,7 +64,7 @@ module AuthenticatedSystem
       respond_to do |format|
         format.html do
           store_location
-          redirect_to new_session_url
+          redirect_to '/login'
         end
         format.xml do
           request_http_basic_authentication 'Web Password'

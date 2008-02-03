@@ -4,6 +4,7 @@ class LostPasswordController < ApplicationController
     @selected_button = 'members'
   end
   def email
+    @selected_button = 'members'
     email = params[:user]['email']
     if email.nil? or email == ""
       error = "Email cannot be blank"

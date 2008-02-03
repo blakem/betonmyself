@@ -25,4 +25,15 @@ class Bet < ActiveRecord::Base
       "Notes for \"#{descr}\""
     end
   end
+  def Bet.authorize_for_user(id, user)
+    obj = find_by_id(id)
+    if obj and obj.user_id != user.id
+      raise ActiveScaffold::RecordNotAllowed
+    end
+  end
+  def Bet.authorize_for_user_id(user_id, user)
+    if user_id != user.id
+      raise ActiveScaffold::RecordNotAllowed
+    end
+  end
 end
