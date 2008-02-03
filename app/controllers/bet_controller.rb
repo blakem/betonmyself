@@ -20,7 +20,7 @@ class BetController < ApplicationController
   end
 
   def complete
-    @selected_button = 'play'
+    @selected_button = self.current_user.is_demo ? 'demo' : 'play'
     do_edit
   end
   def complete_submit
@@ -32,7 +32,7 @@ class BetController < ApplicationController
       @record.save!
       log_bets_complete(@record)
     end
-    redirect_to :controller => 'members'
+    redirect_to :controller => self.current_user.is_demo ? 'demo' : 'members'
   end
   def do_new
     @record = active_scaffold_config.model.new

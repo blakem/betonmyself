@@ -16,57 +16,17 @@ module ApplicationHelper
     buttons = {
       'welcome' => {
         'text' => 'Welcome',
-        'link' => '/',
+        'link' => 'http://www.betonmyself.com/',
+        'selected' => 0,
+      },
+      'signup' => {
+        'text' => 'SignUp',
+        'link' => 'http://www.betonmyself.com/signup',
         'selected' => 0,
       },
       'members' => {
         'text' => 'Members',
         'link' => 'https://members.betonmyself.com/members',
-        'selected' => 0,
-      },
-      'play' => {
-        'text' => 'Play!',
-        'link' => '/members',
-        'selected' => 0,
-      },
-      'demo' => {
-        'text' => 'Demo',
-        'link' => '/demo',
-        'selected' => 0,
-      },
-      'intro' => {
-        'text' => 'Intro',
-        'link' => '/intro',
-        'selected' => 0,
-      },
-      'signup' => {
-        'text' => 'SignUp',
-        'link' => '/signup',
-        'selected' => 0,
-      },
-      'help' => {
-        'text' => 'Help',
-        'link' => '/help',
-        'selected' => 0,
-      },
-      'support' => {
-        'text' => 'Support',
-        'link' => '/support',
-        'selected' => 0,
-      },
-      'purchase' => {
-        'text' => 'Add Money',
-        'link' => '/purchase',
-        'selected' => 0,
-      },
-      'logout' => {
-        'text' => 'Log Out',
-        'link' => '/logout',
-        'selected' => 0,
-      },
-      'cashout' => {
-        'text' => 'Cash Out',
-        'link' => '/cash_out',
         'selected' => 0,
       },
       'faq' => {
@@ -79,16 +39,53 @@ module ApplicationHelper
         'link' => '/contact',
         'selected' => 0,
       },
+      'demo' => {
+        'text' => 'Demo',
+        'link' => 'http://www.betonmyself.com/demo',
+        'selected' => 0,
+      },
+      'intro' => {
+        'text' => 'Intro',
+        'link' => 'https://members.betonmyself.com/intro',
+        'selected' => 0,
+      },
+      'play' => {
+        'text' => 'Play!',
+        'link' => 'https://members.betonmyself.com/members',
+        'selected' => 0,
+      },
+      'purchase' => {
+        'text' => 'Add Money',
+        'link' => 'https://members.betonmyself.com/purchase',
+        'selected' => 0,
+      },
+      'cashout' => {
+        'text' => 'Cash Out',
+        'link' => 'https://members.betonmyself.com/cash_out',
+        'selected' => 0,
+      },
+      'help' => {
+        'text' => 'Help',
+        'link' => 'https://members.betonmyself.com/help',
+        'selected' => 0,
+      },
+      'support' => {
+        'text' => 'Support',
+        'link' => 'https://members.betonmyself.com/support',
+        'selected' => 0,
+      },
+      'logout' => {
+        'text' => 'Log Out',
+        'link' => 'https://members.betonmyself.com/logout',
+        'selected' => 0,
+      },
     };
 
-    if self.current_user.is_demo
-      selected_button = "demo"
-    end
     if not selected_button.nil? and buttons[selected_button]
       buttons[selected_button]['selected'] = 1
     end
 
-    if not logged_in? or selected_button == "demo"
+    if not logged_in? or selected_button == "demo" or self.current_user.is_demo
       display_buttons = [
         buttons['welcome'],
         buttons['signup'],
