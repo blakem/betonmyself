@@ -11,6 +11,7 @@ class UsersController < ApplicationController
     # uncomment at your own risk
     # reset_session
     @user = User.new(params[:user])
+    @user.role = BomConstant::ROLE_TYPE_USER
     @user.save!
     log_users_create(@user)
     self.current_user = @user

@@ -51,10 +51,11 @@ ActiveRecord::Schema.define(:version => 4) do
   end
 
   create_table "users", :force => true do |t|
-    t.string   "login"
-    t.string   "first_name"
-    t.string   "last_name"
-    t.string   "email"
+    t.string   "login",                                   :null => false
+    t.integer  "role",                                    :null => false
+    t.string   "first_name",                              :null => false
+    t.string   "last_name",                               :null => false
+    t.string   "email",                                   :null => false
     t.string   "crypted_password",          :limit => 40
     t.string   "salt",                      :limit => 40
     t.datetime "created_at"

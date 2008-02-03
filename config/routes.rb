@@ -3,7 +3,7 @@ ActionController::Routing::Routes.draw do |map|
   map.resource :session
   map.resources :users
 
-
+  map.demo '/demo', :controller => 'demo'
   map.intro '/intro', :controller => 'intro'
   map.faq '/faq', :controller => 'faq'
   map.contact '/contact', :controller => 'contact'

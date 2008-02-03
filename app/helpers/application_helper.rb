@@ -31,7 +31,7 @@ module ApplicationHelper
       },
       'demo' => {
         'text' => 'Demo',
-        'link' => '/members',
+        'link' => '/demo',
         'selected' => 0,
       },
       'intro' => {
@@ -81,11 +81,14 @@ module ApplicationHelper
       },
     };
 
+    if self.current_user.is_demo
+      selected_button = "demo"
+    end
     if not selected_button.nil? and buttons[selected_button]
       buttons[selected_button]['selected'] = 1
     end
 
-    if not logged_in?
+    if not logged_in? or selected_button == "demo"
       display_buttons = [
         buttons['welcome'],
         buttons['signup'],

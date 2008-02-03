@@ -7,7 +7,7 @@ class User < ActiveRecord::Base
   attr_accessor :password
   attr_accessor :old_password
 
-  validates_presence_of     :login, :email, :first_name, :last_name
+  validates_presence_of     :login, :email, :first_name, :last_name, :role
   validates_presence_of     :password,                   :if => :password_required?
   validates_presence_of     :password_confirmation,      :if => :password_required?
   validates_length_of       :password, :within => 5..40, :if => :password_required?
@@ -134,6 +134,16 @@ class User < ActiveRecord::Base
     return transactions_out
   end
 
+  def is_admin
+    role == BomConstant::ROLE_TYPE_ADMIN
+  end
+  def is_user
+    role == BomConstant::ROLE_TYPE_USER
+  end
+  def is_demo
+    role == BomConstant::ROLE_TYPE_DEMO
+  end
+  
   protected
     # before filter 
     def encrypt_password
@@ -150,5 +160,5 @@ class User < ActiveRecord::Base
       if not encrypt(old_password) == crypted_password
         errors.add(:old_password, " does not match current password")
       end
-    end    
+    end
 end
