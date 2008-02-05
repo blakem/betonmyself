@@ -12,6 +12,8 @@ ActionController::Routing::Routes.draw do |map|
 
   map.connect '/demo', :controller => 'demo'
   map.connect '/demo/get_account_ballance', :controller => 'demo', :action => 'get_account_ballance'
+  map.connect '/demo_expired', :controller => 'demo_expired'
+  map.connect '/demo_purchase', :controller => 'demo_purchase'
 
   map.connect '/members', :controller => 'members'
   map.connect '/members/get_account_ballance', :controller => 'members', :action => 'get_account_ballance'
@@ -67,7 +69,6 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/purchase/express', :controller => 'purchase', :action => 'express'
   map.connect '/purchase/express_complete', :controller => 'purchase', :action => 'express_complete'
   map.connect '/purchase/complete', :controller => 'purchase', :action => 'complete'
-  map.connect '/demo_purchase', :controller => 'demo_purchase'
 
   map.connect '/cash_out', :controller => 'cash_out'
   map.connect '/cash_out/cash_out', :controller => 'cash_out', :action => 'cash_out'

@@ -7,11 +7,11 @@
  }
  </script>
  <%= render :active_scaffold => :bet, 
-            :constraints => { :user_id => @user.id, :state => BomConstant::BET_STATE_CURRENT } 
+            :constraints => { :user_id => current_user.id, :state => BomConstant::BET_STATE_CURRENT } 
   %>
  <%= render :active_scaffold => :accomplishments, 
-            :constraints => { :user_id => @user.id, :state => BomConstant::BET_STATE_SUCCESS } 
+            :constraints => { :user_id => current_user.id, :state => BomConstant::BET_STATE_SUCCESS } 
   %>
-<% if ENV["RAILS_ENV"] != "production" %>
-<hr>Running in <%= ENV["RAILS_ENV"] -%> mode</hr>
+<% if @show_expired %>
+ <%= link_to "Show Expired Goals", { :controller => 'demo_expired' } -%>
 <% end %>

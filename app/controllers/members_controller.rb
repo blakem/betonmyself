@@ -3,16 +3,15 @@ class MembersController < ApplicationController
     logged_in? and not current_user.is_demo
   end
   def index
-    @user = User.find(session[:user_id])
-    @ballance_text = self.account_ballance_text(@user)
+    @ballance_text = self.account_ballance_text
     @selected_button = 'play'
     @show_expired = current_user.failed_bets 
   end
   def get_account_ballance
-    render :text => self.account_ballance_text(User.find(session[:user_id]))
+    render :text => self.account_ballance_text
   end
   protected
-  def account_ballance_text (user)
-    "You have <b>$" + money_format(user.ballance) + "</b> to spend<br>"
+  def account_ballance_text
+    "You have <b>$" + money_format(current_user.ballance) + "</b> to spend<br>"
   end
 end
