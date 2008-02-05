@@ -6,7 +6,7 @@ goal<%= @accomplishments.length == 1 ? '' : 's' -%>, including:<br></h2>
   <li><%= h(a.descr) %></li>
 <% end %>
 </ul>
-You currently have $<%= money_format(self.current_user.ballance) %> in the incentive bank.<br>
+You currently have $<%= money_format(self.current_user.ballance) %> in your incentive account.<br>
 <p></p>
 
 You can fill out this optional Feedback form and we'll cash you out, or you 
@@ -14,8 +14,34 @@ can <p>
   <%= link_to "Play some more!", '/', 
     :class => "red_link"%></p>
 
+<h2>Optional Survey</h2>
 <%= form_tag :action => 'cash_out' %>
-   <p>Question 1: <%= text_field "q1", "value" %></p>
-   <p>Question 2: <%= text_field "q2", "value" %></p>
+<dl>
+ <dt>
+   Did you find the site useful for accomplishing your goals?
+ </dt>
+ <dd>
+   Yes: <%= radio_button :survey, :q1, '1' %>
+   No: <%= radio_button :survey, :q1, '2' %>
+   Sortof: <%= radio_button :survey, :q1, '3' %>
+ </dd>
+ <dt>
+   How honest were you with yourself?
+ </dt>
+ <dd>
+   Very: <%= radio_button :survey, :q2, '1' %>
+   Mostly: <%= radio_button :survey, :q2, '2' %>
+   Not at All: <%= radio_button :survey, :q2, '3' %>
+ </dd>
+ <dt>
+   Will you recommend the site to your friends?
+ </dt>
+ <dd>
+   Yes: <%= radio_button :survey, :q4, '1' %>
+   No: <%= radio_button :survey, :q4, '2' %>
+ </dd>
+ <p></p>
+   <%= submit_tag 'Cancel'%>
    <%= submit_tag 'Cash Out'%>
+</dl>
 </form>

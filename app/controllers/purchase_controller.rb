@@ -68,6 +68,7 @@ class PurchaseController < ApplicationController
   
   # PayPal Express redirects from PayPal back to this action with a token
   def express_complete
+    @selected_button = 'purchase'
     gateway = paypal_gateway(:paypal_express)
     @details = gateway.details_for(params[:token])
 

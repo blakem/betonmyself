@@ -8,6 +8,9 @@ class CashOutController < ApplicationController
   end
   def cash_out
     @selected_button = 'cashout'
+    if params['commit'] == "Cancel"
+      redirect_to '/'
+    end
     @ballance = self.current_user.ballance
     @transaction = Transaction.new(:user_id => self.current_user.id)
     @transaction.price = @ballance

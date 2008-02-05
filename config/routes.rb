@@ -60,7 +60,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/purchase/credit', :controller => 'purchase', :action => 'credit'
   map.connect '/purchase/express', :controller => 'purchase', :action => 'express'
   map.connect '/purchase/express_complete', :controller => 'purchase', :action => 'express_complete'
-  map.connect '/purchase/complete', :controller => 'purchase', :action => 'express'
+  map.connect '/purchase/complete', :controller => 'purchase', :action => 'complete'
   map.connect '/demo_purchase', :controller => 'demo_purchase'
 
   map.connect '/cash_out', :controller => 'cash_out'
