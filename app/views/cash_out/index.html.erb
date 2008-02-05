@@ -11,7 +11,7 @@ You currently have $<%= money_format(self.current_user.ballance) %> in the incen
 
 You can fill out this optional Feedback form and we'll cash you out, or you 
 can <p>
-  <%= link_to "Play some more!", {:controller => "members"}, 
+  <%= link_to "Play some more!", '/', 
     :class => "red_link"%></p>
 
 <%= form_tag :action => 'cash_out' %>

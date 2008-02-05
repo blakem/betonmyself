@@ -13,86 +13,93 @@ module ApplicationHelper
     render :file => "#{RAILS_ROOT}/app/views/menu_items/_menubar.rhtml", :use_full_path => false, :locals => {:level => 0, :depth => 0, :class_attr => nil, :menu_data => menu_data(selected_button) }
   end
   def menu_data(selected_button)
+    www = 'http://www.betonmyself.com'
+    members = 'https://members.betonmyself.com'
     buttons = {
       'welcome' => {
         'text' => 'Welcome',
-        'link' => 'http://www.betonmyself.com/',
+        'link' => www + '/',
         'selected' => 0,
       },
       'signup' => {
         'text' => 'SignUp',
-        'link' => 'https://members.betonmyself.com/signup',
+        'link' => members + '/signup',
         'selected' => 0,
       },
       'members' => {
         'text' => 'Members',
-        'link' => 'https://members.betonmyself.com/members',
+        'link' => members + '/',
         'selected' => 0,
       },
       'faq' => {
         'text' => 'FAQ',
-        'link' => 'http://www.betonmyself.com/faq',
+        'link' => www + '/faq',
         'selected' => 0,
       },
       'contact' => {
         'text' => 'Contact',
-        'link' => 'http://www.betonmyself.com/contact',
+        'link' => www + '/contact',
         'selected' => 0,
       },
       'demo' => {
         'text' => 'Demo',
-        'link' => 'http://www.betonmyself.com/demo',
+        'link' => www + '/demo',
         'selected' => 0,
       },
       'intro' => {
         'text' => 'Intro',
-        'link' => 'https://members.betonmyself.com/intro',
+        'link' => members + '/intro',
         'selected' => 0,
       },
       'play' => {
         'text' => 'Play!',
-        'link' => 'https://members.betonmyself.com/members',
+        'link' => members + '/',
         'selected' => 0,
       },
       'purchase' => {
         'text' => 'Add Money',
-        'link' => 'https://members.betonmyself.com/purchase',
+        'link' => members + '/purchase',
         'selected' => 0,
       },
       'cashout' => {
         'text' => 'Cash Out',
-        'link' => 'https://members.betonmyself.com/cash_out',
+        'link' => members + '/cash_out',
         'selected' => 0,
       },
       'help' => {
         'text' => 'Help',
-        'link' => 'https://members.betonmyself.com/help',
+        'link' => members + '/help',
         'selected' => 0,
       },
       'support' => {
         'text' => 'Support',
-        'link' => 'https://members.betonmyself.com/support',
+        'link' => members + '/support',
         'selected' => 0,
       },
       'member_faq' => {
         'text' => 'FAQ',
-        'link' => 'https://members.betonmyself.com/faq',
+        'link' => members + '/faq',
         'selected' => 0,
       },
       'member_contact' => {
         'text' => 'Contact',
-        'link' => 'https://members.betonmyself.com/contact',
+        'link' => members + '/contact',
         'selected' => 0,
       },
       'logout' => {
         'text' => 'Log Out',
-        'link' => 'https://members.betonmyself.com/logout',
+        'link' => members + '/logout',
         'selected' => 0,
       },
     };
 
-    if not selected_button.nil? and buttons[selected_button]
-      buttons[selected_button]['selected'] = 1
+    if not selected_button.nil? 
+      if buttons[selected_button]
+        buttons[selected_button]['selected'] = 1
+      end
+      if buttons['member_' + selected_button]
+        buttons['member_' + selected_button]['selected'] = 1
+      end
     end
 
     if not logged_in? or selected_button == "demo" or self.current_user.is_demo
