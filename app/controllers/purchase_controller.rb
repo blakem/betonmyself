@@ -3,17 +3,12 @@ class PurchaseController < ApplicationController
 #  ssl_required :index, :credit
   
   before_filter :load_card
-  
   filter_parameter_logging :creditcard
-
-  def demo
-    @selected_button = 'demo'
+  def authorized?
+    logged_in? and not current_user.is_demo
   end
-  
+
   def index
-    if self.current_user.is_demo
-      redirect_to :action => 'demo'
-    end
     @selected_button = 'purchase'
   end
   def error
