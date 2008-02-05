@@ -5,7 +5,7 @@ class DemoController < ApplicationController
     init
     @ballance_text = self.account_ballance_text
     @selected_button = 'demo'
-    @show_expired = current_user.failed_bets 
+    @show_expired = current_user.failed_bets.length
   end
   def get_account_ballance
     render :text => self.account_ballance_text
