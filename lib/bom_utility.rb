@@ -63,6 +63,9 @@ module BomUtility
   def log_bets_delete(bet)
     log_bets_obj("Deleted bet", bet) 
   end
+  def log_bets_delete_failed(bet)
+    log_bets_obj("Deleted failed bet", bet) 
+  end
   def log_bets_update(bet)
     log_bets_obj("Updated bet", bet)
   end

@@ -36,6 +36,12 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/accomplishments/destroy', :controller => 'accomplishments', :action => 'destroy'
   map.connect '/accomplishments/show_search', :controller => 'accomplishments', :action => 'show_search'
 
+  map.connect '/expired', :controller => 'expired'
+  map.connect '/expired_bets/update_table', :controller => 'expired_bets', :action => 'update_table' # xxx
+  map.connect '/expired_bets/destroy', :controller => 'expired_bets', :action => 'destroy'
+  map.connect '/expired_bets/show', :controller => 'expired_bets', :action => 'show'
+  map.connect '/expired_bets/row', :controller => 'expired_bets', :action => 'row'
+  map.connect '/expired_bets/list', :controller => 'expired_bets', :action => 'list'
 
   map.connect '/logout', :controller => 'sessions', :action => 'destroy'
   map.connect '/login', :controller => 'sessions', :action => 'new'
