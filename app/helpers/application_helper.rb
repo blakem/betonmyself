@@ -102,7 +102,7 @@ module ApplicationHelper
       end
     end
 
-    if not logged_in? or selected_button == "demo" or self.current_user.is_demo
+    if not logged_in? or selected_button == "demo" or selected_button == "signup" or self.current_user.is_demo
       display_buttons = [
         buttons['welcome'],
         buttons['signup'],
