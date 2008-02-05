@@ -4,7 +4,7 @@ class ExpiredBetsController < ApplicationController
     config.columns[:price].calculate = :sum
 
     columns[:descr].label = "Goal"
-    columns[:price].label = "Payoff"
+    columns[:price].label = "Cost"
     columns[:notes].label = "Notes / Next Action"
 
     config.actions = [:delete, :show, :list]
