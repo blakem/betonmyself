@@ -82,8 +82,10 @@ module BomUtility
     Notifier.deliver_sms_transaction_out(transaction)
     log_transactions_obj("Successful transaction out", transaction)
   end
-  def log_transaction_fail(obj)
-    log_transactions_obj("Failed transaction", obj)
+  def log_transaction_fail(transaction, obj)
+    log_transactions_obj("Failed transaction", transaction)
+    log_transactions_obj("Failed transaction object", obj)
+    Notifier.deliver_sms_transaction_fail(transaction)
   end
 
   def log_feedback_create(feedback)

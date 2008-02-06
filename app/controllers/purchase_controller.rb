@@ -85,13 +85,11 @@ class PurchaseController < ApplicationController
         log_transaction_in(@transaction)
         redirect_to :action => "complete", :id => @transaction
       else
-        log_transaction_fail(@transaction)
-        log_transaction_fail(@response)
+        log_transaction_fail(@transaction, @response)
         paypal_error(@response)
       end
     else
-      log_transaction_fail(@transaction)
-      log_transaction_fail(@details)
+      log_transaction_fail(@transaction, @details)
       paypal_error(@details)
     end
   end

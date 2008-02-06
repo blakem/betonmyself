@@ -28,4 +28,11 @@ class Notifier < ActionMailer::Base
     subject "OUT: -$" + money_format(transaction.price) + " " + user.first_name + " " + user.last_name + " (" + user.login + ")"
     body :user => user
   end
+  def sms_transaction_fail(transaction)
+    user = User.find_by_id(transaction.user_id);
+    recipients BomConstant::SMS_EMAIL
+    from  "sms@betonmyself.com"
+    subject "TRANSFAIL: $" + money_format(transaction.price) + " " + user.first_name + " " + user.last_name + " (" + user.login + ")"
+    body :user => user
+  end
 end
