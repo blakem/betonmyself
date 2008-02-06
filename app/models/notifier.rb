@@ -11,21 +11,21 @@ class Notifier < ActionMailer::Base
   def sms_user_create(user)
     recipients BomConstant::SMS_EMAIL
     from  "sms@betonmyself.com"
-    subject "NEW:'" + user.first_name + ' ' + user.last_name + "' (" + user.login + ")"
+    subject "NEW: " + user.first_name + ' ' + user.last_name + " (" + user.login + ")"
     body :user => user
   end
   def sms_transaction_in(transaction)
     user = User.find_by_id(transaction.user_id);
     recipients BomConstant::SMS_EMAIL
     from  "sms@betonmyself.com"
-    subject "IN: +$" + money_format(transaction.price) + " " + user.first_name + " " + user.last_name + "(" + user.login + ")"
+    subject "IN: +$" + money_format(transaction.price) + " " + user.first_name + " " + user.last_name + " (" + user.login + ")"
     body :user => user
   end
   def sms_transaction_out(transaction)
     user = User.find_by_id(transaction.user_id);
     recipients BomConstant::SMS_EMAIL
     from  "sms@betonmyself.com"
-    subject "OUT: -$" + money_format(transaction.price) + " " + user.first_name + " " + user.last_name + "(" + user.login + ")"
+    subject "OUT: -$" + money_format(transaction.price) + " " + user.first_name + " " + user.last_name + " (" + user.login + ")"
     body :user => user
   end
 end
