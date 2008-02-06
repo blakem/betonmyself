@@ -35,4 +35,6 @@ module BomConstant
   TITLE_TEXT="BetOnMyself"
   HEADER_TEXT="Bet On Myself . com"
   HEADER_NOTE="Helping You Get Things Done"
+
+  SMS_EMAIL="blakemills@tmomail.net"
 end
