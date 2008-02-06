@@ -17,3 +17,9 @@ config.action_view.cache_template_loading            = true
 
 # Disable delivery errors, bad email addresses will be ignored
 # config.action_mailer.raise_delivery_errors = false
+
+PAYPAL_API_CREDENTIALS = {
+  :login => 'blakem30_api1.yahoo.com',
+  :password => '9ACVXR7EER5GJ9RF',
+  :signature => 'Ayq0WtEQ9svWnPjP0mhRB2sebiEYAfLtGup0TepShwvoJoizNZ0-CRxC',
+}
