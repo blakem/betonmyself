@@ -10,7 +10,8 @@ class ProvideTestimonialController < ApplicationController
     @selected_button = 'support'
     @feedback = Feedback.new(params[:feedback])
     @feedback.subject = 'Testimonial'
-    @feedback.feedback_type = BomConstant::FEEDBACK_TYPE_TESTAMONIAL
+    @feedback.feedback = params[:feedback]['testimonial']
+    @feedback.feedback_type = BomConstant::FEEDBACK_TYPE_TESTIMONIAL
     @feedback.user_id = self.current_user.id
     @feedback.save!
     log_testimonial_create(@feedback)
