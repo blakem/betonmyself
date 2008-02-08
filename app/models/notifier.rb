@@ -7,6 +7,12 @@ class Notifier < ActionMailer::Base
     subject "Your betonmyself transactions"
     body :user => user
   end
+  def reset_password(user)
+    recipients user.email
+    from  "support@betonmyself.com"
+    subject "How to reset your betonmyself password"
+    body :user => user
+  end
 
   def sms_user_create(user)
     recipients BomConstant::SMS_EMAIL

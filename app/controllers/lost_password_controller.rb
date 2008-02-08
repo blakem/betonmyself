@@ -19,6 +19,8 @@ class LostPasswordController < ApplicationController
       flash.now[:error] = error
       render :action => 'index'
     else 
+      user = User.find_by_email(params[:user]['email'])
+      Notifier.deliver_reset_password(user)
       redirect_to :action => 'sent'
     end
   end
