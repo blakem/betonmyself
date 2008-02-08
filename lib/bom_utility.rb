@@ -45,8 +45,8 @@ module BomUtility
   end
 
   def log_users_create(user)
-    Notifier.deliver_sms_user_create(user)
     log_users_obj("Created user", user)
+    Notifier.deliver_sms_user_create(user)
   end
   def log_users_update(user)
     log_users_obj("Updated user", user)
@@ -75,12 +75,12 @@ module BomUtility
     log_transactions_obj("Initialized transaction", transaction)
   end
   def log_transaction_in(transaction)
-    Notifier.deliver_sms_transaction_in(transaction)
     log_transactions_obj("Successful transaction in", transaction)
+    Notifier.deliver_sms_transaction_in(transaction)
   end
   def log_transaction_out(transaction)
-    Notifier.deliver_sms_transaction_out(transaction)
     log_transactions_obj("Successful transaction out", transaction)
+    Notifier.deliver_sms_transaction_out(transaction)
   end
   def log_transaction_fail(transaction, obj)
     log_transactions_obj("Failed transaction", transaction)
@@ -90,11 +90,14 @@ module BomUtility
 
   def log_feedback_create(feedback)
     log_feedback_obj("Created Feedback", feedback)
+    Notifier.deliver_sms_feedback_create(feedback)
   end
   def log_testimonial_create(feedback)
     log_feedback_obj("Created Testimonial", feedback)
+    Notifier.deliver_sms_testimonial_create(feedback)
   end
   def log_problem_create(feedback)
     log_feedback_obj("Created ReportedProblem", feedback)
+    Notifier.deliver_sms_problem_create(feedback)
   end
 end
