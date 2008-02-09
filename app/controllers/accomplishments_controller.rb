@@ -22,32 +22,18 @@ class AccomplishmentsController < ApplicationController
     list.sorting = {:completion_date => 'DESC'}
   end
 
-  def edit
-    Bet.authorize_for_user(params[:id], current_user)
-    super
-  end
-  def show
-    Bet.authorize_for_user(params[:id], current_user)
-    super
-  end
-  def row
-    Bet.authorize_for_user(params[:id], current_user)
-    super
-  end
   def list
     Bet.authorize_for_user_id(params[:user_id], current_user)
     super
   end
 
   def do_destroy
-    Bet.authorize_for_user(params[:id], current_user)
     @record = find_if_allowed(params[:id], :destroy)
     @record.state = BomConstant::BET_STATE_DELETED
     @record.save!
     log_bets_delete(@record)
   end
   def do_update
-    Bet.authorize_for_user(params[:id], current_user)
     super
     if successful?
       log_bets_update(@record)

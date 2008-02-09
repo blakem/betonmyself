@@ -15,21 +15,13 @@ class ExpiredBetsController < ApplicationController
     list.per_page = BomConstant::RECORDS_PER_PAGE
     list.sorting = {:due_date => 'DESC'}
   end
-  def show
-    Bet.authorize_for_user(params[:id], current_user)
-    super
-  end
-  def row
-    Bet.authorize_for_user(params[:id], current_user)
-    super
-  end
+
   def list
     Bet.authorize_for_user_id(params[:user_id], current_user)
     super
   end
 
   def do_destroy
-    Bet.authorize_for_user(params[:id], current_user)
     @record = find_if_allowed(params[:id], :destroy)
     @record.state = BomConstant::BET_STATE_FAILED_DELETED
     @record.save!

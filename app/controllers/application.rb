@@ -14,6 +14,7 @@ class ApplicationController < ActionController::Base
 
   ActiveScaffold.set_defaults do |config| 
     config.ignore_columns.add [:created_at, :updated_at, :lock_version]
+    config.security.default_permission = false
   end
 
   before_filter :login_required

@@ -19,34 +19,16 @@ class BetController < ApplicationController
     list.sorting = {:due_date => 'ASC'}
   end
 
-  def edit
-    Bet.authorize_for_user(params[:id], current_user)
-    super
-  end
-  def update
-    Bet.authorize_for_user(params[:id], current_user)
-    super
-  end
-  def show
-    Bet.authorize_for_user(params[:id], current_user)
-    super
-  end
-  def row
-    Bet.authorize_for_user(params[:id], current_user)
-    super
-  end
   def list
     Bet.authorize_for_user_id(params[:user_id], current_user)
     super
   end
 
   def complete
-    Bet.authorize_for_user(params[:id], current_user)
     @selected_button = self.current_user.is_demo ? 'demo' : 'play'
     do_edit
   end
   def complete_submit
-    Bet.authorize_for_user(params[:id], current_user)
     if params['commit'] == "Complete Task"
       do_edit # finds @record
       @record.state = BomConstant::BET_STATE_SUCCESS

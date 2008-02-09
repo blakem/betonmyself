@@ -26,15 +26,26 @@ class Bet < ActiveRecord::Base
       "Notes for \"#{descr}\""
     end
   end
-  def Bet.authorize_for_user(id, user)
-    obj = find_by_id(id)
-    if obj and obj.user_id != user.id
-      raise ActiveScaffold::RecordNotAllowed
-    end
-  end
   def Bet.authorize_for_user_id(user_id, user)
     if user_id != user.id
       raise ActiveScaffold::RecordNotAllowed
     end
+  end
+  def authorized_for_create?
+    return record_authorized?
+  end
+  def authorized_for_read?
+    return record_authorized?
+  end
+  def authorized_for_update?
+    return record_authorized?
+  end
+  def authorized_for_destroy?
+    return record_authorized?
+  end
+  def record_authorized?
+    return false unless current_user
+    return true unless existing_record_check?
+    return self.user_id == current_user.id
   end
 end
