@@ -1,5 +1,6 @@
 require 'digest/sha1'
 class User < ActiveRecord::Base
+  include BomUtility
   has_many :transactions
   has_many :bets
 
@@ -122,6 +123,7 @@ class User < ActiveRecord::Base
         transactions_in.push t
       end
     end
+    log_object(transactions_in)
     return transactions_in
   end
 

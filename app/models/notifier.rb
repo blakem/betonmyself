@@ -4,7 +4,7 @@ class Notifier < ActionMailer::Base
   def summarize_transactions(user)
     recipients user.email
     from  "support@betonmyself.com"
-    subject "Your betonmyself transactions"
+    subject "Your BetOnMyself transactions"
     body :user => user
   end
   def reset_password(user)
