@@ -124,7 +124,6 @@ class User < ActiveRecord::Base
         transactions_in.push t
       end
     end
-    log_object(transactions_in)
     return transactions_in
   end
 

@@ -26,15 +26,16 @@ module BetHelper
   end
   def descr_form_column(record, input_name)
     value = record.descr.blank? ? '' : ' value="' + h(record.descr) + '"'
-    if record.descr != record.descr_orig
-      original = 'Was originally: "<em>' + h(record.descr_orig) + '"</em><br>'
-    else
+    if record.descr == record.descr_orig or record.descr_orig.blank?
       original = ''
+    else
+      original = 'Was originally: "<em>' + h(record.descr_orig) + '"</em><br>'
     end
     original + '<input autocomplete="off" class="text-input" id="record_descr" name="record[descr]" size="43" type="text"' + value + '>'
   end
   def descr_column(record)
-    if record.descr == record.descr_orig
+    log_object(record)
+    if record.descr == record.descr_orig or record.descr_orig.blank?
       h(record.descr)
     else
       h(record.descr) + ' (Was originally: <em>' + h(record.descr_orig) + '</em>)'
