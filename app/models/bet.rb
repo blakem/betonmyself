@@ -19,6 +19,11 @@ class Bet < ActiveRecord::Base
       end
     end
   end
+  def validate_on_update
+    if state == BomConstant::BET_STATE_CURRENT and due_date < Date.today
+      errors.add(:due_date, "is in the past")
+    end
+  end
   def to_label
     if state == BomConstant::BET_STATE_CURRENT
       "Fields for \"#{descr}\""
