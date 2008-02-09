@@ -42,8 +42,8 @@ module BetHelper
     end
   end
   def due_date_form_column(record, input_name) 
-    is_editable = 1.hour.ago.utc < record.created_at
-    if not record.due_date or is_editable or current_user.is_admin
+    is_editable = (record.created_at and (1.hour.ago.utc < record.created_at))
+    if (((not record.due_date) or is_editable) or current_user.is_admin)
       start_date = record.due_date.nil? ? Date.today : record.due_date
       field = calendar_date_select_tag "record[due_date]", 
         start_date.strftime("%B %d, %Y"), 
