@@ -15,6 +15,7 @@ ActiveRecord::Schema.define(:version => 5) do
     t.integer  "user_id",         :null => false
     t.integer  "state",           :null => false
     t.string   "descr"
+    t.string   "descr_orig"
     t.integer  "price"
     t.string   "notes"
     t.string   "congrats"

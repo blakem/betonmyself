@@ -56,6 +56,8 @@ class BetController < ApplicationController
     params[:record]['price'] = price
     super
     if successful?
+      @record.descr_orig = @record.descr
+      @record.save!
       log_bets_create(@record)
     end
   end

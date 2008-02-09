@@ -4,6 +4,7 @@ class CreateBets < ActiveRecord::Migration
       t.integer :user_id, :null => false, :references => :users
       t.integer :state, :null => false
       t.string :descr
+      t.string :descr_orig
       t.integer :price
       t.string :notes
       t.string :congrats
