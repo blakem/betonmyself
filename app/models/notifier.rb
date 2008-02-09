@@ -10,7 +10,7 @@ class Notifier < ActionMailer::Base
   def reset_password(user)
     recipients user.email
     from  "support@betonmyself.com"
-    subject "How to reset your betonmyself password"
+    subject "How to reset your BetOnMyself password"
     body :user => user
   end
 

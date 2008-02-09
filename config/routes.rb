@@ -77,6 +77,8 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/lost_password', :controller => 'lost_password'
   map.connect '/lost_password/email', :controller => 'lost_password', :action => 'email'
   map.connect '/lost_password/sent', :controller => 'lost_password', :action => 'sent'
+  map.connect '/lost_password/error', :controller => 'lost_password', :action => 'error'
+  map.connect '/lost_password/reset/:id', :controller => 'lost_password', :action => 'reset'
 
 
 

@@ -100,4 +100,31 @@ module BomUtility
     log_feedback_obj("Created ReportedProblem", feedback)
     Notifier.deliver_sms_problem_create(feedback)
   end
+
+  def make_random_token(length)
+    digest = Digest::MD5.hexdigest(random_string)
+    return digest[0..length-1]
+  end
+  def random_string
+    count = 0
+    File.open("/usr/share/dict/words") do |file|
+      while line = file.gets
+        count += 1
+      end
+    end
+    i1 = rand(count)+1
+    i2 = rand(count)+1
+
+    count = 0
+    w1 = ''
+    w2 = ''
+    File.open("/usr/share/dict/words") do |file|
+      while line = file.gets
+        count += 1
+        w1 = line.chomp if count == i1
+        w2 = line.chomp if count == i2
+      end
+    end
+    return w1 + '-' + w2
+  end
 end
