@@ -11,10 +11,11 @@ class CashOutController < ApplicationController
     if params['commit'] == "Cancel"
       create_survey
       redirect_to '/'
+    else
+      @ballance = self.current_user.ballance
+      create_transaction_out(@ballance)
+      create_survey
     end
-    @ballance = self.current_user.ballance
-    create_transaction_out(@ballance)
-    create_survey
   end
 
   protected

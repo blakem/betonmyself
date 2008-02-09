@@ -21,24 +21,34 @@ can <p>
    Did you find the site useful for accomplishing your goals?
  </dt>
  <dd>
-   Yes: <%= radio_button :survey, :q1, 'yes' %>
-   No: <%= radio_button :survey, :q1, 'no' %>
-   Sort Of: <%= radio_button :survey, :q1, 'sortof' %>
+  <%= radio_button :survey, :q1, 'yes' %> Yes
+ </dd>
+ <dd>
+  <%= radio_button :survey, :q1, 'no' %> No 
+ </dd>
+ <dd>
+  <%= radio_button :survey, :q1, 'sortof' %> Sort Of 
  </dd>
  <dt>
    How honest were you with yourself?
  </dt>
  <dd>
-   Very: <%= radio_button :survey, :q2, 'very' %>
-   Mostly: <%= radio_button :survey, :q2, 'mostly' %>
-   Not at All: <%= radio_button :survey, :q2, 'notatall' %>
+   <%= radio_button :survey, :q2, 'very' %> Very 
+ </dd>
+ <dd>
+   <%= radio_button :survey, :q2, 'mostly' %> Mostly 
+ </dd>
+ <dd>
+   <%= radio_button :survey, :q2, 'notatall' %> Not at All 
  </dd>
  <dt>
    Will you recommend the site to your friends?
  </dt>
  <dd>
-   Yes: <%= radio_button :survey, :q3, 'yes' %>
-   No: <%= radio_button :survey, :q3, 'no' %>
+   <%= radio_button :survey, :q3, 'yes' %> Yes 
+ </dd>
+ <dd>
+   <%= radio_button :survey, :q3, 'no' %> No 
  </dd>
  <p></p>
    <%= submit_tag 'Cancel'%>
