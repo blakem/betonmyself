@@ -4,39 +4,39 @@ Here is a list of all your interations with betonmyself.com to date:
 
 Purchase Transactions:
 <% total_in = 0
-   @user.transactions_in.each do |o| 
+   @user.transactions_in.sort {|a,b| a.created_at <=> b.created_at}.each do |o| 
    total_in = total_in + o.price
 -%>
-  $<%= @user.money_format(o.price) -%> at <%= h(o.created_at) %>
+  $<%= @user.money_format(o.price) -%> on <%= o.created_at.strftime("%m/%d/%Y") %>
 <% end -%>
 
 Cash Out Transactions:
 <% total_out = 0
-   @user.transactions_out.each do |o|
+   @user.transactions_out.sort {|a,b| a.created_at <=> b.created_at}.each do |o|
    total_out += o.price
 -%>
-   $<%= @user.money_format(o.price) -%> at <%= h(o.created_at) %>
+   $<%= @user.money_format(o.price) -%> on <%= o.created_at.strftime("%m/%d/%Y") %>
 <% end -%>
 
 Current Goals:
 <% total_current = 0
-   @user.current_bets.each do |o| 
+   @user.current_bets.sort {|a,b| a.due_date <=> b.due_date}.each do |o| 
    total_current = total_current + o.price
 -%>
-   <%= o.descr -%> at <%= h(o.created_at) %>
+   "<%= o.descr -%>" to be completed by <%= o.due_date.strftime("%m/%d/%Y") %>
 <% end -%>
 
 Completed Goals:
-<% @user.accomplishments.each do |o| -%>
-   <%= o.descr -%> at <%= h(o.created_at) %>
+<% @user.accomplishments.sort {|a,b| a.due_date <=> b.due_date}.each do |o| -%>
+   "<%= o.descr -%>" was completed by <%= o.due_date.strftime("%m/%d/%Y") %>
 <% end -%>
 
 Expired Goals:
 <% total_expired = 0
-   @user.failed_bets.each do |o| 
+   @user.failed_bets.sort {|a,b| a.due_date <=> b.due_date}.each do |o| 
    total_expired = total_expired + o.price
 -%>
-   <%= o.descr -%> at <%= h(o.created_at) %>
+   "<%= o.descr -%>" expired on <%= o.due_date.strftime("%m/%d/%Y") %>
 <% end -%>
 
 Current Account Balance:
