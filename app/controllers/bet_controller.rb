@@ -12,8 +12,7 @@ class BetController < ApplicationController
     config.create.link.label = 'Create New Goal'
     config.actions = [:create, :update, :show, :list]
     config.label = "Current Goals"
-    # config.update.columns = [:descr, :notes, :due_date]
-    config.update.columns = [:descr, :notes]
+    config.update.columns = [:descr, :due_date, :notes ]
 
     list.per_page = BomConstant::RECORDS_PER_PAGE
     list.sorting = {:due_date => 'ASC'}
