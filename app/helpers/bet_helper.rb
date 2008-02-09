@@ -33,6 +33,13 @@ module BetHelper
     end
     original + '<input autocomplete="off" class="text-input" id="record_descr" name="record[descr]" size="43" type="text"' + value + '>'
   end
+  def descr_column(record)
+    if record.descr == record.descr_orig
+      h(record.descr)
+    else
+      h(record.descr) + ' (Was originally: <em>' + h(record.descr_orig) + '</em>)'
+    end
+  end
   def due_date_form_column(record, input_name) 
     start_date = record.due_date.nil? ? Date.today : record.due_date
     calendar_date_select_tag "record[due_date]", 
