@@ -20,6 +20,10 @@ class LostPasswordController < ApplicationController
       render :action => 'index'
     else 
       user = User.find_by_email(params[:user]['email'])
+      user.reset_password_token = 'foobar'
+      user.reset_password_token_expires_at = Time.now.utc
+      log_object(user)
+      user.save!
       Notifier.deliver_reset_password(user)
       redirect_to :action => 'sent'
     end

@@ -12,6 +12,8 @@ class CreateUsers < ActiveRecord::Migration
       t.datetime :updated_at
       t.string :remember_token
       t.datetime :remember_token_expires_at
+      t.string :reset_password_token
+      t.datetime :reset_password_token_expires_at
     end
   end
 

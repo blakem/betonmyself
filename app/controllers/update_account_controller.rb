@@ -16,6 +16,7 @@ class UpdateAccountController < ApplicationController
     @user.password = new_fields[:password]
     @user.password_confirmation = new_fields[:password_confirmation]
     @user.old_password = new_fields[:old_password]
+    @user.old_password_required = 1
     @user.save!
     log_users_update(@user)
     redirect_to('/')

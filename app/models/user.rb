@@ -6,6 +6,7 @@ class User < ActiveRecord::Base
   # Virtual attribute for the unencrypted password
   attr_accessor :password
   attr_accessor :old_password
+  attr_accessor :old_password_required
 
   validates_presence_of     :login, :email, :first_name, :last_name, :role
   validates_presence_of     :password,                   :if => :password_required?
@@ -157,7 +158,7 @@ class User < ActiveRecord::Base
     end
 
     def validate_on_update
-      if not encrypt(old_password) == crypted_password
+      if old_password_required and not encrypt(old_password) == crypted_password
         errors.add(:old_password, " does not match current password")
       end
     end

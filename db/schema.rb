@@ -51,17 +51,19 @@ ActiveRecord::Schema.define(:version => 4) do
   end
 
   create_table "users", :force => true do |t|
-    t.string   "login",                                   :null => false
-    t.integer  "role",                                    :null => false
-    t.string   "first_name",                              :null => false
-    t.string   "last_name",                               :null => false
-    t.string   "email",                                   :null => false
-    t.string   "crypted_password",          :limit => 40
-    t.string   "salt",                      :limit => 40
+    t.string   "login",                                         :null => false
+    t.integer  "role",                                          :null => false
+    t.string   "first_name",                                    :null => false
+    t.string   "last_name",                                     :null => false
+    t.string   "email",                                         :null => false
+    t.string   "crypted_password",                :limit => 40
+    t.string   "salt",                            :limit => 40
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "remember_token"
     t.datetime "remember_token_expires_at"
+    t.string   "reset_password_token"
+    t.datetime "reset_password_token_expires_at"
   end
 
   add_foreign_key "bets", ["user_id"], "users", ["id"], :name => "bets_user_id_fkey"
