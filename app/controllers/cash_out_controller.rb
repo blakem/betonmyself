@@ -9,6 +9,7 @@ class CashOutController < ApplicationController
   def cash_out
     @selected_button = 'cashout'
     if params['commit'] == "Cancel"
+      create_survey
       redirect_to '/'
     end
     @ballance = self.current_user.ballance
