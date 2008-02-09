@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
+use lib '/var/www/rails/betonmyself/perl';
 use constant BET_STATE_CURRENT => 1;
 use constant BET_STATE_SUCCESS => 2;
 use constant BET_STATE_FAILURE => 3;
