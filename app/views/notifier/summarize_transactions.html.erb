@@ -27,8 +27,8 @@ Current Goals:
 <% end -%>
 
 Completed Goals:
-<% @user.accomplishments.sort {|a,b| a.due_date <=> b.due_date}.each do |o| -%>
-   "<%= o.descr -%>" was completed by <%= o.due_date.strftime("%m/%d/%Y") %>
+<% @user.accomplishments.sort {|a,b| a.completion_date <=> b.completion_date}.each do |o| -%>
+   "<%= o.descr -%>" was completed on <%= o.completion_date.strftime("%m/%d/%Y") %>
 <% end -%>
 
 Expired Goals:

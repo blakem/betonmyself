@@ -3,7 +3,7 @@ class CashOutController < ApplicationController
     logged_in? and not current_user.is_demo
   end
   def index
-    @accomplishments = self.current_user.accomplishments
+    @accomplishments = self.current_user.accomplishments.sort {|a,b| a.completion_date <=> b.completion_date}
     @selected_button = 'cashout'
   end
   def cash_out
@@ -12,11 +12,29 @@ class CashOutController < ApplicationController
       redirect_to '/'
     end
     @ballance = self.current_user.ballance
-    @transaction = Transaction.new(:user_id => self.current_user.id)
-    @transaction.price = @ballance
-    @transaction.direction = BomConstant::TRANSACTION_DIRECTION_OUT
-    @transaction.state = BomConstant::TRANSACTION_STATE_SUCCESS
-    @transaction.save!
-    log_transaction_out(@transaction)
+    create_transaction_out(@ballance)
+    create_survey
   end
+
+  protected
+    def create_transaction_out(ballance)
+      @transaction = Transaction.new(:user_id => self.current_user.id)
+      @transaction.price = @ballance
+      @transaction.direction = BomConstant::TRANSACTION_DIRECTION_OUT
+      @transaction.state = BomConstant::TRANSACTION_STATE_SUCCESS
+      @transaction.save!
+      log_transaction_out(@transaction)
+    end
+    def create_survey
+      survey_fields = params[:survey]
+      if not survey_fields.nil?
+        Survey.new(
+          :version => 1,
+          :user_id => current_user.id,
+          :q1 => survey_fields['q1'],
+          :q2 => survey_fields['q2'],
+          :q3 => survey_fields['q3']
+        ).save!
+      end
+    end
 end

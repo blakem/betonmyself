@@ -3,6 +3,7 @@ class User < ActiveRecord::Base
   include BomUtility
   has_many :transactions
   has_many :bets
+  has_many :surveys
 
   # Virtual attribute for the unencrypted password
   attr_accessor :password
