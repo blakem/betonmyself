@@ -33,5 +33,4 @@ class UsersController < ApplicationController
     end
     redirect_back_or_default('/intro')
   end
-
 end
