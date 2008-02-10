@@ -22,7 +22,7 @@ class UsersController < ApplicationController
   end
 
   def activate
-    self.current_user = params[:activation_code].blank? ? :false : User.find_by_activation_code(params[:activation_code])
+    self.current_user = params[:id].blank? ? :false : User.find_by_activation_code(params[:id])
     if logged_in? && !current_user.active?
       current_user.activate
       Notifier.deliver_activation(current_user) if current_user.pending?
