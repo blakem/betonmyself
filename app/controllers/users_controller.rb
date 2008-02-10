@@ -27,7 +27,7 @@ class UsersController < ApplicationController
       current_user.activate
       if current_user.pending?
         Notifier.deliver_activation(current_user) 
-        Notifier.deliver_sms_user_activate(current_user)
+        log_users_activate(current_user)
       end
       flash[:notice] = "Signup complete!"
     end

@@ -48,6 +48,10 @@ module BomUtility
     log_users_obj("Created user", user)
     Notifier.deliver_sms_user_create(user)
   end
+  def log_users_activate(user)
+    log_users_obj("Activated user", user)
+    Notifier.deliver_sms_user_activate(user)
+  end
   def log_users_update(user)
     log_users_obj("Updated user", user)
   end
