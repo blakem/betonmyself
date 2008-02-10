@@ -3,11 +3,12 @@ class DemoController < ApplicationController
   layout "members"
   def index
     init
-    @ballance_text = self.account_ballance_text
     @selected_button = 'demo'
+    @ballance_text = self.account_ballance_text
     @show_expired = current_user.failed_bets.length
   end
   def get_account_ballance
+    init
     render :text => self.account_ballance_text
   end
   protected

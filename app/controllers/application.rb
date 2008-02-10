@@ -18,4 +18,9 @@ class ApplicationController < ActionController::Base
   end
 
   before_filter :login_required
+  def members_authorized?
+    return false if not current_user
+    logged_in? and current_user.active? and not current_user.is_demo
+  end
 end
+

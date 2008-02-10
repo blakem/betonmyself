@@ -1,6 +1,6 @@
 class CashOutController < ApplicationController
   def authorized?
-    logged_in? and not current_user.is_demo
+    members_authorized?
   end
   def index
     @accomplishments = self.current_user.accomplishments.sort {|a,b| a.completion_date <=> b.completion_date}

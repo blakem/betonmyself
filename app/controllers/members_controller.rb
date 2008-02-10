@@ -1,10 +1,10 @@
 class MembersController < ApplicationController
   def authorized?
-    logged_in? and not current_user.is_demo
+    members_authorized?
   end
   def index
-    @ballance_text = self.account_ballance_text
     @selected_button = 'play'
+    @ballance_text = self.account_ballance_text
     @show_expired = current_user.failed_bets.length 
   end
   def get_account_ballance

@@ -1,6 +1,6 @@
 class FeedbackController < ApplicationController
   def authorized?
-    logged_in? and not current_user.is_demo
+    members_authorized?
   end
   def index
     @selected_button = 'support'

@@ -5,7 +5,7 @@ class PurchaseController < ApplicationController
   before_filter :load_card
   filter_parameter_logging :creditcard
   def authorized?
-    logged_in? and not current_user.is_demo
+    members_authorized?
   end
 
   def index
