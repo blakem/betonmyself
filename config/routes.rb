@@ -9,6 +9,7 @@ ActionController::Routing::Routes.draw do |map|
 
   map.connect '/signup',  :controller => 'users', :action => 'new'
   map.connect '/signup/create', :controller => 'users', :action => 'create'
+  map.connect '/activate/:id', :controller => 'users', :action => 'activate'
 
   map.connect '/demo', :controller => 'demo'
   map.connect '/demo/get_account_ballance', :controller => 'demo', :action => 'get_account_ballance'

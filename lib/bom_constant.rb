@@ -30,11 +30,13 @@ module BomConstant
 
   RECORDS_PER_PAGE=20
                
-  CURRENT_YEAR=Date.today.year.to_s 
-  FOOTER_TEXT="Copyright &copy; 2007-" + CURRENT_YEAR + ", BetOnMyself"
-  TITLE_TEXT="BetOnMyself"
-  HEADER_TEXT="Bet On Myself . com"
-  HEADER_NOTE="Helping You Get Things Done"
+  FOOTER_TEXT='Copyright &copy; 2007-' + Date.today.year.to_s + ', BetOnMyself'
+  TITLE_TEXT='BetOnMyself'
+  HEADER_TEXT='Bet On Myself . com'
+  HEADER_NOTE='Helping You Get Things Done'
 
-  SMS_EMAIL="blakemills@tmomail.net"
+  SMS_TO_EMAIL='blakemills@tmomail.net'
+  SMS_FROM_EMAIL='sms@betonmyself.com'
+  EMAIL_PREFIX='[BetOnMySelf] '
+  SUPPORT_EMAIL='support@betonmyself.com'
 end
