@@ -25,7 +25,10 @@ class UsersController < ApplicationController
     self.current_user = params[:id].blank? ? :false : User.find_by_activation_code(params[:id])
     if logged_in? && !current_user.active?
       current_user.activate
-      Notifier.deliver_activation(current_user) if current_user.pending?
+      if current_user.pending?
+        Notifier.deliver_activation(current_user) 
+        Notifier.deliver_sms_user_activate(current_user)
+      end
       flash[:notice] = "Signup complete!"
     end
     redirect_back_or_default('/intro')

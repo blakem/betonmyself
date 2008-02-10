@@ -33,7 +33,7 @@ module BomConstant
   FOOTER_TEXT='Copyright &copy; 2007-' + Date.today.year.to_s + ', BetOnMyself'
   TITLE_TEXT='BetOnMyself'
   HEADER_TEXT='Bet On Myself . com'
-  HEADER_NOTE='Helping You Get Things Done'
+  HEADER_NOTE='Helping You Get Your Stuff Done'
 
   SMS_TO_EMAIL='blakemills@tmomail.net'
   SMS_FROM_EMAIL='sms@betonmyself.com'

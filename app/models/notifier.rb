@@ -39,6 +39,11 @@ class Notifier < ActionMailer::Base
     subject "NEW: " + user.first_name + ' ' + user.last_name + " (" + user.login + ")"
     body :user => user
   end
+  def sms_user_activate(user)
+    setup_sms
+    subject "ACTV: " + user.first_name + ' ' + user.last_name + " (" + user.login + ")"
+    body :user => user
+  end
   def sms_transaction_in(transaction)
     setup_sms
     user = User.find_by_id(transaction.user_id);
