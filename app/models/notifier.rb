@@ -2,6 +2,17 @@ class Notifier < ActionMailer::Base
   include BomConstant
   include BomUtility
 
+  def change_email_notification(user)
+    from BomConstant::SUPPORT_EMAIL
+    recipients user.new_email
+    subject BomConstant::EMAIL_PREFIX + 'Please verify your new email'
+    body :user => user, :url => "https://members.betonmyself.com/update_account/change_email/#{user.new_email_activation_code}"
+  end
+  def change_email_notification_old_email(user)
+    setup_email(user)
+    subject BomConstant::EMAIL_PREFIX + 'Email Change Request'
+    body :user => user
+  end
   def signup_notification(user)
     setup_email(user)
     subject BomConstant::EMAIL_PREFIX + 'Please activate your new account'

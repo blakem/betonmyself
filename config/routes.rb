@@ -53,6 +53,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/support', :controller => 'support'
   map.connect '/update_account', :controller => 'update_account'
   map.connect '/update_account/change', :controller => 'update_account', :action => 'change'
+  map.connect '/update_account/change_email/:id', :controller => 'update_account', :action => 'change_email'
   map.connect '/summarize_transactions', :controller => 'summarize_transactions'
   map.connect '/summarize_transactions/email', :controller => 'summarize_transactions', :action => 'email'
   map.connect '/feedback', :controller => 'feedback'

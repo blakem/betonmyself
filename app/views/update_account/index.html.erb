@@ -8,7 +8,11 @@
 <%= f.text_field :last_name %></p>
 
 <p><label for="email">Email</label><br/>
-<%= f.text_field :email %></p>
+<%= f.text_field :email %>
+<% if not @user.new_email.nil? -%>
+(<em>pending change to: <%= h(@user.new_email) -%></em>)<br/>
+<% end -%>
+</p>
 
 <p><label for="password">Old Password</label><br/>
 <%= f.password_field :old_password %></p>

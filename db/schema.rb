@@ -77,6 +77,8 @@ ActiveRecord::Schema.define(:version => 5) do
     t.datetime "reset_password_token_expires_at"
     t.string   "activation_code",                 :limit => 40
     t.datetime "activated_at"
+    t.string   "new_email"
+    t.string   "new_email_activation_code",       :limit => 40
   end
 
   add_foreign_key "bets", ["user_id"], "users", ["id"], :name => "bets_user_id_fkey"
