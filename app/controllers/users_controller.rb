@@ -31,6 +31,7 @@ class UsersController < ApplicationController
       end
       flash[:notice] = "Signup complete!"
     end
+    self.current_user = nil
     redirect_back_or_default('/intro')
   end
 end
