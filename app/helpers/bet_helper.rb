@@ -34,7 +34,6 @@ module BetHelper
     original + '<input autocomplete="off" class="text-input" id="record_descr" name="record[descr]" size="43" type="text"' + value + '>'
   end
   def descr_column(record)
-    log_object(record)
     if record.descr == record.descr_orig or record.descr_orig.blank?
       h(record.descr)
     else
