@@ -25,7 +25,16 @@ class PurchaseController < ApplicationController
   def credit
     @selected_button = 'purchase'
     @amount = params['price'].to_i
-    render :action => 'form' and return unless @creditcard.valid?
+    @address = BomAddress.new()
+    @address.address1 = params[:address]['address1']
+    @address.address2 = params[:address]['address2']
+    @address.city = params[:address]['city']
+    @address.state = params[:address]['state']
+    @address.zip = params[:address]['zip']
+    @states = get_states
+    valid_address = @address.valid?
+    valid_cc = @creditcard.valid?
+    render :action => 'form' and return unless valid_address and valid_cc
 
 billing_address = { 
     :name     => "John Smith",

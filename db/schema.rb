@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 5) do
+ActiveRecord::Schema.define(:version => 6) do
 
   create_table "bets", :force => true do |t|
     t.integer  "user_id",         :null => false
@@ -34,6 +34,10 @@ ActiveRecord::Schema.define(:version => 5) do
     t.string   "location"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "pseudos", :force => true do |t|
+    t.string "type"
   end
 
   create_table "surveys", :force => true do |t|

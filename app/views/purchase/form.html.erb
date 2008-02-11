@@ -2,11 +2,12 @@
 
 <%= content_tag('div', "There was an error processing your payment: #{@paypal_error}", :class => 'error') if @paypal_error %>
 
-<% if @creditcard.errors.any? %>
-  <div class="error">
+<% if @creditcard.errors.any? or @address.errors.any? %>
+  <div class="flash_error">
     Errors encountered with your credit card information:
     <ul>
       <%= @creditcard.errors.full_messages.map {|m| content_tag('li', m)} %>
+      <%= @address.errors.full_messages.map {|m| content_tag('li', m)} %>
     </ul>
   </div>
 <% end %>
@@ -14,7 +15,7 @@
 <h2>Pay by credit card:</h2>
 <dl><dd>
 <%= form_tag :action => 'credit' %>
-<% fields_for :creditcad, @creditcard do |c| %>  
+<% fields_for :creditcard, @creditcard do |c| %>  
 <p>
   <label>Card Type</label>
   <%= c.select :type, [["Visa", "visa"], ["MasterCard", "master"], ["Discover", "discover"], ["American Express", "american_express"]] %>
