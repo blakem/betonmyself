@@ -6,11 +6,20 @@ class CreateTransactions < ActiveRecord::Migration
       t.integer :state, :null => false
       t.integer :trans_type
       t.integer :price
-      t.string  :transaction_id
       t.string  :cvv2_code
       t.string  :avs_code
       t.string  :token
-      t.string  :token2
+      t.string  :remote_token
+      t.string  :name
+      t.string  :state_or_province
+      t.string  :payer_country
+      t.string  :address_owner
+      t.string  :postal_code
+      t.string  :payer
+      t.string  :payer_status
+      t.integer :fee_amount
+      t.integer :gross_amount
+      t.integer :tax_amount
       t.timestamps
     end
   end

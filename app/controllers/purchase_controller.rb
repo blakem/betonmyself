@@ -46,7 +46,7 @@ class PurchaseController < ApplicationController
       :cancel_return_url => url_for(:action => 'index'),
       :description => "PayPal Website Payments Pro Guide"
     )
-
+    log_paypal_obj('Express Response', @response)
     if @response.success?
       # The useraction=commit in the redirect URL tells PayPal there won't
       # be an additional review step at our site before a charge is made
@@ -56,7 +56,7 @@ class PurchaseController < ApplicationController
         :direction => BomConstant::TRANSACTION_DIRECTION_IN,
         :state => BomConstant::TRANSACTION_STATE_INIT,
         :price => bill_amount,
-        :token2 => @response.params['token']
+        :remote_token => @response.params['token']
       )
       @transaction.save!
       log_transaction_init(@transaction)
@@ -71,16 +71,35 @@ class PurchaseController < ApplicationController
     @selected_button = 'purchase'
     gateway = paypal_gateway(:paypal_express)
     @details = gateway.details_for(params[:token])
+    log_paypal_obj('Express Complete Details', @details)
 
-    @transaction = Transaction.find_by_token2(@details.params['token']);
+    @transaction = Transaction.find_by_remote_token(@details.params['token']);
+    @transaction.name = @details.params['name']
+    @transaction.state_or_province = @details.params['state_or_province']
+    @transaction.payer_country = @details.params['payer_country']
+    @transaction.address_owner = @details.params['address_owner']
+    @transaction.postal_code = @details.params['postal_code']
+    @transaction.payer = @details.params['payer']
+    @transaction.payer_status = @details.params['payer_status']
+    @transaction.save!
     bill_amount = @transaction.price
     
     if @details.success?
       @response = gateway.purchase(bill_amount, 
         :token => @details.params['token'], 
         :payer_id => @details.params['payer_id'])
+      log_paypal_obj('Express Complete Response', @response)
       if @response.success?
-        @transaction.state = BomConstant::TRANSACTION_STATE_SUCCESS;
+        @transaction.state = BomConstant::TRANSACTION_STATE_SUCCESS
+        if @response.params['fee_amount']
+          @transaction.fee_amount = (@response.params['fee_amount'].to_f * 100).to_i
+        end
+        if @response.params['gross_amount']
+          @transaction.gross_amount = (@response.params['gross_amount'].to_f * 100).to_i
+        end
+        if @response.params['tax_amount']
+          @transaction.tax_amount = (@response.params['tax_amount'].to_f * 100).to_i
+        end
         @transaction.save!;
         log_transaction_in(@transaction)
         redirect_to :action => "complete", :id => @transaction

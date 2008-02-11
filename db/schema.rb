@@ -47,16 +47,25 @@ ActiveRecord::Schema.define(:version => 5) do
   end
 
   create_table "transactions", :force => true do |t|
-    t.integer  "user_id",        :null => false
-    t.integer  "direction",      :null => false
-    t.integer  "state",          :null => false
+    t.integer  "user_id",           :null => false
+    t.integer  "direction",         :null => false
+    t.integer  "state",             :null => false
     t.integer  "trans_type"
     t.integer  "price"
-    t.string   "transaction_id"
     t.string   "cvv2_code"
     t.string   "avs_code"
     t.string   "token"
-    t.string   "token2"
+    t.string   "remote_token"
+    t.string   "name"
+    t.string   "state_or_province"
+    t.string   "payer_country"
+    t.string   "address_owner"
+    t.string   "postal_code"
+    t.string   "payer"
+    t.string   "payer_status"
+    t.integer  "fee_amount"
+    t.integer  "gross_amount"
+    t.integer  "tax_amount"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -88,6 +97,5 @@ ActiveRecord::Schema.define(:version => 5) do
   add_foreign_key "surveys", ["user_id"], "users", ["id"], :name => "surveys_user_id_fkey"
 
   add_foreign_key "transactions", ["user_id"], "users", ["id"], :name => "transactions_user_id_fkey"
-  add_foreign_key "transactions", ["transaction_id"], "transactions", ["id"], :name => "transactions_transaction_id_fkey"
 
 end

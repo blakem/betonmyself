@@ -21,6 +21,9 @@ module BomUtility
   def log_feedback(msg)
     log('feedback', msg)
   end
+  def log_paypal(msg)
+    log('paypal', msg)
+  end
 
   def log_msg_for_object(string, obj)
     if obj.respond_to? 'reload'
@@ -37,11 +40,17 @@ module BomUtility
   def log_transactions_obj(string, obj)
     log_transactions(log_msg_for_object(string, obj))
   end
+  def log_paypal_obj(string, obj)
+    log_transactions(log_msg_for_object(string, obj))
+  end
   def log_feedback_obj(string, obj)
     log_feedback(log_msg_for_object(string, obj))
   end
   def log_object(obj)
-    log('objects', log_msg_for_object('Object', obj))
+    log_object_msg('Object', obj)
+  end
+  def log_object_msg(string, obj)
+    log('objects', log_msg_for_object(string, obj))
   end
 
   def log_users_create(user)
