@@ -22,11 +22,12 @@ class PurchaseController < ApplicationController
   # Use the DirectPayment API
   def credit
     @selected_button = 'purchase'
-    render :action => 'index' and return unless @creditcard.valid?
-    bill_amount = param[:transaction][price]
-    
+    render :action => 'form' and return unless @creditcard.valid?
+    bill_amount = params['price'].to_i
+
     @response = paypal_gateway.purchase(bill_amount, @creditcard, 
       :ip => request.remote_ip)
+    log_paypal_obj('Credit Response', @response)
       
     if @response.success?
       @purchase = Purchase.create(:response => @response)
