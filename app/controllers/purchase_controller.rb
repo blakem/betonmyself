@@ -25,13 +25,30 @@ class PurchaseController < ApplicationController
     render :action => 'form' and return unless @creditcard.valid?
     bill_amount = params['price'].to_i
 
+billing_address = { 
+    :name     => "John Smith",
+    :address1 => '123 First St.',
+    :address2 => '',
+    :city     => 'Los Angeles',
+    :state    => 'CA',
+    :country  => 'US',
+    :zip      => '90068',
+    :phone    => '310-555-1234'
+}    
+
     @response = paypal_gateway.purchase(bill_amount, @creditcard, 
-      :ip => request.remote_ip)
+      :ip => request.remote_ip, :billing_address => billing_address)
     log_paypal_obj('Credit Response', @response)
       
     if @response.success?
-      @purchase = Purchase.create(:response => @response)
-      redirect_to :action => "complete", :id => @purchase
+      @transaction = Transaction.new(:response => @response)
+      @transaction.user_id = self.current_user.id
+      @transaction.trans_type = BomConstant::TRANSACTION_TYPE_PAYPAL_CREDIT
+      @transaction.direction = BomConstant::TRANSACTION_DIRECTION_IN
+      @transaction.state = BomConstant::TRANSACTION_STATE_SUCCESS
+      @transaction.price = bill_amount
+      @transaction.save!
+      redirect_to :action => "complete", :id => @transaction
     else
       paypal_error(@response)
     end
@@ -116,7 +133,7 @@ class PurchaseController < ApplicationController
   
   def complete
     @selected_button = 'purchase'
-    raise ActiveRecord::RecordNotFound unless @purchase = Transaction.find_by_token(params[:id])
+    raise ActiveRecord::RecordNotFound unless @transaction = Transaction.find_by_token(params[:id])
   end
   
   protected

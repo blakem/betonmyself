@@ -10,6 +10,7 @@ class CreateTransactions < ActiveRecord::Migration
       t.string  :avs_code
       t.string  :token
       t.string  :remote_token
+      t.string  :transaction_identifier
       t.string  :name
       t.string  :state_or_province
       t.string  :payer_country

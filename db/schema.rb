@@ -47,15 +47,16 @@ ActiveRecord::Schema.define(:version => 5) do
   end
 
   create_table "transactions", :force => true do |t|
-    t.integer  "user_id",           :null => false
-    t.integer  "direction",         :null => false
-    t.integer  "state",             :null => false
+    t.integer  "user_id",                :null => false
+    t.integer  "direction",              :null => false
+    t.integer  "state",                  :null => false
     t.integer  "trans_type"
     t.integer  "price"
     t.string   "cvv2_code"
     t.string   "avs_code"
     t.string   "token"
     t.string   "remote_token"
+    t.string   "transaction_identifier"
     t.string   "name"
     t.string   "state_or_province"
     t.string   "payer_country"
