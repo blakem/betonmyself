@@ -36,16 +36,16 @@ class PurchaseController < ApplicationController
     valid_cc = @creditcard.valid?
     render :action => 'form' and return unless valid_address and valid_cc
 
-billing_address = { 
-    :name     => "John Smith",
-    :address1 => '123 First St.',
-    :address2 => '',
-    :city     => 'Los Angeles',
-    :state    => 'CA',
-    :country  => 'US',
-    :zip      => '90068',
-    :phone    => '310-555-1234'
-}    
+    billing_address = { 
+      :name     => @creditcard.first_name + " " + @creditcard.last_name,
+      :address1 => @address.address1,
+      :address2 => @address.address2,
+      :city     => @address.city,
+      :state    => @address.state,
+      :zip      => @address.zip,
+      :country  => 'US',
+      :phone    => ''
+    }
 
     @response = paypal_gateway.purchase(@amount, @creditcard, 
       :ip => request.remote_ip, :billing_address => billing_address)
