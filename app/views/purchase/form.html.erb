@@ -11,39 +11,54 @@
   </div>
 <% end %>
 
+<h2>Pay by credit card:</h2>
+<dl><dd>
+<%= form_tag :action => 'credit' %>
+<% fields_for :creditcad, @creditcard do |c| %>  
 <p>
-  Pay by credit card...
-</p>
-
-<% form_for :creditcard, @creditcard, :url => { :action => 'credit' } do |f| %>
-<p>
-  <label>Card Number</label> <%= f.text_field :number %>
-</p><p>
   <label>Card Type</label>
-  <%= f.select :type, [["Visa", "visa"], ["MasterCard", "master"], ["Discover", "discover"], ["American Express", "american_express"]] %>
+  <%= c.select :type, [["Visa", "visa"], ["MasterCard", "master"], ["Discover", "discover"], ["American Express", "american_express"]] %>
+</p><p>
+  <label>Card Number</label> <%= c.text_field :number %>
 </p><p>
   <label>Expiration Month</label> 
-  <%= f.select :month, (1 .. 12) %>
-  <%= f.select :year, (Time.now.year .. 10.years.from_now.year) %>
+  <%= c.select :month, (1 .. 12) %>
+  <%= c.select :year, (Time.now.year .. 10.years.from_now.year) %>
 </p><p>
   <label>CVV 
-  <%= f.text_field :verification_value, :size => 4 %>
+  <%= c.text_field :verification_value, :size => 4 %>
   (three digits on the back of card)</label>
 </p><p>
   <label>Name on Card (first, last)</label>
-  <%= f.text_field :first_name, :size => 15 %>
-  <%= f.text_field :last_name, :size => 15 %>
+  <%= c.text_field :first_name, :size => 15 %>
+  <%= c.text_field :last_name, :size => 15 %>
+</p>
+<% end %>
+<% fields_for :address, @address do |a| %>  
+<p>
+  <label>Address Line 1</label>
+  <%= a.text_field :address1, :size => 15 %>
 </p><p>
+  <label>Address Line 2</label>
+  <%= a.text_field :address2, :size => 15 %>
+</p><p>
+  <label>City, State, Zip</label>
+  <%= a.text_field :city, :size => 15 %>
+  <%= a.select :state, @states %>
+  <%= a.text_field :zip, :size => 10 %>
+</p>
+<% end %>
+<p>
   <input id="price" name="price" type="hidden" value="<%= @amount -%>" />  
   <%= submit_tag 'Transfer Funds' %>
 </p>
-<% end %>
+</form>
+</dd></dl>
 
-<p>
-  ...or by PayPal
-</p>
-
+<h2>Or Pay by Paypal:</h2>
+<dl><dd>
 <% form_tag :action => 'express' do %>
   <input type="hidden" name="price" value="<%= @amount -%>">
   <input type="image" src="<%= image_path('paypal.gif') %>">
 <% end %>
+</dd></dl>
