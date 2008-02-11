@@ -22,8 +22,8 @@ class PurchaseController < ApplicationController
   # Use the DirectPayment API
   def credit
     @selected_button = 'purchase'
+    @amount = params['price'].to_i
     render :action => 'form' and return unless @creditcard.valid?
-    bill_amount = params['price'].to_i
 
 billing_address = { 
     :name     => "John Smith",
@@ -36,7 +36,7 @@ billing_address = {
     :phone    => '310-555-1234'
 }    
 
-    @response = paypal_gateway.purchase(bill_amount, @creditcard, 
+    @response = paypal_gateway.purchase(@amount, @creditcard, 
       :ip => request.remote_ip, :billing_address => billing_address)
     log_paypal_obj('Credit Response', @response)
       
@@ -46,7 +46,7 @@ billing_address = {
       @transaction.trans_type = BomConstant::TRANSACTION_TYPE_PAYPAL_CREDIT
       @transaction.direction = BomConstant::TRANSACTION_DIRECTION_IN
       @transaction.state = BomConstant::TRANSACTION_STATE_SUCCESS
-      @transaction.price = bill_amount
+      @transaction.price = @amount
       @transaction.save!
       redirect_to :action => "complete", :id => @transaction
     else
