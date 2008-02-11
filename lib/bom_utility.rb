@@ -41,7 +41,7 @@ module BomUtility
     log_transactions(log_msg_for_object(string, obj))
   end
   def log_paypal_obj(string, obj)
-    log_transactions(log_msg_for_object(string, obj))
+    log_paypal(log_msg_for_object(string, obj))
   end
   def log_feedback_obj(string, obj)
     log_feedback(log_msg_for_object(string, obj))
