@@ -17,25 +17,21 @@
 
 <% form_for :creditcard, @creditcard, :url => { :action => 'credit' } do |f| %>
 <p>
-  <label>Card Number</label><br/>
-  <%= f.text_field :number %>
+  <label>Card Number</label> <%= f.text_field :number %>
 </p><p>
   <label>Card Type</label>
   <%= f.select :type, [["Visa", "visa"], ["MasterCard", "master"], ["Discover", "discover"], ["American Express", "american_express"]] %>
 </p><p>
-  <label>Expiration Month</label><br/>
+  <label>Expiration Month</label> 
   <%= f.select :month, (1 .. 12) %>
-</p><p>
-  <label>Expiration Year</label><br/>
   <%= f.select :year, (Time.now.year .. 10.years.from_now.year) %>
 </p><p>
-  <label>CVV (three digits on the back of card)</label><br/>
+  <label>CVV 
   <%= f.text_field :verification_value, :size => 4 %>
+  (three digits on the back of card)</label>
 </p><p>
-  <label>First Name on Card</label><br/>
+  <label>Name on Card (first, last)</label>
   <%= f.text_field :first_name, :size => 15 %>
-</p><p>
-  <label>Last Name on Card</label><br/>
   <%= f.text_field :last_name, :size => 15 %>
 </p><p>
   <input id="price" name="price" type="hidden" value="<%= @amount -%>" />  

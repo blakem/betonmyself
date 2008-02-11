@@ -21,7 +21,7 @@ padding:5px 20px 5px;
 margin-bottom: 15px ;
 }
 
-div.fieldWithErrors input {  
+.fieldWithErrors {  
 background-color:#ffddd1;
 }
 
