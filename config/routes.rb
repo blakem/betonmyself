@@ -75,6 +75,7 @@ ActionController::Routing::Routes.draw do |map|
 
   map.connect '/cash_out', :controller => 'cash_out'
   map.connect '/cash_out/cash_out', :controller => 'cash_out', :action => 'cash_out'
+  map.connect '/cash_out/submit', :controller => 'cash_out', :action => 'submit'
 
   map.connect '/lost_password', :controller => 'lost_password'
   map.connect '/lost_password/email', :controller => 'lost_password', :action => 'email'

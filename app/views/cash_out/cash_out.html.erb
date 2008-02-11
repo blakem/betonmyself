@@ -1,2 +1,21 @@
-<h1>Thank You for your feedback.</h1>
-<h2>A payment for $<%= money_format(@ballance) -%> will be credited to your account within 24 hours.</h2>
+<p>Ok, so you have <b>$<%= money_format(@ballance) -%></b> in your incentive account.  How much of that would you like to cash out?</p>
+<form action="/cash_out/submit" method="post">
+<p>
+Amount: <input type=text value="0.00"><br>
+</p>
+
+<p>
+And how would you like us to send that to you?
+</p>
+<p>
+<input type=radio name=method value=paypal checked=checked>Paypal Account
+<input type=text name=paypal_act value="<%= h(@paypal) -%>" size=30>
+</p>
+<p>
+<input type=radio name=method value=mail>Mail a Check To
+<input type=text name=address>
+</p>
+
+<input type=submit value="Cancel">
+<input type=submit value="Cash Out"><br>
+</form>

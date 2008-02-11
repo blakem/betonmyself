@@ -164,6 +164,14 @@ class User < ActiveRecord::Base
   def is_demo
     role == BomConstant::ROLE_TYPE_DEMO
   end
+
+  def last_paypal_acct
+    acct = ''
+    self.transactions_in.sort {|a,b| a.id <=> b.id}.each do |t| 
+      acct = t.payer unless t.payer.blank?
+    end
+    acct
+  end
   
   protected
     # before filter 

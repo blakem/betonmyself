@@ -12,9 +12,18 @@ class CashOutController < ApplicationController
       create_survey
       redirect_to '/'
     else
+      create_survey
+      @ballance = self.current_user.ballance
+      @paypal = self.current_user.last_paypal_acct 
+    end
+  end
+  def submit
+    @selected_button = 'cashout'
+    if params['commit'] == "Cancel"
+      redirect_to '/'
+    else
       @ballance = self.current_user.ballance
       create_transaction_out(@ballance)
-      create_survey
     end
   end
 
