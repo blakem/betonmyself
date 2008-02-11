@@ -14,7 +14,10 @@ class CashOutController < ApplicationController
     else
       create_survey
       @ballance = self.current_user.ballance
-      @paypal = self.current_user.last_paypal_acct 
+      @cash_out_request = CashOutRequest.new
+      @cash_out_request.price = 0
+      @cash_out_request.paypal_account = current_user.last_paypal_acct  
+      @cash_out_request.method = BomConstant::CASH_OUT_TYPE_PAYPAL
     end
   end
   def submit
@@ -22,15 +25,25 @@ class CashOutController < ApplicationController
     if params['commit'] == "Cancel"
       redirect_to '/'
     else
-      @ballance = self.current_user.ballance
-      create_transaction_out(@ballance)
+      @cash_out_request = CashOutRequest.new(params[:cash_out_request])
+      @cash_out_request.user_id = current_user.id
+      @cash_out_request.state = BomConstant::CASH_OUT_STATE_PENDING
+      @price = params[:cash_out_request]['price']
+      @price = @price.sub(/\$/, "")
+      @price = @price.to_f * 100
+      @cash_out_request.price = @price
+      @cash_out_request.save!
+      create_transaction_out(@price)
     end
+  rescue ActiveRecord::RecordInvalid
+    @cash_out_request.price = (@cash_out_request.price.to_f / 100).to_s
+    render :action => 'cash_out'
   end
 
   protected
-    def create_transaction_out(ballance)
+    def create_transaction_out(price)
       @transaction = Transaction.new(:user_id => self.current_user.id)
-      @transaction.price = @ballance
+      @transaction.price = price
       @transaction.direction = BomConstant::TRANSACTION_DIRECTION_OUT
       @transaction.state = BomConstant::TRANSACTION_STATE_SUCCESS
       @transaction.save!
