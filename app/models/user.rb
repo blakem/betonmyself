@@ -89,20 +89,47 @@ class User < ActiveRecord::Base
   end
 
   def ballance
+    total_funds_in - total_funds_out - total_expired_bet_funds - total_current_bet_funds
+  end
+  def available_cashout_funds
+    fees = fee_total - total_expired_bet_funds
+    fees = 0 if fees < 0
+    ballance - fees
+  end
+  def total_expired_bet_funds
+    total = 0
+    self.failed_bets.each do |b|
+      total += b.price
+    end
+    total
+  end
+  def total_current_bet_funds
+    total = 0
+    self.current_bets.each do |b|
+      total += b.price
+    end
+    total
+  end
+  def total_funds_in
     total = 0
     self.transactions_in.each do |t|
       total += t.price
     end
+    total
+  end
+  def total_funds_out
+    total = 0
     self.transactions_out.each do |t|
-      total -= t.price
+      total += t.price
     end
-    self.current_bets.each do |b|
-      total -= b.price
+    total
+  end
+  def fee_total
+    total = 0
+    self.transactions_in.each do |t|
+      total += t.fee_amount_calc
     end
-    self.failed_bets.each do |b|
-      total -= b.price
-    end
-    return total
+    total
   end
 
   def accomplishments
@@ -117,7 +144,7 @@ class User < ActiveRecord::Base
 
   def current_bets
     current_bets = []
-    self.bets.each do |b|
+    self.bets.sort {|a,b| a.due_date <=> b.due_date}.each do |b|
       if b.state == BomConstant::BET_STATE_CURRENT
         current_bets.push b
       end
@@ -127,7 +154,7 @@ class User < ActiveRecord::Base
 
   def failed_bets
     failed_bets = []
-    self.bets.each do |b|
+    self.bets.sort {|a,b| a.due_date <=> b.due_date}.each do |b|
       if b.state == BomConstant::BET_STATE_FAILURE
         failed_bets.push b
       end
@@ -137,8 +164,8 @@ class User < ActiveRecord::Base
 
   def transactions_in
     transactions_in = []
-    self.transactions.each do |t|
-      if t.direction == BomConstant::TRANSACTION_DIRECTION_IN and t.state == BomConstant::TRANSACTION_STATE_SUCCESS
+    self.transactions_successful.each do |t|
+      if t.direction == BomConstant::TRANSACTION_DIRECTION_IN
         transactions_in.push t
       end
     end
@@ -147,12 +174,22 @@ class User < ActiveRecord::Base
 
   def transactions_out
     transactions_out = []
-    self.transactions.each do |t|
-      if t.direction == BomConstant::TRANSACTION_DIRECTION_OUT and t.state == BomConstant::TRANSACTION_STATE_SUCCESS
+    self.transactions_successful.each do |t|
+      if t.direction == BomConstant::TRANSACTION_DIRECTION_OUT
         transactions_out.push t
       end
     end
     return transactions_out
+  end
+
+  def transactions_successful
+    transactions_succ = []
+    self.transactions.sort {|a,b| a.created_at <=> b.created_at}.each do |t|
+      if t.state == BomConstant::TRANSACTION_STATE_SUCCESS
+        transactions_succ.push t
+      end
+    end
+    return transactions_succ
   end
 
   def is_admin

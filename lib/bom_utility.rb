@@ -1,6 +1,9 @@
 module BomUtility
-  def money_format (integer)
-    return sprintf("%.02f", integer.to_f / 100);
+  def money_format(integer)
+    sprintf("%.02f", integer.to_f / 100);
+  end
+  def sigil_money(price)
+    "$" + money_format(price)
   end
 
   def log(logfile_name, msg)

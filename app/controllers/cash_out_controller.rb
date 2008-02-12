@@ -18,6 +18,7 @@ class CashOutController < ApplicationController
       @cash_out_request.price = 0
       @cash_out_request.paypal_account = current_user.last_paypal_acct  
       @cash_out_request.method = BomConstant::CASH_OUT_TYPE_PAYPAL
+      @user = current_user
     end
   end
   def submit

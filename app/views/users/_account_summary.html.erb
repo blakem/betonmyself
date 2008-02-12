@@ -1,0 +1,135 @@
+<%
+ @total_expired_bet_funds = @user.total_expired_bet_funds
+ @total_expired_bet_funds_fmt = sigil_money(@total_expired_bet_funds)
+ @total_current_bet_funds = @user.total_current_bet_funds
+ @total_current_bet_funds_fmt = sigil_money(@total_current_bet_funds)
+ @fee_total = @user.fee_total
+ @fee_total_fmt = sigil_money(@fee_total)
+ @total_funds_in = @user.total_funds_in
+ @total_funds_in_fmt = sigil_money(@total_funds_in)
+ @total_funds_out = @user.total_funds_out
+ @total_funds_out_fmt = sigil_money(@total_funds_out)
+ @available_cashout = @user.available_cashout_funds
+ @available_cashout_fmt = sigil_money(@available_cashout)
+%>
+
+<p>
+<table cellspacing="3" cellpadding="3">
+<b>Transactions In:</b>
+<tr>
+  <th>Date</th>
+  <th>Amount</th>
+  <th>Transaction Fee</th>
+</tr>
+
+<% @user.transactions_in.each do |t| %>
+<tr align="right">
+  <td>
+    <%= h(t.created_at.strftime("%m/%d/%Y")) -%>
+  </td>
+  <td>
+    <%= h(sigil_money(t.price)) -%>
+  </td>
+  <td>
+    <%= h(sigil_money(t.fee_amount_calc)) -%>
+  </td>
+</tr>
+<% end %>
+<tr align="right">
+  <td>
+    <b>Total:</b>
+  </td>
+  <td>
+    <span class="red_link"><%= @total_funds_in_fmt -%></span>
+  </td>
+  <td>
+    <span class="red_link"><%= @fee_total_fmt -%></span>
+  </td>
+</tr>
+
+</table>
+</p>
+
+<p>
+<table cellspacing="3" cellpadding="3">
+<b>Transactions Out:</b>
+<tr>
+  <th>Date</th>
+  <th>Amount</th>
+</tr>
+
+<% @user.transactions_out.each do |t| %>
+<tr align="right">
+  <td>
+    <%= h(t.created_at.strftime("%m/%d/%Y")) -%>
+  </td>
+  <td>
+    <%= h(sigil_money(t.price)) -%>
+  </td>
+</tr>
+<% end %>
+<tr align="right">
+  <td>
+    <b>Total:</b>
+  </td>
+  <td>
+    <%= @total_funds_out_fmt -%>
+  </td>
+</tr>
+
+</table>
+</p>
+
+<p>
+<b><%= link_to 'Expired Goals', :controller => 'expired' %>:</b> <span class="red_link"><%= @total_expired_bet_funds_fmt -%></span>
+<p></p>
+<b><%= link_to 'Current Goals', '/'%>:</b> <span class="red_link"><%= @total_current_bet_funds_fmt -%></span>
+</p>
+<p></p>
+
+<% if @total_expired_bet_funds >= @fee_total -%>
+<p>
+Since your expired bet total (<%= @total_expired_bet_funds_fmt -%>) is greater than your transaction fee total (<%= @fee_total_fmt -%>) the transaction fees are waived, and your available cash out ballance is simply:
+</p><p>
+<b>
+TotalIn - TotalOut - ExpiredGoals - CurrentGoals = Available To Cash Out<br/>
+<%= @total_funds_in_fmt -%> - 
+<%= @total_funds_out_fmt -%> - 
+<%= @total_expired_bet_funds_fmt -%> - 
+<%= @total_current_bet_funds_fmt -%> = 
+<span class="red_link"><%= @available_cashout_fmt -%></span> 
+</b>
+</p>
+
+<% elsif @total_expired_bet_funds == 0 %>
+
+<p>
+Your available cash out ballance is simply:<p>
+</p><p>
+<b>
+TotalIn - TotalOut - TransactionFees - ExpiredGoals - CurrentGoals = Available To Cash Out<br/>
+<%= @total_funds_in_fmt -%> - 
+<%= @total_funds_out_fmt -%> - 
+<%= @fee_total_fmt -%> -
+<%= @total_expired_bet_funds_fmt -%> - 
+<%= @total_current_bet_funds_fmt -%> = 
+<span class="red_link"><%= @available_cashout_fmt -%></span> 
+</b>
+</p>
+
+<% else %>
+
+<p>
+Your expired goals (<%= @total_expired_bet_funds_fmt -%>) cover part of your transaction fees (<%= @fee_total_fmt -%>).  So, your available cash out ballance is simply:
+</p><p>
+<b>
+TotalIn - TotalOut - RemainingFees - CurrentGoals = Available To Cash Out<br/>
+<%= @total_funds_in_fmt -%> - 
+<%= @total_funds_out_fmt -%> - 
+<%= sigil_money(@fee_total_fmt - @total_expired_bet_funds_fmt) -%> - 
+<%= @total_current_bet_funds_fmt -%> = 
+<span class="red_link"><%= @available_cashout_fmt -%></span> 
+</b>
+</p>
+
+<% end %>
