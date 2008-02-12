@@ -8,7 +8,6 @@ Members
 /var/www/rails/betonmyself/app/controllers/provide_testimonial_controller.rb
 /var/www/rails/betonmyself/app/controllers/purchase_controller.rb
 /var/www/rails/betonmyself/app/controllers/report_problem_controller.rb
-/var/www/rails/betonmyself/app/controllers/summarize_transactions_controller.rb
 /var/www/rails/betonmyself/app/controllers/support_controller.rb
 /var/www/rails/betonmyself/app/controllers/update_account_controller.rb
 

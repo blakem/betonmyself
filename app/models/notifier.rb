@@ -23,11 +23,6 @@ class Notifier < ActionMailer::Base
     subject BomConstant::EMAIL_PREFIX + 'Your account has been activated!'
     body :user => user, :url  => "https://members.betonmyself.com/"
   end
-  def summarize_transactions(user)
-    setup_email(user)
-    subject BomConstant::EMAIL_PREFIX + 'Your account transactions'
-    body :user => user
-  end
   def reset_password(user)
     setup_email(user)
     subject BomConstant::EMAIL_PREFIX + 'How to reset your password'
