@@ -3,8 +3,8 @@ class CashOutController < ApplicationController
     members_authorized?
   end
   def index
-    @accomplishments = self.current_user.accomplishments.sort {|a,b| a.completion_date <=> b.completion_date}
     @selected_button = 'cashout'
+    @user = current_user
   end
   def cash_out
     @selected_button = 'cashout'

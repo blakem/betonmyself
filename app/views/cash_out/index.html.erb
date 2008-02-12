@@ -1,4 +1,12 @@
+<% if @user.available_cashout_funds <= 0 %>
+<h2>You have no funds to cash out</h2>
+<% else %>
+<% @accomplishments = @user.accomplishments %>
 <h1>So soon?</h1>
+
+<% if @accomplishments.length == 0 %>
+<h2>But you haven't accomplished any goals...</h2>
+<% else %>
 <h2>So far you've accomplished <%= @accomplishments.length %>
 goal<%= @accomplishments.length == 1 ? '' : 's' -%>, including:<br></h2>
 <ul>
@@ -6,12 +14,14 @@ goal<%= @accomplishments.length == 1 ? '' : 's' -%>, including:<br></h2>
   <li><%= h(a.descr) %></li>
 <% end %>
 </ul>
+<% end %>
+
 You currently have <b>$<%= money_format(self.current_user.ballance) %></b> in your incentive account.<br>
 <p></p>
 
 You can fill out this optional Feedback form and we'll cash you out, or you 
 can <p>
-  <%= link_to "Play some more!", '/', 
+  <%= link_to "Continue to Play!", '/', 
     :class => "red_link"%></p>
 
 <h2>Optional Survey</h2>
@@ -55,3 +65,4 @@ can <p>
    <%= submit_tag 'Cash Out'%>
 </dl>
 </form>
+<% end %>
