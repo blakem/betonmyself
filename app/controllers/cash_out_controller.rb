@@ -13,7 +13,7 @@ class CashOutController < ApplicationController
       redirect_to '/'
     else
       create_survey
-      @ballance = self.current_user.ballance
+      @available_funds = self.current_user.available_cashout_funds
       @cash_out_request = CashOutRequest.new
       @cash_out_request.price = 0
       @cash_out_request.paypal_account = current_user.last_paypal_acct  
