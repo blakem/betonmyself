@@ -66,4 +66,8 @@ class BetController < ApplicationController
       log_bets_update(@record)
     end
   end
+  def do_destroy
+    @record = find_if_allowed(params[:id], :destroy)
+    log_bets_delete_failed(@record)
+  end
 end
