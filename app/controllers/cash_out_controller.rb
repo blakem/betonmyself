@@ -38,6 +38,7 @@ class CashOutController < ApplicationController
       create_transaction_out(@price)
     end
   rescue ActiveRecord::RecordInvalid
+    @available_cashout_funds = self.current_user.available_cashout_funds
     @user = current_user
     render :action => 'cash_out'
   end
