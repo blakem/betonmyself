@@ -1,5 +1,6 @@
 <% if @user.available_cashout_funds <= 0 %>
 <h2>You have no funds to cash out</h2>
+Perhaps it's time to <%= link_to 'add some funds', :controller => 'purchase' -%>.
 <% else %>
 <% @accomplishments = @user.accomplishments %>
 <h1>So soon?</h1>

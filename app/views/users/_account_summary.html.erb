@@ -10,6 +10,8 @@
   @items = @user.items
 %>
 
+<% if @items.length > 0 %>
+
 <p>
 <table cellspacing="3" cellpadding="3">
 <tr>
@@ -49,11 +51,13 @@
 </table>
 </p>
 
+<% end %>
 <p></p>
 <p>
 <b>Current Balance</b>: <b><span class="red_link"><%= @straight_up_cashout_funds_fmt -%></span></b>
 </p>
 
+<% if @items.length > 0 %>
 <% if @total_expired_bet_funds >= @fee_total -%>
 <p>
 Since your <%= link_to "expired goal total", :controller => 'expired' -%> (<%= @total_expired_bet_funds_fmt -%>) is greater than your transaction fee total (<%= @fee_total_fmt -%>) the transaction fees are waived, and your available cash out balance is: <b><%= @straight_up_cashout_funds_fmt %> + <%= @fee_total_fmt -%> = <span class="red_link"><%= @available_cashout_fmt -%></span></b>
@@ -72,4 +76,5 @@ Balance + FeesCoveredByExpiredGoals = Available Cash Out Balance<br/>
 </b>
 </p>
 
+<% end %>
 <% end %>
