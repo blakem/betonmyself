@@ -13,7 +13,7 @@ class CashOutController < ApplicationController
       redirect_to '/'
     else
       create_survey
-      @available_funds = self.current_user.available_cashout_funds
+      @available_cashout_funds = self.current_user.available_cashout_funds
       @cash_out_request = CashOutRequest.new
       @cash_out_request.price = 0
       @cash_out_request.paypal_account = current_user.last_paypal_acct  
@@ -37,7 +37,7 @@ class CashOutController < ApplicationController
       create_transaction_out(@price)
     end
   rescue ActiveRecord::RecordInvalid
-    @cash_out_request.price = (@cash_out_request.price.to_f / 100).to_s
+    @user = current_user
     render :action => 'cash_out'
   end
 

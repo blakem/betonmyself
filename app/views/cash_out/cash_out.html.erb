@@ -1,3 +1,4 @@
+<%= error_messages_for :cash_out_request %>
 <p>
 Here is how your account looks right now:
 </p>
@@ -10,9 +11,8 @@ Here is how your account looks right now:
 <p></p>
 <p></p>
 
-Of that <%= sigil_money(@available_funds) %>, how much would you like to cash out?
+Of that <%= sigil_money(@available_cashout_funds) %>, how much would you like to cash out?
 <p></p>
-<%= error_messages_for :cash_out_request %>
 <% form_for :cash_out_request, @cash_out_request, :url => { :action => :submit } do |f| -%>
 
 <p>
