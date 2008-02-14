@@ -3,7 +3,9 @@ module BomUtility
     sprintf("%.02f", integer.to_f / 100);
   end
   def sigil_money(price)
-    "$" + money_format(price)
+    sign = price < 0 ? '-' : ''
+    price = price.abs
+    sign + "$" + money_format(price)
   end
 
   def log(logfile_name, msg)

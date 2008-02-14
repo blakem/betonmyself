@@ -9,7 +9,7 @@ class CreateBets < ActiveRecord::Migration
       t.string :notes
       t.string :congrats
       t.date :due_date
-      t.date :completion_date
+      t.timestamp :completion_date
       t.timestamps
     end
   end

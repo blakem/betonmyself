@@ -96,6 +96,10 @@ class User < ActiveRecord::Base
     fees = 0 if fees < 0
     ballance - fees
   end
+  def straight_up_cashout_funds
+    ballance - fee_total
+  end
+
   def total_expired_bet_funds
     total = 0
     self.failed_bets.each do |b|
@@ -190,6 +194,18 @@ class User < ActiveRecord::Base
       end
     end
     return transactions_succ
+  end
+  def items
+    items = []
+    items.push transactions_successful
+    items.push bets
+    accomplishments.each do |a|
+      new_a = a.dup
+      new_a.is_accomplishment = true
+      items.push new_a
+    end
+    items = items.flatten.sort { |a,b| a.account_summary_sort_date <=> b.account_summary_sort_date }
+    return items
   end
 
   def is_admin

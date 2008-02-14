@@ -20,7 +20,7 @@ ActiveRecord::Schema.define(:version => 7) do
     t.string   "notes"
     t.string   "congrats"
     t.date     "due_date"
-    t.date     "completion_date"
+    t.datetime "completion_date"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

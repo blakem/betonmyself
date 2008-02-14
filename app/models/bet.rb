@@ -2,6 +2,7 @@ class Bet < ActiveRecord::Base
   include BomUtility
   belongs_to :user
   validates_presence_of :user_id, :state, :descr, :price, :due_date
+  attr_accessor :is_accomplishment
   def validate_on_create
     if not due_date.nil? and due_date < Date.today
       errors.add(:due_date, "is in the past")
@@ -31,6 +32,29 @@ class Bet < ActiveRecord::Base
       "Notes for \"#{descr}\""
     end
   end
+
+  def account_summary_action 
+    is_accomplishment ? 'Completed Goal' : 'Created Goal'
+  end
+  def account_summary_date
+    account_summary_sort_date.strftime("%m/%d/%Y")
+  end
+  def account_summary_price
+    sigil_money(account_summary_balance_effect)
+  end
+  def account_summary_fee
+    '-'
+  end
+  def account_summary_balance_effect
+    is_accomplishment ? price : 0 - price
+  end
+  def account_summary_goal
+    descr[0..20]
+  end
+  def account_summary_sort_date
+    is_accomplishment ? completion_date : created_at
+  end
+
   def Bet.authorize_for_user_id(user_id, user)
     if user_id != user.id
       raise ActiveScaffold::RecordNotAllowed

@@ -27,4 +27,42 @@ class Transaction < ActiveRecord::Base
     end
     return value
   end
+
+  def account_summary_action 
+    if direction == BomConstant::TRANSACTION_DIRECTION_IN
+      'Deposit'
+    else
+      'Withdraw'
+    end
+  end
+  def account_summary_date
+    created_at.strftime("%m/%d/%Y")
+  end
+  def account_summary_price
+    if direction == BomConstant::TRANSACTION_DIRECTION_IN
+      sigil_money(price)
+    else
+      sigil_money(0-price)
+    end
+  end
+  def account_summary_fee
+    if direction == BomConstant::TRANSACTION_DIRECTION_IN
+      sigil_money(fee_amount_calc)
+    else
+      '-'
+    end
+  end
+  def account_summary_balance_effect
+    if direction == BomConstant::TRANSACTION_DIRECTION_IN
+      price - fee_amount_calc
+    else
+      0 - price
+    end
+  end
+  def account_summary_goal
+    '-'
+  end
+  def account_summary_sort_date
+    created_at
+  end
 end
