@@ -145,6 +145,15 @@ class User < ActiveRecord::Base
     end
     return accomplishments
   end
+  def accomplishments_deleted
+    accomplishments = []
+    self.bets.each do |b|
+      if b.state == BomConstant::BET_STATE_DELETED
+        accomplishments.push b
+      end
+    end
+    return accomplishments
+  end
 
   def current_bets
     current_bets = []
@@ -200,6 +209,11 @@ class User < ActiveRecord::Base
     items.push transactions_successful
     items.push bets
     accomplishments.each do |a|
+      new_a = a.dup
+      new_a.is_accomplishment = true
+      items.push new_a
+    end
+    accomplishments_deleted.each do |a|
       new_a = a.dup
       new_a.is_accomplishment = true
       items.push new_a
