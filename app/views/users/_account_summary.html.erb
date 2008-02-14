@@ -40,6 +40,26 @@
     To Get My Stuff Done
   </td>
 </tr>
+<tr>
+  <td align="right">
+    <%= @user.activated_at.strftime("%m/%d/%Y") -%>
+  </td>
+  <td align="left">
+    Activated Account
+  </td>
+  <td align="right">
+    -
+  </td>
+  <td align="right">
+    -
+  </td>
+  <td align="right">
+    $0.00
+  </td>
+  <td align="left">
+    -
+  </td>
+</tr>
 <%
   balance = 0
   @items.each do |i| 
