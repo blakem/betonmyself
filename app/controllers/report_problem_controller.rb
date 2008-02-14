@@ -5,6 +5,7 @@ class ReportProblemController < ApplicationController
   def index
     @selected_button = 'support'
     @style = 'border: solid 1px #1F7F00; font: 16px arial'
+    @feedback = Feedback.new
   end
   def submit
     @selected_button = 'support'

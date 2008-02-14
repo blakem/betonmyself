@@ -1,7 +1,23 @@
+<% if @feedback.errors.any? %>
+<div class="errorExplanation" id="errorExplanation">
+  <h2>
+    <%= @feedback.errors.length -%>
+    <% if @feedback.errors.length > 1 %> 
+    errors 
+    <% else %>
+    error
+    <% end %>
+    prevented this concern from being sent.
+  </h2>
+    There were problems with the following fields:
+  <ul>
+    <%= @feedback.errors.full_messages.map {|m| content_tag('li', m)} %>
+  </ul>
+</div>
+<% end %>
 <h1>Report A Problem</h1>
 <h2>Hava a Problem or Concern?</h2>
 Let us know about it.  We are constantly developing this site to give you the best experience possible.  Your input is valuable to us, and we'll get back to you as soon as possible.
-<%= error_messages_for :feedback %>
 <% form_for :feedback, @feedback, :url => { :action => 'submit' } do |f| %>
 <p></p>
 <p><label>Subject</label><br>

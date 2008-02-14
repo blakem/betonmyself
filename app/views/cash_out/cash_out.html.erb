@@ -1,7 +1,13 @@
 <% if @cash_out_request.errors.any? %>
 <div class="errorExplanation" id="errorExplanation">
   <h2>
-    <%= @cash_out_request.errors.length -%> errors prevented this cash out request.
+    <%= @cash_out_request.errors.length -%>
+    <% if @cash_out_request.errors.length > 1 %> 
+    errors 
+    <% else %>
+    error
+    <% end %>
+    prevented this cash out request.
   </h2>
     There were problems with the following fields:
   <ul>
