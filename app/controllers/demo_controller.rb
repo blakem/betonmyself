@@ -4,16 +4,16 @@ class DemoController < ApplicationController
   def index
     init
     @selected_button = 'demo'
-    @ballance_text = self.account_ballance_text
+    @balance_text = self.account_balance_text
     @show_expired = current_user.failed_bets.length
   end
-  def get_account_ballance
+  def get_account_balance
     init
-    render :text => self.account_ballance_text
+    render :text => self.account_balance_text
   end
   protected
-  def account_ballance_text
-    "You have <b>$" + money_format(current_user.ballance) + "</b> to spend<br>"
+  def account_balance_text
+    "You have <b>$" + money_format(current_user.balance) + "</b> to spend<br>"
   end
   def init
     self.current_user = User.find_by_role(BomConstant::ROLE_TYPE_DEMO)

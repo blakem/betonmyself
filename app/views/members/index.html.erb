@@ -1,9 +1,9 @@
  <center><h1><%= h(current_user.first_name) -%>'s Incentives</h1></center>
- <div id="user_ballance"><%= @ballance_text -%></div>
+ <div id="user_balance"><%= @balance_text -%></div>
  <script>
- function update_user_ballance() {
- <%= remote_function :url => {:action => 'get_account_ballance' },
-    :update => 'user_ballance' %>
+ function update_user_balance() {
+ <%= remote_function :url => {:action => 'get_account_balance' },
+    :update => 'user_balance' %>
  }
  </script>
  <%= render :active_scaffold => :bet, 

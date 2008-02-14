@@ -62,13 +62,13 @@
 
 <% if @total_expired_bet_funds >= @fee_total -%>
 <p>
-Since your expired goal total (<%= @total_expired_bet_funds_fmt -%>) is greater than your transaction fee total (<%= @fee_total_fmt -%>) the transaction fees are waived, and your available cash out ballance is: <b><%= @straight_up_cashout_funds_fmt %> + <%= @fee_total_fmt -%> = <span class="red_link"><%= @available_cashout_fmt -%></span></b>
+Since your expired goal total (<%= @total_expired_bet_funds_fmt -%>) is greater than your transaction fee total (<%= @fee_total_fmt -%>) the transaction fees are waived, and your available cash out balance is: <b><%= @straight_up_cashout_funds_fmt %> + <%= @fee_total_fmt -%> = <span class="red_link"><%= @available_cashout_fmt -%></span></b>
 </p>
 
 <% elsif @total_expired_bet_funds > 0 %>
 
 <p>
-Your expired goals (<%= @total_expired_bet_funds_fmt -%>) cover part of your transaction fees (<%= @fee_total_fmt -%>).  So, your available cash out ballance is simply:
+Your expired goals (<%= @total_expired_bet_funds_fmt -%>) cover part of your transaction fees (<%= @fee_total_fmt -%>).  So, your available cash out balance is simply:
 </p><p>
 <b>
 Balance + FeesCoveredByExpiredGoals = Available Cash Out Balance<br/>

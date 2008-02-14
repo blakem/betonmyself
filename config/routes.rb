@@ -12,12 +12,12 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/activate/:id', :controller => 'users', :action => 'activate'
 
   map.connect '/demo', :controller => 'demo'
-  map.connect '/demo/get_account_ballance', :controller => 'demo', :action => 'get_account_ballance'
+  map.connect '/demo/get_account_balance', :controller => 'demo', :action => 'get_account_balance'
   map.connect '/demo_expired', :controller => 'demo_expired'
   map.connect '/demo_purchase', :controller => 'demo_purchase'
 
   map.connect '/members', :controller => 'members'
-  map.connect '/members/get_account_ballance', :controller => 'members', :action => 'get_account_ballance'
+  map.connect '/members/get_account_balance', :controller => 'members', :action => 'get_account_balance'
 
   map.connect '/bet/update_table', :controller => 'bet', :action => 'update_table' # xxx
   map.connect '/bet/edit', :controller => 'bet', :action => 'edit'

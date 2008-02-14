@@ -88,16 +88,16 @@ class User < ActiveRecord::Base
     save(false)
   end
 
-  def ballance
+  def balance
     total_funds_in - total_funds_out - total_expired_bet_funds - total_current_bet_funds
   end
   def available_cashout_funds
     fees = fee_total - total_expired_bet_funds
     fees = 0 if fees < 0
-    ballance - fees
+    balance - fees
   end
   def straight_up_cashout_funds
-    ballance - fee_total
+    balance - fee_total
   end
 
   def total_expired_bet_funds

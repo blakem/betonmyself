@@ -8,7 +8,7 @@ class Bet < ActiveRecord::Base
       errors.add(:due_date, "is in the past")
     end
     if not price.nil?
-      if price > self.user.ballance
+      if price > self.user.balance
         purchase_url = self.user.is_demo ? '/demo_purchase' : '/purchase'
         errors.add(:price, 'is more than you have in your incentive bank. ' +
                            '<a href="' + purchase_url + '">Add More Money</a>');
