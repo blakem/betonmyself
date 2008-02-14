@@ -204,7 +204,7 @@ class User < ActiveRecord::Base
       new_a.is_accomplishment = true
       items.push new_a
     end
-    items = items.flatten.sort { |a,b| a.account_summary_sort_date <=> b.account_summary_sort_date }
+    items = items.flatten.sort { |a,b| a.account_history_sort_date <=> b.account_history_sort_date }
     return items
   end
 

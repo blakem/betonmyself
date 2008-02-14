@@ -33,25 +33,25 @@ class Bet < ActiveRecord::Base
     end
   end
 
-  def account_summary_action 
+  def account_history_action 
     is_accomplishment ? 'Completed Goal' : 'Created Goal'
   end
-  def account_summary_date
-    account_summary_sort_date.strftime("%m/%d/%Y")
+  def account_history_date
+    account_history_sort_date.strftime("%m/%d/%Y")
   end
-  def account_summary_price
-    sigil_money(account_summary_balance_effect)
+  def account_history_price
+    sigil_money(account_history_balance_effect)
   end
-  def account_summary_fee
+  def account_history_fee
     '-'
   end
-  def account_summary_balance_effect
+  def account_history_balance_effect
     is_accomplishment ? price : 0 - price
   end
-  def account_summary_goal
+  def account_history_goal
     descr[0..40]
   end
-  def account_summary_sort_date
+  def account_history_sort_date
     is_accomplishment ? completion_date : created_at
   end
 

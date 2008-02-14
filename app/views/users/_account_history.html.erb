@@ -63,26 +63,26 @@
 <%
   balance = 0
   @items.each do |i| 
-  balance += i.account_summary_balance_effect
+  balance += i.account_history_balance_effect
 %>
 <tr>
   <td align="right">
-    <%= i.account_summary_date -%>
+    <%= i.account_history_date -%>
   </td>
   <td align="left">
-    <%= i.account_summary_action -%>
+    <%= i.account_history_action -%>
   </td>
   <td align="right">
-    <%= i.account_summary_price -%>
+    <%= i.account_history_price -%>
   </td>
   <td align="right">
-    <%= i.account_summary_fee -%>
+    <%= i.account_history_fee -%>
   </td>
   <td align="right">
     <%= sigil_money(balance) -%>
   </td>
   <td align="left">
-    <%= h(i.account_summary_goal) -%>
+    <%= h(i.account_history_goal) -%>
   </td>
 </tr>
 <% end %>

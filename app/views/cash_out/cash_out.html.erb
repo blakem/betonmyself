@@ -17,11 +17,11 @@
 <% end %>
 
 <p>
-Here is <%= link_to "your account history", :controller => 'account_status' %>.
+Here is <%= link_to "your account history", :controller => 'account_history' %>.
 </p>
 
 <p>
- <%= render_partial 'users/account_summary', @user -%>
+ <%= render_partial 'users/account_history', @user -%>
 </p>
 
 <hr>

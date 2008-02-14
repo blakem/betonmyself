@@ -54,7 +54,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/update_account', :controller => 'update_account'
   map.connect '/update_account/change', :controller => 'update_account', :action => 'change'
   map.connect '/update_account/change_email/:id', :controller => 'update_account', :action => 'change_email'
-  map.connect '/account_history', :controller => 'account_status'
+  map.connect '/account_history', :controller => 'account_history'
   map.connect '/feedback', :controller => 'feedback'
   map.connect '/feedback/submit', :controller => 'feedback', :action => 'submit'
   map.connect '/feedback/thanks', :controller => 'feedback', :action => 'thanks'
