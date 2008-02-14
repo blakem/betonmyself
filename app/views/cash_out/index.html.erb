@@ -4,9 +4,10 @@ Perhaps it's time to <%= link_to 'add some funds', :controller => 'purchase' -%>
 <% else %>
 <% @accomplishments = @user.accomplishments %>
 <h1>So soon?</h1>
-
-<% if @accomplishments.length == 0 %>
-<h2>But you haven't accomplished any goals...</h2>
+<% if @user.bets.length == 0 %>
+<h2>Come on, now... You haven't even set up any goals, yet.</h2>
+<% elsif @accomplishments.length == 0 %>
+<h2>But you haven't accomplished any of your goals...</h2>
 <% else %>
 <h2>So far you've accomplished <%= @accomplishments.length %>
 goal<%= @accomplishments.length == 1 ? '' : 's' -%>, including:<br></h2>

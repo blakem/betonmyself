@@ -10,8 +10,6 @@
   @items = @user.items
 %>
 
-<% if @items.length > 0 %>
-
 <p>
 <table cellspacing="3" cellpadding="3">
 <tr>
@@ -21,6 +19,26 @@
   <th align="right">Transaction Fee</th>
   <th align="right">Balance</th>
   <th align="center">Goal</th>
+</tr>
+<tr>
+  <td align="right">
+    <%= @user.created_at.strftime("%m/%d/%Y") -%>
+  </td>
+  <td align="left">
+    Signed Up
+  </td>
+  <td align="right">
+    -
+  </td>
+  <td align="right">
+    -
+  </td>
+  <td align="right">
+    $0.00
+  </td>
+  <td align="left">
+    To Get My Stuff Done
+  </td>
 </tr>
 <%
   balance = 0
@@ -51,7 +69,6 @@
 </table>
 </p>
 
-<% end %>
 <p></p>
 <p>
 <b>Current Balance</b>: <b><span class="red_link"><%= @straight_up_cashout_funds_fmt -%></span></b>
