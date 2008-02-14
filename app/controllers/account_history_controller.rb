@@ -1,4 +1,4 @@
-class AccountStatusController < ApplicationController
+class AccountHistoryController < ApplicationController
   layout "members"
   def index
     @selected_button = 'support'
