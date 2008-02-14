@@ -1,2 +1,10 @@
-<h1>Thank You for Playing.</h1>
-<h2>A payment for $<%= money_format(@price) -%> will be credited to your account within 24 hours.</h2>
+<h1>Thanks for playing.</h1>
+<% if @cash_out_request.method == BomConstant::CASH_OUT_TYPE_PAYPAL %> 
+<h2>A payment for $<%= money_format(@price) -%> will be credited to your paypal account within 24 hours.</h2>
+<% elsif @cash_out_request.method == BomConstant::CASH_OUT_TYPE_GOOGLE %>
+<h2>A payment for $<%= money_format(@price) -%> will be credited to your google account within 24 hours.</h2>
+<% elsif @cash_out_request.method == BomConstant::CASH_OUT_TYPE_CHECK %>
+<h2>We will send a check to you for $<%= money_format(@price) -%> within 24 hours.</h2>
+<% else %>
+<h2>We will get back to you within 24 hours.</h2>
+<% end %>

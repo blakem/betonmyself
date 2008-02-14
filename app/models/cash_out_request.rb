@@ -11,11 +11,13 @@ class CashOutRequest < ActiveRecord::Base
       end
     end
     if method == BomConstant::CASH_OUT_TYPE_PAYPAL
-      errors.add(:paypal_account, 'can not be blank') if paypal_account.blank?
+      errors.add(:paypal_account, 'can not be blank when selected') if paypal_account.blank?
     elsif method == BomConstant::CASH_OUT_TYPE_GOOGLE
-      errors.add(:google_account, 'can not be blank') if google_account.blank?
+      errors.add(:google_account, 'can not be blank when selected') if google_account.blank?
     elsif method == BomConstant::CASH_OUT_TYPE_CHECK
-      errors.add(:mailing_address, 'can not be blank') if mailing_address.blank?
+      errors.add(:mailing_address, 'can not be blank when selected') if mailing_address.blank?
+    elsif method == BomConstant::CASH_OUT_TYPE_OTHER
+      errors.add(:other, 'text can not be blank when selected') if other.blank?
     else
       errors.add(:method, 'is invalid')
     end

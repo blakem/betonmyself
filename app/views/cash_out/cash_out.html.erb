@@ -1,4 +1,15 @@
-<%= error_messages_for :cash_out_request %>
+<% if @cash_out_request.errors.any? %>
+<div class="errorExplanation" id="errorExplanation">
+  <h2>
+    <%= @cash_out_request.errors.length -%> errors prevented this cash out request.
+  </h2>
+    There were problems with the following fields:
+  <ul>
+    <%= @cash_out_request.errors.full_messages.map {|m| content_tag('li', m)} %>
+  </ul>
+</div>
+<% end %>
+
 <p>
 Here is how your account looks right now:
 </p>
@@ -37,8 +48,17 @@ And how would you like us to send that to you?
 <%= f.radio_button :method, BomConstant::CASH_OUT_TYPE_CHECK %>
 <label for="check">Mail a Check To</label>
   <%= f.text_area :mailing_address,
-      :cols => 40,
-      :rows => 4
+      :cols => 50,
+      :rows => 5
+  %>
+</p>
+
+<p>
+<%= f.radio_button :method, BomConstant::CASH_OUT_TYPE_OTHER %>
+<label for="check">Other (please explain)</label>
+  <%= f.text_area :other,
+      :cols => 50,
+      :rows => 5
   %>
 </p>
 

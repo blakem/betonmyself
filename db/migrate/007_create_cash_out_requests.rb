@@ -8,6 +8,7 @@ class CreateCashOutRequests < ActiveRecord::Migration
       t.string  :paypal_account
       t.string  :google_account
       t.string  :mailing_address
+      t.string  :other
       t.timestamps
     end
   end

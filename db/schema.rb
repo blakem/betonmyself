@@ -33,6 +33,7 @@ ActiveRecord::Schema.define(:version => 7) do
     t.string   "paypal_account"
     t.string   "google_account"
     t.string   "mailing_address"
+    t.string   "other"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

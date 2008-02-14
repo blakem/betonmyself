@@ -16,7 +16,8 @@ class CashOutController < ApplicationController
       create_survey
       @available_cashout_funds = self.current_user.available_cashout_funds
       @cash_out_request = CashOutRequest.new
-      @cash_out_request.price = 0
+      suggested_price = compute_suggested_price(@available_cashout_funds)
+      @cash_out_request.price = suggested_price
       @cash_out_request.paypal_account = current_user.last_paypal_acct  
       @cash_out_request.method = BomConstant::CASH_OUT_TYPE_PAYPAL
       @user = current_user
@@ -63,5 +64,33 @@ class CashOutController < ApplicationController
           :q3 => survey_fields['q3']
         ).save!
       end
+    end
+    def compute_suggested_price(price)
+      price = (price/100).to_i
+      suggested = 0
+      if price > 1000
+        suggested_price = 1000
+      elsif price > 500
+        suggested_price = 500
+      elsif price > 300
+        suggested_price = 300
+      elsif price > 200
+        suggested_price = 200
+      elsif price > 100
+        suggested_price = 100
+      elsif price > 50
+        suggested_price = 50
+      elsif price > 20
+        suggested_price = 20
+      elsif price > 10
+        suggested_price = 10
+      elsif price > 5
+        suggested_price = 5
+      elsif price > 1
+        suggested_price = 1
+      else 
+        suggested_price = 0
+      end
+      return suggested_price * 100
     end
 end
