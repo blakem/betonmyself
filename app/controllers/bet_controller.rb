@@ -32,7 +32,7 @@ class BetController < ApplicationController
       do_edit # finds @record
       @record.state = BomConstant::BET_STATE_SUCCESS
       @record.congrats = params[:bet]['congrats']
-      @record.completion_date = Date.today
+      @record.completion_date = DateTime.now
       @record.save!
       log_bets_complete(@record)
     end
