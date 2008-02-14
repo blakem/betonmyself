@@ -10,6 +10,7 @@ Members
 /var/www/rails/betonmyself/app/controllers/report_problem_controller.rb
 /var/www/rails/betonmyself/app/controllers/support_controller.rb
 /var/www/rails/betonmyself/app/controllers/update_account_controller.rb
+/var/www/rails/betonmyself/app/controllers/account_history_controller.rb
 
 Demo
 /var/www/rails/betonmyself/app/controllers/demo_controller.rb
