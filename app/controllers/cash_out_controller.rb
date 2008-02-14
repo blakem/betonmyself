@@ -1,4 +1,5 @@
 class CashOutController < ApplicationController
+  layout "members"
   def authorized?
     members_authorized?
   end

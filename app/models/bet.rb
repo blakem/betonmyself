@@ -49,7 +49,7 @@ class Bet < ActiveRecord::Base
     is_accomplishment ? price : 0 - price
   end
   def account_summary_goal
-    descr[0..20]
+    descr[0..40]
   end
   def account_summary_sort_date
     is_accomplishment ? completion_date : created_at

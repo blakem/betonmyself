@@ -12,19 +12,17 @@
 
 <p>
 <table cellspacing="3" cellpadding="3">
-<tr align="right">
-  <th>Date</th>
-  <th>Action</th>
-  <th>Amount</th>
-  <th>Transaction Fee</th>
-  <th>Balance</th>
-  <th>Goal</th>
+<tr>
+  <th align="right">Date</th>
+  <th align="center">Action</th>
+  <th align="right">Amount</th>
+  <th align="right">Transaction Fee</th>
+  <th align="right">Balance</th>
+  <th align="center">Goal</th>
 </tr>
 <%
   balance = 0
-  count = 0
   @items.each do |i| 
-  count += 1
   balance += i.account_summary_balance_effect
 %>
 <tr>
@@ -41,12 +39,7 @@
     <%= i.account_summary_fee -%>
   </td>
   <td align="right">
-<% if count == @items.length %>
-    <span class="red_link"><%= sigil_money(balance) -%></span>
-<% else %>
     <%= sigil_money(balance) -%>
-<% end %>
-
   </td>
   <td align="left">
     <%= h(i.account_summary_goal) -%>
@@ -56,13 +49,14 @@
 </table>
 </p>
 
+<p></p>
 <p>
-<b>Current Balance</b>: <span class="red_link"><%= @straight_up_cashout_funds_fmt -%></span>
+<b>Current Balance</b>: <b><span class="red_link"><%= @straight_up_cashout_funds_fmt -%></span></b>
 </p>
 
 <% if @total_expired_bet_funds >= @fee_total -%>
 <p>
-Since your expired goal total (<%= @total_expired_bet_funds_fmt -%>) is greater than your transaction fee total (<%= @fee_total_fmt -%>) the transaction fees are waived, and your available cash out balance is: <b><%= @straight_up_cashout_funds_fmt %> + <%= @fee_total_fmt -%> = <span class="red_link"><%= @available_cashout_fmt -%></span></b>
+Since your <%= link_to "expired goal total", :controller => 'expired' -%> (<%= @total_expired_bet_funds_fmt -%>) is greater than your transaction fee total (<%= @fee_total_fmt -%>) the transaction fees are waived, and your available cash out balance is: <b><%= @straight_up_cashout_funds_fmt %> + <%= @fee_total_fmt -%> = <span class="red_link"><%= @available_cashout_fmt -%></span></b>
 </p>
 
 <% elsif @total_expired_bet_funds > 0 %>
