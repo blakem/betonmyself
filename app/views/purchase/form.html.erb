@@ -1,4 +1,4 @@
-<h1>Transfer $<%= money_format(@amount) -%> to your account</h1>
+<h1>Transfer $<%= money_format(@amount) -%> to your incentive account</h1>
 
 <%= content_tag('div', "There was an error processing your payment: #{@paypal_error}", :class => 'error') if @paypal_error %>
 
@@ -37,7 +37,7 @@
 </p><p>
   <label>Expiration Month</label> 
   <%= c.select :month, (1 .. 12) %>
-  <%= c.select :year, (Time.now.year .. 10.years.from_now.year) %>
+  <%= c.select :year, (Time.now.year .. 12.years.from_now.year) %>
 </p><p>
   <label>CVV 
   <%= c.text_field :verification_value, :size => 4 %>
