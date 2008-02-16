@@ -64,10 +64,6 @@ module BetHelper
   def render_price_sum(sum)
     sum.nil? ? '' : '<b>$' + money_format(sum) + '</b>'
   end
-  def render_descr_count(count)
-    plural = count == 1 ? '' : 's'
-    count == 0 ? '' : '<b>' + count.to_s + ' Completed Accomplishment' + plural + '!</b>'
-  end
   def congrats_column(record)
     record.congrats.nil? ? '' : '<b>' + record.congrats + '</b>'
   end
@@ -79,5 +75,11 @@ module BetHelper
     else
       format_date(record.due_date)
     end
+  end
+  def checked_column(record)
+    '<img src="/images/blue_check.png" border="0">'
+  end
+  def completion_date_column(record)
+    record.completion_date.strftime("%m/%d/%Y")
   end
 end
