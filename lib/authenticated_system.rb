@@ -82,7 +82,15 @@ module AuthenticatedSystem
     # Redirect to the URI stored by the most recent store_location call or
     # to the passed default.
     def redirect_back_or_default(default)
-      redirect_to(session[:return_to] || default)
+      redirect_url = default
+      if session[:return_to]
+        if session[:return_to] == '/members'
+          redirect_url = '/'
+        else
+          redirect_url = session[:return_to]
+        end
+      end
+      redirect_to(redirect_url)
       session[:return_to] = nil
     end
 
