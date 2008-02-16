@@ -5,25 +5,26 @@ class LostPasswordController < ApplicationController
   end
   def email
     @selected_button = 'members'
+    @user = User.new
     email = params[:user]['email']
     if email.nil? or email == ""
-      error = "Email cannot be blank"
+      @user.errors.add(:email, "can not be blank")
     else
-      user = User.find_by_email(params[:user]['email'])
-      if user.nil?
-        error = "Can't find Email Address"
+      found_user = User.find_by_email(params[:user]['email'])
+      if found_user.nil?
+        @user.errors.add(:email, "address does not match our records")
       end
     end
 
-    if error
-      flash.now[:error] = error
+    if @user.errors.any?
+      @user.email = params[:user]['email']
       render :action => 'index'
     else 
-      user = User.find_by_email(params[:user]['email'])
-      user.reset_password_token = make_random_token(12)
-      user.reset_password_token_expires_at = Time.now.utc + 1.day
-      user.save!
-      Notifier.deliver_reset_password(user)
+      found_user = User.find_by_email(params[:user]['email'])
+      found_user.reset_password_token = make_random_token(12)
+      found_user.reset_password_token_expires_at = Time.now.utc + 1.day
+      found_user.save!
+      Notifier.deliver_reset_password(found_user)
       redirect_to :action => 'sent'
     end
   end

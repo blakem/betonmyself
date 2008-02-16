@@ -5,7 +5,23 @@ Please enter the email address that you used to sign up for your betonmyself acc
 We will send you instructions on how to reset your password.
 </p>
 
-<%= error_messages_for :user %>
+<% if not @user.nil? and @user.errors.any? %>
+<div class="errorExplanation" id="errorExplanation">
+  <h2>
+    <%= @user.errors.length -%>
+    <% if @user.errors.length > 1 %> 
+    errors 
+    <% else %>
+    error
+    <% end %>
+    prevented this password reset request
+  </h2>
+    There were problems with the following fields:
+  <ul>
+    <%= @user.errors.full_messages.map {|m| content_tag('li', m)} %>
+  </ul>
+</div>
+<% end %>
 <% form_for :user, :url => { :action => :email } do |f| -%>
 <p><label for="email">Email</label><br/>
 <%= f.text_field :email %></p>
