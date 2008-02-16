@@ -1,4 +1,4 @@
-<h1>Transfer $<%= money_format(@amount) -%> to your incentive account</h1>
+<h1>Transfer <%= sigil_money(@amount) -%> to your incentive account</h1>
 
 <%= content_tag('div', "There was an error processing your payment: #{@paypal_error}", :class => 'error') if @paypal_error %>
 

@@ -16,7 +16,11 @@ class PurchaseController < ApplicationController
   end
   def form
     @selected_button = 'purchase'
-    @amount = params[:transaction][:price]
+    @amount = params[:transaction][:price].to_i
+    if not valid_purchase_amount(@amount)
+      invalid_price_error(@amount, 'credit')
+      return
+    end
     @address = BomAddress.new
     @states = get_states
   end
@@ -25,46 +29,54 @@ class PurchaseController < ApplicationController
   def credit
     @selected_button = 'purchase'
     @amount = params['price'].to_i
-    @address = BomAddress.new()
-    @address.address1 = params[:address]['address1']
-    @address.address2 = params[:address]['address2']
-    @address.city = params[:address]['city']
-    @address.state = params[:address]['state']
-    @address.zip = params[:address]['zip']
-    @states = get_states
-    valid_address = @address.valid?
-    valid_cc = @creditcard.valid?
-    render :action => 'form' and return unless valid_address and valid_cc
-
-    billing_address = { 
-      :name     => @creditcard.first_name + " " + @creditcard.last_name,
-      :address1 => @address.address1,
-      :address2 => @address.address2,
-      :city     => @address.city,
-      :state    => @address.state,
-      :zip      => @address.zip,
-      :country  => 'US',
-      :phone    => ''
-    }
-
-    @response = paypal_gateway.purchase(@amount, @creditcard, 
-      :ip => request.remote_ip, :billing_address => billing_address)
-    log_paypal_obj('Credit Response', @response)
-      
-    if @response.success?
-      @transaction = Transaction.new(:response => @response)
-      @transaction.user_id = self.current_user.id
-      @transaction.trans_type = BomConstant::TRANSACTION_TYPE_PAYPAL_CREDIT
-      @transaction.direction = BomConstant::TRANSACTION_DIRECTION_IN
-      @transaction.state = BomConstant::TRANSACTION_STATE_SUCCESS
-      @transaction.price = @amount
-      @transaction.save!
-      redirect_to :action => "complete", :id => @transaction
+    if not valid_purchase_amount(@amount)
+      invalid_price_error(@amount, 'credit')
+      return
     else
-      @transaction = Transaction.new
-      @transaction.user_id = current_user.id
-      @transaction.price = @amount
-      paypal_error(@transaction, @response, 'credit response fail')
+      @address = BomAddress.new()
+      render :action => 'form' and return unless params[:address]
+      @address.address1 = params[:address]['address1']
+      @address.address2 = params[:address]['address2']
+      @address.city = params[:address]['city']
+      @address.state = params[:address]['state']
+      @address.zip = params[:address]['zip']
+      @states = get_states
+      if not @address.valid? or not @creditcard.valid?
+        render :action => 'form'
+        return
+      end
+
+      billing_address = { 
+        :name     => @creditcard.first_name + " " + @creditcard.last_name,
+        :address1 => @address.address1,
+        :address2 => @address.address2,
+        :city     => @address.city,
+        :state    => @address.state,
+        :zip      => @address.zip,
+        :country  => 'US',
+        :phone    => ''
+      }
+
+      @response = paypal_gateway.purchase(@amount, @creditcard, 
+        :ip => request.remote_ip, :billing_address => billing_address)
+      log_paypal_obj('Credit Response', @response)
+        
+      if @response.success?
+        @transaction = Transaction.new(:response => @response)
+        @transaction.user_id = self.current_user.id
+        @transaction.trans_type = BomConstant::TRANSACTION_TYPE_PAYPAL_CREDIT
+        @transaction.direction = BomConstant::TRANSACTION_DIRECTION_IN
+        @transaction.state = BomConstant::TRANSACTION_STATE_SUCCESS
+        @transaction.price = @amount
+        @transaction.save!
+        redirect_to :action => "complete", :id => @transaction
+      else
+        @transaction = Transaction.new
+        @transaction.user_id = current_user.id
+        @transaction.price = @amount
+        paypal_error(@transaction, @response, 'credit response fail')
+        return
+      end
     end
   end
   
@@ -73,13 +85,8 @@ class PurchaseController < ApplicationController
     gateway = paypal_gateway(:paypal_express)
     bill_amount = params['price'].to_i
     if not valid_purchase_amount(bill_amount)
-      @transaction = Transaction.new
-      @transaction.user_id = current_user.id
-      @transaction.price = bill_amount
-      @response = BomBasicObject.new
-      @response.message = 'Price is invalid';
-      @response.success = false
-      paypal_error(@transaction, @response, 'express invalid price')
+      invalid_price_error(bill_amount, 'express')
+      return
     else
       @response = gateway.setup_purchase(bill_amount,
         :return_url => url_for(:action => 'express_complete'),
@@ -103,6 +110,7 @@ class PurchaseController < ApplicationController
         redirect_to "#{gateway.redirect_url_for(@response.params['token'])}&useraction=commit"
       else
         paypal_error(@transaction, @response, 'express response failure')
+        return
       end
     end
   end
@@ -146,9 +154,11 @@ class PurchaseController < ApplicationController
         redirect_to :action => "complete", :id => @transaction
       else
         paypal_error(@transaction, @response, 'express complete error')
+        return
       end
     else
       paypal_error(@transaction, @details, 'express complete detail error')
+      return
     end
   end
   
@@ -161,6 +171,14 @@ class PurchaseController < ApplicationController
   
     def paypal_gateway(gw = :paypal)
       ActiveMerchant::Billing::Base.gateway(gw).new(PAYPAL_API_CREDENTIALS)
+    end
+    def invalid_price_error(price, stage)
+      @transaction = Transaction.new
+      @transaction.user_id = current_user.id
+      @transaction.price = price
+      @response = BomBasicObject.new
+      @response.message = 'Price is invalid';
+      paypal_error(@transaction, @response, stage + ' invalid price')
     end
 
     def paypal_error(transaction, obj, stage)
