@@ -8,7 +8,7 @@ class LostPasswordController < ApplicationController
     @user = User.new
     email = params[:user]['email']
     if email.nil? or email == ""
-      @user.errors.add(:email, "can not be blank")
+      @user.errors.add(:email, "is required")
     else
       found_user = User.find_by_email(params[:user]['email'])
       if found_user.nil?
