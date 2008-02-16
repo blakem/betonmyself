@@ -41,7 +41,10 @@ class PurchaseController < ApplicationController
       @address.state = params[:address]['state']
       @address.zip = params[:address]['zip']
       @states = get_states
-      if not @address.valid? or not @creditcard.valid?
+      valid_address = @address.valid? # need to call valid on both
+      valid_cc = @creditcard.valid?   # objects to avoid lazy evaluation
+      custom_cc_validation
+      if not valid_address or not valid_cc
         render :action => 'form'
         return
       end
@@ -179,6 +182,23 @@ class PurchaseController < ApplicationController
       @response = BomBasicObject.new
       @response.message = 'Price is invalid';
       paypal_error(@transaction, @response, stage + ' invalid price')
+    end
+    def custom_cc_validation
+      if not @creditcard.verification_value.blank?
+        if @creditcard.verification_value !~ /^\d{3}$/
+          @creditcard.errors.add(:verification_value, 'must be 3 digits')
+        end
+      end
+      if not @creditcard.number.blank?
+        if @creditcard.number !~ /^\d{16}$/
+          @creditcard.errors.add(:number, 'must be 16 digits')
+        end
+      end
+      if not @address.zip.blank?
+        if @address.zip !~ /^\d{5}(-\d{4})?$/ and @address.zip !~ /^[ABCEGHJKLMNPRSTVXY]\d[A-Z] *\d[A-Z]\d?$/i
+          @address.errors.add(:zip, 'is invalid, it must be five digits')
+        end
+      end
     end
 
     def paypal_error(transaction, obj, stage)
