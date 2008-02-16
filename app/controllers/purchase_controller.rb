@@ -61,7 +61,10 @@ class PurchaseController < ApplicationController
       @transaction.save!
       redirect_to :action => "complete", :id => @transaction
     else
-      paypal_error(@response)
+      @transaction = Transaction.new
+      @transaction.user_id = current_user.id
+      @transaction.price = @amount
+      paypal_error(@transaction, @response, 'credit response fail')
     end
   end
   
@@ -69,29 +72,38 @@ class PurchaseController < ApplicationController
   def express
     gateway = paypal_gateway(:paypal_express)
     bill_amount = params['price'].to_i
-
-    @response = gateway.setup_purchase(bill_amount,
-      :return_url => url_for(:action => 'express_complete'),
-      :cancel_return_url => url_for(:action => 'index'),
-      :description => "PayPal Website Payments Pro Guide"
-    )
-    log_paypal_obj('Express Response', @response)
-    if @response.success?
-      # The useraction=commit in the redirect URL tells PayPal there won't
-      # be an additional review step at our site before a charge is made
-      @transaction = Transaction.new(
-        :user_id => self.current_user.id, 
-        :trans_type => BomConstant::TRANSACTION_TYPE_PAYPAL_EXPRESS,
-        :direction => BomConstant::TRANSACTION_DIRECTION_IN,
-        :state => BomConstant::TRANSACTION_STATE_INIT,
-        :price => bill_amount,
-        :remote_token => @response.params['token']
-      )
-      @transaction.save!
-      log_transaction_init(@transaction)
-      redirect_to "#{gateway.redirect_url_for(@response.params['token'])}&useraction=commit"
+    if not valid_purchase_amount(bill_amount)
+      @transaction = Transaction.new
+      @transaction.user_id = current_user.id
+      @transaction.price = bill_amount
+      @response = BomBasicObject.new
+      @response.message = 'Price is invalid';
+      @response.success = false
+      paypal_error(@transaction, @response, 'express invalid price')
     else
-      paypal_error(@response)
+      @response = gateway.setup_purchase(bill_amount,
+        :return_url => url_for(:action => 'express_complete'),
+        :cancel_return_url => url_for(:action => 'index'),
+        :description => "PayPal Website Payments Pro Guide"
+      )
+      log_paypal_obj('Express Response', @response)
+      if @response.success?
+        # The useraction=commit in the redirect URL tells PayPal there won't
+        # be an additional review step at our site before a charge is made
+        @transaction = Transaction.new(
+          :user_id => self.current_user.id, 
+          :trans_type => BomConstant::TRANSACTION_TYPE_PAYPAL_EXPRESS,
+          :direction => BomConstant::TRANSACTION_DIRECTION_IN,
+          :state => BomConstant::TRANSACTION_STATE_INIT,
+          :price => bill_amount,
+          :remote_token => @response.params['token']
+        )
+        @transaction.save!
+        log_transaction_init(@transaction)
+        redirect_to "#{gateway.redirect_url_for(@response.params['token'])}&useraction=commit"
+      else
+        paypal_error(@transaction, @response, 'express response failure')
+      end
     end
   end
   
@@ -133,12 +145,10 @@ class PurchaseController < ApplicationController
         log_transaction_in(@transaction)
         redirect_to :action => "complete", :id => @transaction
       else
-        log_transaction_fail(@transaction, @response)
-        paypal_error(@response)
+        paypal_error(@transaction, @response, 'express complete error')
       end
     else
-      log_transaction_fail(@transaction, @details)
-      paypal_error(@details)
+      paypal_error(@transaction, @details, 'express complete detail error')
     end
   end
   
@@ -153,8 +163,10 @@ class PurchaseController < ApplicationController
       ActiveMerchant::Billing::Base.gateway(gw).new(PAYPAL_API_CREDENTIALS)
     end
 
-    def paypal_error(response)
-      @paypal_error = response.message
+    def paypal_error(transaction, obj, stage)
+      log_transaction_fail(transaction, obj, stage)
+      @paypal_error = obj.message
+      @selected_button = 'purchase'
       render :action => 'error'
     end
     

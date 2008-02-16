@@ -31,7 +31,7 @@ module BomUtility
   end
 
   def log_msg_for_object(string, obj)
-    if obj.respond_to? 'reload'
+    if obj.respond_to? 'reload' and not obj.id.nil?
       obj.reload
     end
     string + ": " + obj.inspect
@@ -100,9 +100,9 @@ module BomUtility
     log_transactions_obj("Successful transaction out", transaction)
     Notifier.deliver_sms_transaction_out(transaction)
   end
-  def log_transaction_fail(transaction, obj)
+  def log_transaction_fail(transaction, obj, stage)
     log_transactions_obj("Failed transaction", transaction)
-    log_transactions_obj("Failed transaction object", obj)
+    log_transactions_obj("Failed transaction " + stage, obj)
     Notifier.deliver_sms_transaction_fail(transaction)
   end
 
@@ -144,5 +144,12 @@ module BomUtility
       end
     end
     return w1 + '-' + w2
+  end
+  def valid_purchase_amount(price)
+    valid = [2000, 5000, 10000, 25000, 50000]
+    valid.each do |p|
+      return true if price == p
+    end
+    return false
   end
 end

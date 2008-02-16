@@ -2,6 +2,9 @@ class Pseudo < ActiveRecord::Base
   def save
     raise "Cannot save a Pseudo Model"
   end
+  def reload
+    self
+  end
   def method_missing(symbol, *params)
     send $1 if (symbol.to_s =~ /(.*)_before_type_cast$/)
   end

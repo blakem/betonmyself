@@ -1,1 +1,11 @@
-<%= @paypal_error %>
+<div class="errorExplanation" id="errorExplanation">
+<h2>Error</h2>
+There has been a problem with your purchase request:
+  <ul>
+   <li><%= @paypal_error %></li>
+  </ul>
+</div>
+
+<p>We have been notified and will look into it for you.</p>
+Please <%= link_to 'try again', :controller => 'purchase' %>, or 
+<%= link_to 'contact support', :controller => 'contact' %> for help. 
