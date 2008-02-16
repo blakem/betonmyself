@@ -1,4 +1,4 @@
-<% if @feedback.errors.any? %>
+<% if not @feedback.nil? and @feedback.errors.any? %>
 <div class="errorExplanation" id="errorExplanation">
   <h2>
     <%= @feedback.errors.length -%>

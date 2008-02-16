@@ -1,5 +1,21 @@
+<% if not @user.nil? and @user.errors.any? %>
+<div class="errorExplanation" id="errorExplanation">
+  <h2>
+    <%= @user.errors.length -%>
+    <% if @user.errors.length > 1 %> 
+    errors 
+    <% else %>
+    error
+    <% end %>
+    prevented us from signing you up.
+  </h2>
+    There were problems with the following fields:
+  <ul>
+    <%= @user.errors.full_messages.map {|m| content_tag('li', m)} %>
+  </ul>
+</div>
+<% end %>
 <h1>Sounds like fun, sign me up:</h1>
-<%= error_messages_for :user %>
 <% form_for :user, :url => '/signup/create' do |f| -%>
 <p><label for="first_name">First Name</label><br/>
 <%= f.text_field :first_name %></p>

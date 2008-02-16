@@ -1,4 +1,4 @@
-<% if @cash_out_request.errors.any? %>
+<% if not @cash_out_request.nil? and @cash_out_request.errors.any? %>
 <div class="errorExplanation" id="errorExplanation">
   <h2>
     <%= @cash_out_request.errors.length -%>

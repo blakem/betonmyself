@@ -2,14 +2,27 @@
 
 <%= content_tag('div', "There was an error processing your payment: #{@paypal_error}", :class => 'error') if @paypal_error %>
 
-<% if @creditcard.errors.any? or @address.errors.any? %>
-  <div class="flash_error">
-    Errors encountered with your credit card information:
-    <ul>
-      <%= @creditcard.errors.full_messages.map {|m| content_tag('li', m)} %>
-      <%= @address.errors.full_messages.map {|m| content_tag('li', m)} %>
-    </ul>
-  </div>
+<% if not @creditcard.nil? and not @address.nil? %>
+  <% if @creditcard.errors.any? or @address.errors.any? 
+       error_count = @creditcard.errors.length + @address.errors.length 
+  %>
+<div class="errorExplanation" id="errorExplanation">
+  <h2>
+    <%= error_count -%>
+    <% if error_count > 1 %> 
+    errors 
+    <% else %>
+    error
+    <% end %>
+    prevented this credit card purchase.
+  </h2>
+    There were problems with the following fields:
+  <ul>
+    <%= @creditcard.errors.full_messages.map {|m| content_tag('li', m)} %>
+    <%= @address.errors.full_messages.map {|m| content_tag('li', m)} %>
+  </ul>
+</div>
+  <% end %>
 <% end %>
 
 <h2>Pay by credit card:</h2>
