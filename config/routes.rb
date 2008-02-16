@@ -6,6 +6,8 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/faq',     :controller => 'faq'
   map.connect '/contact', :controller => 'contact'
   map.connect '/intro',   :controller => 'intro'
+  map.connect '/story',   :controller => 'story'
+  map.connect '/works',   :controller => 'works'
 
   map.connect '/signup',  :controller => 'users', :action => 'new'
   map.connect '/signup/create', :controller => 'users', :action => 'create'

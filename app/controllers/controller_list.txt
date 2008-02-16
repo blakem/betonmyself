@@ -23,6 +23,8 @@ WWW
 /var/www/rails/betonmyself/app/controllers/lost_password_controller.rb
 /var/www/rails/betonmyself/app/controllers/contact_controller.rb
 /var/www/rails/betonmyself/app/controllers/faq_controller.rb
+/var/www/rails/betonmyself/app/controllers/story_controller.rb
+/var/www/rails/betonmyself/app/controllers/works_controller.rb
 
 Other
 /var/www/rails/betonmyself/app/controllers/application.rb

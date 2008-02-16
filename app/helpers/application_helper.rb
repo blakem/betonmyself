@@ -26,6 +26,16 @@ module ApplicationHelper
         'link' => members + '/signup',
         'selected' => 0,
       },
+      'story' => {
+        'text' => 'My Story',
+        'link' => www + '/story',
+        'selected' => 0,
+      },
+      'works' => {
+        'text' => 'How it Works',
+        'link' => www + '/works',
+        'selected' => 0,
+      },
       'members' => {
         'text' => 'Members',
         'link' => members + '/',
@@ -105,6 +115,8 @@ module ApplicationHelper
     if not logged_in? or selected_button == "demo" or selected_button == "signup" or self.current_user.is_demo
       display_buttons = [
         buttons['welcome'],
+        buttons['story'],
+        buttons['works'],
         buttons['signup'],
         buttons['members'],
         buttons['faq'],
