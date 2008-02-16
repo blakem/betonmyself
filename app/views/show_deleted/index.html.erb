@@ -1,0 +1,3 @@
+ <%= render :active_scaffold => :deleted_accomplishments, 
+            :constraints => { :user_id => current_user.id, :state => BomConstant::BET_STATE_DELETED }
+  %>

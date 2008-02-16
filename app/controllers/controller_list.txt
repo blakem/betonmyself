@@ -2,6 +2,7 @@ Members
 /var/www/rails/betonmyself/app/controllers/members_controller.rb
 /var/www/rails/betonmyself/app/controllers/cash_out_controller.rb
 /var/www/rails/betonmyself/app/controllers/expired_controller.rb
+/var/www/rails/betonmyself/app/controllers/show_deleted_controller.rb
 /var/www/rails/betonmyself/app/controllers/feedback_controller.rb
 /var/www/rails/betonmyself/app/controllers/help_controller.rb
 /var/www/rails/betonmyself/app/controllers/intro_controller.rb
@@ -28,5 +29,6 @@ Other
 /var/www/rails/betonmyself/app/controllers/accomplishments_controller.rb
 /var/www/rails/betonmyself/app/controllers/bet_controller.rb
 /var/www/rails/betonmyself/app/controllers/expired_bets_controller.rb
+/var/www/rails/betonmyself/app/controllers/deleted_accomplishments_controller.rb
 /var/www/rails/betonmyself/app/controllers/sessions_controller.rb
 /var/www/rails/betonmyself/app/controllers/users_controller.rb

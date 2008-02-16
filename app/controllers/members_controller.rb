@@ -6,6 +6,7 @@ class MembersController < ApplicationController
     @selected_button = 'play'
     @balance_text = self.account_balance_text
     @show_expired = current_user.failed_bets.length 
+    @show_deleted = current_user.accomplishments_deleted.length 
   end
   def get_account_balance
     render :text => self.account_balance_text

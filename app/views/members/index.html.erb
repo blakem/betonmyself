@@ -13,7 +13,10 @@
             :constraints => { :user_id => current_user.id, :state => BomConstant::BET_STATE_SUCCESS }
   %>
 <% if @show_expired != 0 %>
- <%= link_to "Show Expired Goals", { :controller => 'expired' } -%>
+ <p><%= link_to "Show Expired Goals", { :controller => 'expired' } -%></p>
+<% end %>
+<% if @show_deleted != 0 %>
+ <p><%= link_to "Show Deleted Accomplishments", { :controller => 'show_deleted' } -%></p>
 <% end %>
 
 <% if ENV["RAILS_ENV"] != "production" %>
