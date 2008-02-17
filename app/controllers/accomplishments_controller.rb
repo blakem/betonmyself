@@ -19,7 +19,7 @@ class AccomplishmentsController < ApplicationController
     config.update.columns = [:notes, :congrats]
 
     list.per_page = BomConstant::RECORDS_PER_PAGE
-    list.sorting = {:completion_date => 'DESC'}
+    list.sorting = {:completion_date => :desc}
   end
 
   def list

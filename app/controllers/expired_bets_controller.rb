@@ -11,7 +11,7 @@ class ExpiredBetsController < ApplicationController
     config.label = "Expired Goals"
 
     list.per_page = BomConstant::RECORDS_PER_PAGE
-    list.sorting = {:due_date => 'DESC'}
+    list.sorting = [{ :due_date => :desc}, {:created_at => :asc}]
   end
 
   def list
