@@ -260,5 +260,29 @@ class User < ActiveRecord::Base
       if old_password_required and not encrypt(old_password) == crypted_password
         errors.add(:old_password, " does not match current password")
       end
+      if errors.on(:new_email).nil?
+        if new_email !~ /.+\@.+\..+/
+          errors.add(:email, " is invalid")
+        end
+      end
+    end
+    def validate
+      if errors.on(:password).nil? and not password.blank?
+        password_lw = password.downcase
+        if password_lw !~ /[a-z]/i
+          errors.add(:password, " must contain at least one alphabet character")
+        elsif password_lw !~ /[^a-z]/i
+          errors.add(:password, " must contain at least one non-alphabet character")
+        elsif password_lw == login.downcase
+          errors.add(:password, " can not be the same as your login")
+        elsif ((password_lw == first_name.downcase) or (password_lw == last_name.downcase) or (password_lw == first_name.downcase + last_name.downcase) or (password_lw == first_name.downcase + ' ' + last_name.downcase))
+          errors.add(:password, " can not be the same as your name")
+        end
+      end
+      if errors.on(:email).nil?
+        if email !~ /.+\@.+\..+/
+          errors.add(:email, " is invalid")
+        end
+      end
     end
 end
