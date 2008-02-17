@@ -18,19 +18,22 @@ class UpdateAccountController < ApplicationController
       @user.password_confirmation = new_fields[:password_confirmation]
       @user.old_password = new_fields[:old_password]
       @user.old_password_required = 1
-      @user.save!
       if @user.email != new_fields[:email]
         @user.new_email = new_fields[:email]
         @user.new_email_activation_code = Digest::SHA1.hexdigest( Time.now.to_s.split(//).sort_by {rand}.join )
+      end
+      @user.save!
+      if @user.email != new_fields[:email]
         Notifier.deliver_change_email_notification(@user)
         Notifier.deliver_change_email_notification_old_email(@user)
-        @user.save!
         @new_email = true
       end
       log_users_update(@user)
     end
   rescue ActiveRecord::RecordInvalid
     @user.email = new_fields[:email]
+    @user.new_email = nil
+    @user.new_email_activation_code = nil
     render :action => 'index'
   end
   def change_email

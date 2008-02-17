@@ -260,10 +260,8 @@ class User < ActiveRecord::Base
       if old_password_required and not encrypt(old_password) == crypted_password
         errors.add(:old_password, " does not match current password")
       end
-      if errors.on(:new_email).nil?
-        if new_email !~ /.+\@.+\..+/
-          errors.add(:email, " is invalid")
-        end
+      if ((not new_email.nil?) and (new_email !~ /.+\@.+\..+/))
+        errors.add(:email, " is invalid")
       end
     end
     def validate
