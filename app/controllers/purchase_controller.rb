@@ -18,7 +18,7 @@ class PurchaseController < ApplicationController
     @selected_button = 'purchase'
     @amount = params[:transaction][:price].to_i
     if not valid_purchase_amount(@amount)
-      invalid_price_error(@amount, 'credit')
+      invalid_price_error(@amount, 'form')
       return
     end
     @address = BomAddress.new
@@ -77,7 +77,7 @@ class PurchaseController < ApplicationController
         @transaction = Transaction.new
         @transaction.user_id = current_user.id
         @transaction.price = @amount
-        paypal_error(@transaction, @response, 'credit response fail')
+        paypal_error(@transaction, @response, 'credit response')
         return
       end
     end
@@ -112,7 +112,8 @@ class PurchaseController < ApplicationController
         log_transaction_init(@transaction)
         redirect_to "#{gateway.redirect_url_for(@response.params['token'])}&useraction=commit"
       else
-        paypal_error(@transaction, @response, 'express response failure')
+        @transaction = make_empty_transaction
+        paypal_error(@transaction, @response, 'express response')
         return
       end
     end
@@ -156,11 +157,11 @@ class PurchaseController < ApplicationController
         log_transaction_in(@transaction)
         redirect_to :action => "complete", :id => @transaction
       else
-        paypal_error(@transaction, @response, 'express complete error')
+        paypal_error(@transaction, @response, 'express_complete response')
         return
       end
     else
-      paypal_error(@transaction, @details, 'express complete detail error')
+      paypal_error(@transaction, @details, 'express_complete detail')
       return
     end
   end
@@ -176,12 +177,16 @@ class PurchaseController < ApplicationController
       ActiveMerchant::Billing::Base.gateway(gw).new(PAYPAL_API_CREDENTIALS)
     end
     def invalid_price_error(price, stage)
-      @transaction = Transaction.new
-      @transaction.user_id = current_user.id
+      @transaction = make_empty_transaction
       @transaction.price = price
       @response = PseudoResponse.new
       @response.message = 'Price is invalid';
-      paypal_error(@transaction, @response, stage + ' invalid price')
+      paypal_error(@transaction, @response, 'invalid_price_error on ' + stage)
+    end
+    def make_empty_transaction
+      empty_transaction = Transaction.new
+      empty_transaction.user_id = current_user.id
+      return empty_transaction
     end
     def custom_cc_validation
       if not @creditcard.verification_value.blank?

@@ -102,7 +102,7 @@ module BomUtility
   end
   def log_transaction_fail(transaction, obj, stage)
     log_transactions_obj("Failed transaction", transaction)
-    log_transactions_obj("Failed transaction " + stage, obj)
+    log_transactions_obj("Failed transaction: '" + stage + "'", obj)
     Notifier.deliver_sms_transaction_fail(transaction)
   end
 
