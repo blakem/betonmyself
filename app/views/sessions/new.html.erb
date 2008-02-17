@@ -1,15 +1,20 @@
+<% if not @user.nil? and @user.errors.any? %>
+<div class="errorExplanation" id="errorExplanation">
+  <b>Error</b>: Failed Authentication
+</div>
+<% end %>
 <h1>Login</h1>
 <p> Please enter your username and password to enter the members area.</p>
 
-<% form_tag session_path do -%>
+<% form_for :user, :url => session_path do |f| -%>
 <p><label for="login">Login</label><br/>
-<%= text_field_tag 'login', nil, :size => 30 %></p>
+<%= f.text_field :login, :size => 30 %></p>
 
 <p><label for="password">Password</label><br/>
-<%= password_field_tag 'password', nil, :size => 30 %></p>
+<%= f.password_field :password, :size => 30 %></p>
 
 <p><label for="remember_me">Remember me:</label>
-<%= check_box_tag 'remember_me' %></p>
+<%= f.check_box 'remember_me' %></p>
 
 <p><%= submit_tag 'Log in' %></p>
 <% end -%>

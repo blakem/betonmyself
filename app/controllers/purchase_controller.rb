@@ -179,7 +179,7 @@ class PurchaseController < ApplicationController
       @transaction = Transaction.new
       @transaction.user_id = current_user.id
       @transaction.price = price
-      @response = BomBasicObject.new
+      @response = PseudoResponse.new
       @response.message = 'Price is invalid';
       paypal_error(@transaction, @response, stage + ' invalid price')
     end

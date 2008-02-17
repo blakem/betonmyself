@@ -6,17 +6,18 @@ class SessionsController < ApplicationController
   end
 
   def create
-    self.current_user = User.authenticate(params[:login], params[:password])
+    @selected_button = 'members'
+    self.current_user = User.authenticate(params[:user]['login'], params[:user]['password'])
     if logged_in?
-      if params[:remember_me] == "1"
+      if params[:user]['remember_me'] == "1"
         self.current_user.remember_me
         cookies[:auth_token] = { :value => self.current_user.remember_token , :expires => self.current_user.remember_token_expires_at }
       end
       redirect_back_or_default('/')
-      flash[:notice] = "Logged in successfully"
     else
-      flash[:notice] = "Failed Authentication"
-      flash.now[:error] = "Authentication Failed"
+      @user = PseudoUser.new(params[:user])
+      @user.errors.add(:login, 'failed authenticaion')
+      @user.errors.add(:password, 'failed authenticaion')
       render :action => 'new'
     end
   end
