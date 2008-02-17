@@ -15,7 +15,7 @@ class BetController < ApplicationController
     config.update.columns = [:descr, :due_date, :notes ]
 
     list.per_page = BomConstant::RECORDS_PER_PAGE
-    list.sorting = {:due_date => 'ASC'}
+    list.sorting = [{ :due_date => :asc}, {:created_at => :desc}]
   end
 
   def list
