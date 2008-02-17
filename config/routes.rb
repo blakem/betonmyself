@@ -16,6 +16,7 @@ ActionController::Routing::Routes.draw do |map|
   map.connect '/demo', :controller => 'demo'
   map.connect '/demo/get_account_balance', :controller => 'demo', :action => 'get_account_balance'
   map.connect '/demo_expired', :controller => 'demo_expired'
+  map.connect '/demo_deleted', :controller => 'demo_deleted'
   map.connect '/demo_purchase', :controller => 'demo_purchase'
 
   map.connect '/members', :controller => 'members'

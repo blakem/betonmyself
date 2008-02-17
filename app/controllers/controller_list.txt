@@ -17,6 +17,7 @@ Demo
 /var/www/rails/betonmyself/app/controllers/demo_controller.rb
 /var/www/rails/betonmyself/app/controllers/demo_expired_controller.rb
 /var/www/rails/betonmyself/app/controllers/demo_purchase_controller.rb
+/var/www/rails/betonmyself/app/controllers/demo_expired_controller.rb
 
 WWW
 /var/www/rails/betonmyself/app/controllers/welcome_controller.rb

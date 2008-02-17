@@ -1,0 +1,2 @@
+module DemoDeletedHelper
+end
