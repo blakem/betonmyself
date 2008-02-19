@@ -32,7 +32,6 @@ alias gh='history | grep'
 alias ls='ls -F'
 alias status='svn status'
 alias update='svn update'
-alias cdiff='svn diff | less'
 alias diff='diff -u'
 [ "$root" = "" ] && export root="/var/www/rails/betonmyself"
 export PATH=$PATH:$root/sysconf/bin
@@ -40,6 +39,7 @@ alias root='cd $root'
 alias reroot='export root=`pwd`'
 alias app='root; cd app'
 alias controllers='root; cd app/controllers'
+alias views='root; cd app/views'
 alias db='psql betonmyself_development'
 alias db_prod='psql betonmyself_production'
 alias db_test='psql betonmyself_test'
@@ -47,23 +47,25 @@ alias svnci='svn ci'
 export EDITOR='emacs -nw'
 alias cleandroppings='find -name '\''*~'\'' | xargs -r rm'
 alias cleanalldroppings='cleandroppings'
-alias pxrm='parseup | xargs rm -rf'
-alias pxa='parseup | xargs svn add'
+alias pxrm='parseup | xargs -r rm -rf'
+alias pxa='parseup | xargs -r svn add'
 alias up='svn update'
 alias logs='cd $root/log'
+alias hlogs='cd /etc/httpd/logs'
 alias rerake='(cd $root; sysconf/bin/stop_mongrel.sh; sysconf/bin/backup_data.pl); rake db:drop:all; rake db:create:all; RAILS_ENV=development rake db:migrate; RAILS_ENV=production rake db:migrate; (cd $root;  sysconf/bin/backup_data.pl -r; sysconf/bin/start_mongrel.sh)'
 alias psg='ps auwx | grep'
 alias sca='cd $root/vendor/plugins/1.1.0_rc1'
 alias lib='cd $root/lib'
 alias sb='. ~/.bashrc'
 
-alias findcode='find . -type f -path ./app/\* -a ! -path \*/.svn/\* -o -type f -path ./config/\* -a ! -path \*/.svn/\* -o -type f -path ./db/\* -a ! -path \*/.svn/\* -o -type f -path ./lib/\* -a ! -path \*/.svn/\* -o -type f -path ./test/\* -a ! -path \*/.svn/\* | egrep -v '\''~$'\'' | xargs grep'
+alias findcode='find . -type f -path ./app/\* -a ! -path \*/.svn/\* -o -type f -path ./config/\* -a ! -path \*/.svn/\* -o -type f -path ./db/\* -a ! -path \*/.svn/\* -o -type f -path ./lib/\* -a ! -path \*/.svn/\* -o -type f -path ./test/\* -a ! -path \*/.svn/\* | egrep -v '\''~$'\'' | xargs -r grep -n'
 alias _new_bet='echo "insert into bets (user_id, state, descr, price, notes, due_date) values(1,1,'\''`random-string`'\'', 500, '\''Make it so'\'', current_date)" | db'
 alias new_bets='_new_bet; _new_bet; _new_bet; _new_bet; _new_bet;'
 
 export emacs=/usr/bin/emacs
 export PERL5LIB=$root/perl:/usr/local/lib/perl
 
+function cdiff { svn diff "$@" | less; }
 function emacs { _emacs "$@"; }
 function _emacs {
   if [ "$(echo " $@ " | grep -- ' -nw ')" = "" ]; then
@@ -76,7 +78,7 @@ function _emacs {
 }
 
 function find_in_dir {
-  grep -r $@ . | grep -v '\.svn'
+  grep -nr $@ . | grep -v '\.svn'
 }
 
 function svnproj () {
