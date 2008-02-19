@@ -10,6 +10,7 @@ class PurchaseController < ApplicationController
 
   def index
     @selected_button = 'purchase'
+    @user = current_user
   end
   def error
     @selected_button = 'purchase'

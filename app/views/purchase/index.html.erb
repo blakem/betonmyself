@@ -1,4 +1,5 @@
-<h1>Get some more incentive money...</h1>
+<h1>Get some <%= @user.balance == 0 ? '' : 'more ' -%>
+incentive money...</h1>
 <% form_for :transaction, :url => { :action => :form } do |form| -%>
   <p><b>Amount:</b> <%= form.select('price', [ [ '$20',  2000],
                                                [ '$50',  5000],
@@ -7,5 +8,5 @@
                                                ['$500', 50000] ],
                                     :selected => 5000 ) 
   %></p>
-  <p><%= submit_tag 'Purchase' -%></br></p>
+  <p><%= submit_tag 'Transfer' -%></br></p>
  <% end %>
