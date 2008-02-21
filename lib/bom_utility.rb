@@ -96,6 +96,9 @@ module BomUtility
     log_transactions_obj("Successful transaction in", transaction)
     Notifier.deliver_sms_transaction_in(transaction)
   end
+  def log_transaction_loan(transaction)
+    log_transactions_obj("Successful transaction loan", transaction)
+  end
   def log_transaction_out(transaction)
     log_transactions_obj("Successful transaction out", transaction)
     Notifier.deliver_sms_transaction_out(transaction)

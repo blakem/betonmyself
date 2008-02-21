@@ -1,8 +1,22 @@
 <h2>Thanks for signing up, <%= h(@user.first_name) %>!</h2>
-<p>
-Welcome to the BetOnMyself members area.
-</p>
 
 <p>
-The first step is to activate your account.  We've sent an email to <b><%= h(@user.email) -%></b> with instruction you how to do this.  Simply visit the link we sent, and you'll be ready to go.
+
+Welcome to the BetOnMyself members area.
+
+</p><p>
+
+The first step is to activate your account.  We've sent an email to 
+<b><%= h(@user.email) -%></b>
+with instruction you how to do this.  Simply visit
+the link we sent, and you'll be ready to go.
+
+
+</p><p>
+
+Please note, it's possible for the activation email to be caught by your
+spam filter.  Be sure to check your Bulk folder if you can't find the
+activation email.  You may also wish to add betonmyself.com to your
+whitelist of email senders.
+
 </p>

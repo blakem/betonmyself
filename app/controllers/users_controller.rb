@@ -16,6 +16,7 @@ class UsersController < ApplicationController
     @user.save!
     Notifier.deliver_signup_notification(@user)
     log_users_create(@user)
+    create_loan
     flash[:notice] = "Thanks for signing up!"
   rescue ActiveRecord::RecordInvalid
     render :action => 'new'
@@ -34,4 +35,22 @@ class UsersController < ApplicationController
     self.current_user = nil
     redirect_back_or_default('/intro')
   end
+
+  protected
+    def create_loan
+      @loan_in = Transaction.new(:user_id => @user.id)
+      @loan_in.price = BomConstant::INITIAL_LOAN_AMOUNT
+      @loan_in.direction = BomConstant::TRANSACTION_DIRECTION_IN
+      @loan_in.state = BomConstant::TRANSACTION_STATE_SUCCESS
+      @loan_in.trans_type = BomConstant::TRANSACTION_TYPE_BOM_LOAN
+      @loan_in.fee_amount = 0
+      @loan_in.save!
+      @loan_out = Transaction.new(:user_id => @user.id)
+      @loan_out.price = BomConstant::INITIAL_LOAN_AMOUNT
+      @loan_out.direction = BomConstant::TRANSACTION_DIRECTION_OUT
+      @loan_out.state = BomConstant::TRANSACTION_STATE_SUCCESS
+      @loan_out.trans_type = BomConstant::TRANSACTION_TYPE_BOM_LOAN
+      @loan_out.save!
+      log_transaction_loan(@loan_in)
+    end
 end

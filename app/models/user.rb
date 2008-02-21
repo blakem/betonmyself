@@ -89,15 +89,15 @@ class User < ActiveRecord::Base
   end
 
   def balance
-    total_funds_in - total_funds_out - total_expired_bet_funds - total_current_bet_funds
+    total_funds_in - total_funds_out - total_expired_bet_funds - total_current_bet_funds + total_loans_in
   end
   def available_cashout_funds
     fees = fee_total - total_expired_bet_funds
     fees = 0 if fees < 0
-    balance - fees
+    balance - fees - total_loans_in
   end
   def straight_up_cashout_funds
-    balance - fee_total
+    balance - fee_total - total_loans_in
   end
 
   def total_expired_bet_funds
@@ -124,6 +124,20 @@ class User < ActiveRecord::Base
   def total_funds_out
     total = 0
     self.transactions_out.each do |t|
+      total += t.price
+    end
+    total
+  end
+  def total_loans_in
+    total = 0
+    self.loans_in.each do |t|
+      total += t.price
+    end
+    total
+  end
+  def total_loans_out
+    total = 0
+    self.loans_out.each do |t|
       total += t.price
     end
     total
@@ -183,6 +197,36 @@ class User < ActiveRecord::Base
       end
     end
     return transactions_in
+  end
+
+  def loans
+    loans = []
+    self.transactions_successful.each do |t|
+      if t.trans_type == BomConstant::TRANSACTION_TYPE_BOM_LOAN
+        loans.push t
+      end
+    end
+    return loans
+  end
+
+  def loans_in
+    loans = []
+    self.loans.each do |t|
+      if t.direction == BomConstant::TRANSACTION_DIRECTION_IN
+        loans.push t
+      end
+    end
+    return loans
+  end
+
+  def loans_out
+    loans = []
+    self.loans.each do |t|
+      if t.direction == BomConstant::TRANSACTION_DIRECTION_OUT
+        loans.push t
+      end
+    end
+    return loans
   end
 
   def transactions_out

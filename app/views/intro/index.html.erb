@@ -1,8 +1,19 @@
 <h1>Yay! You made it!</h1>
+
+<p>
+
 Welcome to the members section of BetOnMyself.  This site will help you clear
 the clutter out of your life, and help make room for what really matters to you.
-<p></p>
+
+</p><p>
+
 <h2>Getting started</h2>
-You can get to everything you need using the tabs up above.  The first thing to
-do is to <%= link_to "add some money", { :controller => 'purchase' } %> to your 
-account.  Then its time to <%= link_to "Play!", '/' %>
+
+</p><p>
+
+To help get you started, we've given you a little
+<b><%= sigil_money(@loan_amount) %></b>
+loan.  You won't be able to cash it out, but you can use it to get a feel
+for how the site works.  And now, it's time to <%= link_to "Play!", BomConstant::MEMBERS_LINK %>
+
+</p>

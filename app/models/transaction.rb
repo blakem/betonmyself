@@ -30,9 +30,17 @@ class Transaction < ActiveRecord::Base
 
   def account_history_action 
     if direction == BomConstant::TRANSACTION_DIRECTION_IN
-      'Deposit'
+      if trans_type == BomConstant::TRANSACTION_TYPE_BOM_LOAN
+        'Loan In'
+      else
+        'Deposit'
+      end
     else
-      'Withdraw'
+      if trans_type == BomConstant::TRANSACTION_TYPE_BOM_LOAN
+        'Loan Out'
+      else
+        'Withdraw'
+      end
     end
   end
   def account_history_date
@@ -46,7 +54,8 @@ class Transaction < ActiveRecord::Base
     end
   end
   def account_history_fee
-    if direction == BomConstant::TRANSACTION_DIRECTION_IN
+    if direction == BomConstant::TRANSACTION_DIRECTION_IN and 
+        trans_type != BomConstant::TRANSACTION_TYPE_BOM_LOAN
       sigil_money(fee_amount_calc)
     else
       '-'

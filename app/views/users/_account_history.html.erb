@@ -8,6 +8,13 @@
   @straight_up_cashout_funds = @user.straight_up_cashout_funds
   @straight_up_cashout_funds_fmt = sigil_money(@straight_up_cashout_funds)
   @items = @user.items
+  @items_no_loan = []
+  @items.each do |i|
+    if i.account_history_action != 'Loan In' and
+         i.account_history_action != 'Loan Out'
+      @items_no_loan.push i
+    end
+  end
 %>
 
 <p>
@@ -90,11 +97,13 @@
 </p>
 
 <p></p>
+
+<% if @items_no_loan.length > 0 and @fee_total > 0 -%>
+
 <p>
 <b>Current Balance</b>: <b><span class="red_link"><%= @straight_up_cashout_funds_fmt -%></span></b>
 </p>
 
-<% if @items.length > 0 %>
 <% if @total_expired_bet_funds >= @fee_total -%>
 <p>
 Since your <%= link_to "expired goal total", :controller => 'expired' -%> (<%= @total_expired_bet_funds_fmt -%>) is greater than your transaction fee total (<%= @fee_total_fmt -%>) the transaction fees are waived, and your available cash out balance is: <b><%= @straight_up_cashout_funds_fmt %> + <%= @fee_total_fmt -%> = <span class="red_link"><%= @available_cashout_fmt -%></span></b>
@@ -114,4 +123,8 @@ Balance + FeesCoveredByExpiredGoals = Available Cash Out Balance<br/>
 </p>
 
 <% end %>
+<% else %>
+<p>
+<b>Current CashOut Balance</b>: <b><span class="red_link"><%= @straight_up_cashout_funds_fmt -%></span></b>
+</p>
 <% end %>
