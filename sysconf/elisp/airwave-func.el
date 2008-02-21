@@ -338,7 +338,13 @@
   (chomp (airwave-shell-function-eval "svnbase")))
 (defun svnurl (&rest proj)
   (concat (string-replace-match "\\/[^/\n]+$" (svnbase) "/") (apply 'concat proj)))
-(defun svnproj () "betonmyself")
+(defun svnproj () 
+  (if (string-equal (root) "/var/www/rails/betonmyself-devel")
+      "betonmyself-devel"
+    (if (string-equal (root) "/var/www/rails/betonmyself")
+        "betonmyself"
+      "other"
+      )))
 (defun towho ()
   (chomp (airwave-shell-function-eval "towho")))
 (defun devamps ()
