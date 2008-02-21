@@ -13,8 +13,16 @@ module ApplicationHelper
     render :file => "#{RAILS_ROOT}/app/views/menu_items/_menubar.rhtml", :use_full_path => false, :locals => {:level => 0, :depth => 0, :class_attr => nil, :menu_data => menu_data(selected_button) }
   end
   def menu_data(selected_button)
-    www = 'http://www.betonmyself.com'
-    members = 'https://members.betonmyself.com'
+    if ENV["RAILS_ENV"] == "production"
+      www = 'http://www.betonmyself.com'
+      members = 'https://members.betonmyself.com'
+      members_link = members + '/'
+    else
+      dev_port = 1080.to_s;
+      www = 'http://www.betonmyself.com:' + dev_port
+      members = 'http://www.betonmyself.com:' + dev_port
+      members_link = members + '/members'
+    end
     buttons = {
       'welcome' => {
         'text' => 'Welcome',
@@ -38,7 +46,7 @@ module ApplicationHelper
       },
       'members' => {
         'text' => 'Members',
-        'link' => members + '/',
+        'link' => members_link,
         'selected' => 0,
       },
       'faq' => {
@@ -63,7 +71,7 @@ module ApplicationHelper
       },
       'play' => {
         'text' => 'Play!',
-        'link' => members + '/',
+        'link' => members_link,
         'selected' => 0,
       },
       'purchase' => {

@@ -977,7 +977,7 @@
    (interactive
     (list (read-string "Run findcode as: findcode "
                        (format "%s" (current-keyword-or-quoted-active-region)))))
-   (grep (format "%s%s" "cd /var/www/rails/betonmyself; find -type f -path ./app/\\* -a ! -path \\*/.svn/\\* -o -type f -path ./config/\\* -a ! -path \\*/.svn/\\* -o -type f -path ./db/\\* -a ! -path \\*/.svn/\\* -o -type f -path ./lib/\\* -a ! -path \\*/.svn/\\* -o -type f -path ./test/\\* -a ! -path \\*/.svn/\\* | egrep -v '~$' | xargs grep -n " findcode-command))
+   (grep (format "cd %s; %s%s" (root) "find -type f -path ./app/\\* -a ! -path \\*/.svn/\\* -o -type f -path ./config/\\* -a ! -path \\*/.svn/\\* -o -type f -path ./db/\\* -a ! -path \\*/.svn/\\* -o -type f -path ./lib/\\* -a ! -path \\*/.svn/\\* -o -type f -path ./test/\\* -a ! -path \\*/.svn/\\* | egrep -v '~$' | xargs grep -n " findcode-command))
 
    (airwave-rename-other-buffer (format "*findcode %s*" findcode-command)))
 
@@ -2178,7 +2178,7 @@
           (when (not (eq (point) beg))
             (setq linenum (string-to-int (buffer-substring beg (point))))))))
     (setq dirs (cons default-directory (list
-      "/var/www/rails/betonmyself"                                  
+      (root)
       (home)
       ""
     )))
