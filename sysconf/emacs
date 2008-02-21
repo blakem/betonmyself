@@ -654,8 +654,8 @@
             (mercmerc "/lib/perl")
             (mercmerc "/")
             airwave-cvs-root
-            "/var/www/rails/betonmyself"
-            "/var/www/rails/betonmyself/vendor/plugins/1.1.0_rc1"
+            (root)
+            (root "/vendor/plugins/1.1.0_rc1")
             nil))
 (setq compilation-error-regexp-alist 
       (append '(("# Failed test [0-9]+ in \\(.*\\) at line \\([0-9]+\\)\\( fail #[0-9]+\\)?$" 1 2)

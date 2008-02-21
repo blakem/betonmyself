@@ -13,7 +13,7 @@ class SessionsController < ApplicationController
         self.current_user.remember_me
         cookies[:auth_token] = { :value => self.current_user.remember_token , :expires => self.current_user.remember_token_expires_at }
       end
-      redirect_back_or_default('/')
+      redirect_back_or_default(BomConstant::MEMBERS_LINK)
     else
       @user = PseudoUser.new(params[:user])
       @user.errors.add(:login, 'failed authenticaion')
@@ -27,6 +27,6 @@ class SessionsController < ApplicationController
     cookies.delete :auth_token
     reset_session
     flash[:notice] = "You have been logged out."
-    redirect_to "http://www.betonmyself.com/"
+    redirect_to BomConstant::WWW_LINK
   end
 end

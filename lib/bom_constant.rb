@@ -46,4 +46,17 @@ module BomConstant
   SMS_FROM_EMAIL='sms@betonmyself.com'
   EMAIL_PREFIX='[BetOnMySelf] '
   SUPPORT_EMAIL='support@betonmyself.com'
+
+  if ENV["RAILS_ENV"] == "production"
+    WWW_URL='http://www.betonmyself.com'
+    WWW_LINK= WWW_URL + '/'
+    MEMBERS_URL='https://members.betonmyself.com'
+    MEMBERS_LINK = MEMBERS_URL + '/'
+  else
+    DEV_PORT = 1080.to_s;
+    WWW_URL = 'http://www.betonmyself.com:' + DEV_PORT
+    WWW_LINK= WWW_URL + '/'
+    MEMBERS_URL = 'http://www.betonmyself.com:' + DEV_PORT
+    MEMBERS_LINK = MEMBERS_URL + '/members'
+  end
 end

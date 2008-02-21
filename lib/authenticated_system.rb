@@ -85,7 +85,7 @@ module AuthenticatedSystem
       redirect_url = default
       if session[:return_to]
         if session[:return_to] == '/members'
-          redirect_url = '/'
+          redirect_url = BomConstant::MEMBERS_LINK
         else
           redirect_url = session[:return_to]
         end

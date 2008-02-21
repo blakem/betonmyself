@@ -13,20 +13,13 @@ module ApplicationHelper
     render :file => "#{RAILS_ROOT}/app/views/menu_items/_menubar.rhtml", :use_full_path => false, :locals => {:level => 0, :depth => 0, :class_attr => nil, :menu_data => menu_data(selected_button) }
   end
   def menu_data(selected_button)
-    if ENV["RAILS_ENV"] == "production"
-      www = 'http://www.betonmyself.com'
-      members = 'https://members.betonmyself.com'
-      members_link = members + '/'
-    else
-      dev_port = 1080.to_s;
-      www = 'http://www.betonmyself.com:' + dev_port
-      members = 'http://www.betonmyself.com:' + dev_port
-      members_link = members + '/members'
-    end
+    www = BomConstant::WWW_URL
+    members = BomConstant::MEMBERS_URL
+    members_link = BomConstant::MEMBERS_LINK
     buttons = {
       'welcome' => {
         'text' => 'Welcome',
-        'link' => www + '/',
+        'link' => BomConstant::WWW_LINK,
         'selected' => 0,
       },
       'signup' => {
