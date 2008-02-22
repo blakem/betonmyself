@@ -49,7 +49,7 @@ module BomConstant
   EMAIL_PREFIX='[BetOnMySelf] '
   SUPPORT_EMAIL='support@betonmyself.com'
 
-  ADMIN_LINK='http://www.betonmyself.com:88/admin'
+  ADMIN_LINK='https://admin.betonmyself.com/admin'
   if ENV["RAILS_ENV"] == "production"
     WWW_URL='http://www.betonmyself.com'
     WWW_LINK= WWW_URL + '/'
