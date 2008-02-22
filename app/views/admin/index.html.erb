@@ -173,6 +173,7 @@
 <%
   surveys = Survey.find(:all).sort {|a,b| b.created_at <=> a.created_at}
 -%>
+<% if surveys.any? -%>
 <h2>Surveys:</h2>
 <table cellpadding=3 cellspacing=3>
  <th align=center>
@@ -206,3 +207,6 @@
  </tr>
 <% end -%>
 </table>
+<% else -%>
+<h2>No Surveys.</h2>
+<% end -%>
