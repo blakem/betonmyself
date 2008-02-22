@@ -14,13 +14,14 @@ module ApplicationHelper
   end
   def menu_data(selected_button)
     www = BomConstant::WWW_URL
+    www_link = BomConstant::WWW_LINK
     members = BomConstant::MEMBERS_URL
     members_link = BomConstant::MEMBERS_LINK
     admin_link = BomConstant::ADMIN_LINK
     buttons = {
       'welcome' => {
         'text' => 'Welcome',
-        'link' => BomConstant::WWW_LINK,
+        'link' => www_link,
         'selected' => 0,
       },
       'signup' => {
@@ -133,6 +134,8 @@ module ApplicationHelper
     elsif selected_button == "admin"
       display_buttons = [
         buttons['admin'],
+        buttons['welcome'],
+        buttons['members'],
       ]
     else
       display_buttons = [
