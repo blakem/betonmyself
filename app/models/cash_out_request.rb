@@ -1,4 +1,5 @@
 class CashOutRequest < ActiveRecord::Base
+  belongs_to :user
   def validate_on_create
     if price.nil? or price.blank?
       errors.add(:price, 'is required')

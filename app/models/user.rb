@@ -4,6 +4,8 @@ class User < ActiveRecord::Base
   has_many :transactions
   has_many :bets
   has_many :surveys
+  has_many :feedbacks
+  has_many :cash_out_requests
 
   # Virtual attribute for the unencrypted password
   attr_accessor :password
@@ -110,6 +112,13 @@ class User < ActiveRecord::Base
   def total_current_bet_funds
     total = 0
     self.current_bets.each do |b|
+      total += b.price
+    end
+    total
+  end
+  def total_accomplishment_funds
+    total = 0
+    self.accomplishments.each do |b|
       total += b.price
     end
     total

@@ -16,6 +16,7 @@ module ApplicationHelper
     www = BomConstant::WWW_URL
     members = BomConstant::MEMBERS_URL
     members_link = BomConstant::MEMBERS_LINK
+    admin_link = BomConstant::ADMIN_LINK
     buttons = {
       'welcome' => {
         'text' => 'Welcome',
@@ -53,7 +54,7 @@ module ApplicationHelper
         'selected' => 0,
       },
       'demo' => {
-        'text' => 'Demo',
+        'text' => '<b>Demo</b>',
         'link' => www + '/demo',
         'selected' => 0,
       },
@@ -102,6 +103,11 @@ module ApplicationHelper
         'link' => members + '/logout',
         'selected' => 0,
       },
+      'admin' => {
+        'text' => 'Admin',
+        'link' => admin_link,
+        'selected' => 0,
+      },
     };
 
     if not selected_button.nil? 
@@ -123,6 +129,10 @@ module ApplicationHelper
         buttons['faq'],
         buttons['contact'],
         buttons['demo'],
+      ]
+    elsif selected_button == "admin"
+      display_buttons = [
+        buttons['admin'],
       ]
     else
       display_buttons = [

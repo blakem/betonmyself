@@ -1,0 +1,208 @@
+<!-- CASH_OUTS -->
+
+<%
+  cash_outs = CashOutRequest.find(:all).sort {|a,b| b.created_at <=> a.created_at}
+-%>
+
+<% if cash_outs.any? -%>
+<h2>Pending Cash Out Requests:</h2>
+<table cellpadding=3 cellspacing=3>
+ <th align=center>
+  User
+ </th>
+ <th align="center">
+  State
+ </th>
+ <th align="center">
+  Price
+ </th>
+ <th align="center">
+  Date
+ </th>
+<%
+  cash_outs.each do |c|
+  state = 'Unknown'
+  state = 'Pending' if c.state == 1
+  state = 'Complete' if c.state == 2
+-%>
+ <tr>
+ <td align="left">
+  <%= h(c.user.login) -%>
+ </td>
+ <td align="left">
+  <%= state -%>
+ </td>
+ <td align="right">
+  <%= sigil_money(c.price) -%>
+ </td>
+ <td align="right">
+  <%= c.created_at.strftime("%m/%d/%Y") -%>
+ </td>
+ </tr>
+<% end -%>
+</table>
+<% else -%>
+<h2>No pending cash out requests.</h2>
+<% end -%>
+
+<!-- USERS -->
+
+<%
+  users = User.find(:all).sort {|a,b| b.bets.count <=> a.bets.count}
+-%>
+<h2>Users:</h2>
+<table cellpadding=3 cellspacing=3>
+ <th align=center>
+  User
+ </th>
+ <th align="center">
+  Activated
+ </th>
+ <th align="center">
+  Bets
+ </th>
+ <th align="center">
+  Balance
+ </th>
+ <th align="center">
+  CashOut
+ </th>
+ <th align="center">
+  Expired
+ </th>
+ <th align="center">
+  Current
+ </th>
+ <th align="center">
+  Success
+ </th>
+ <th align="center">
+  Feedback
+ </th>
+<%
+  users.each do |u|
+-%>
+ <tr>
+ <td align="left">
+  <%= u.login -%>
+ </td>
+ <td align="left">
+  <%= u.active? ? 'Yes' : 'No' -%>
+ </td>
+ <td align="right">
+  <%= u.bets.count -%>
+ </td>
+ <td align="right">
+  <%= sigil_money(u.balance) -%>
+ </td>
+ <td align="right">
+  <%= sigil_money(u.available_cashout_funds) -%>
+ </td>
+ <td align="right">
+  <%= sigil_money(u.total_expired_bet_funds) -%>
+ </td>
+ <td align="right">
+  <%= sigil_money(u.total_current_bet_funds) -%>
+ </td>
+ <td align="right">
+  <%= sigil_money(u.total_accomplishment_funds) -%>
+ </td>
+ <td align="right">
+  <%= u.feedbacks.count -%>
+ </td>
+ </tr>
+<% end -%>
+</table>
+
+<!-- FEEDBACKS -->
+
+<%
+  feedbacks = Feedback.find(:all).sort {|a,b| b.created_at <=> a.created_at}
+-%>
+<h2>Feedback:</h2>
+<table cellpadding=3 cellspacing=3>
+ <th align=center>
+  User
+ </th>
+ <th align=center>
+  Type
+ </th>
+ <th align=center>
+  Subject
+ </th>
+ <th align="center">
+  Name
+ </th>
+ <th align="center">
+  Location
+ </th>
+ <th align="center">
+  Body
+ </th>
+<%
+  feedbacks.each do |f|
+  ftype = 'Unknown'
+  ftype = 'Feedback' if f.feedback_type == 1
+  ftype = 'Problem' if f.feedback_type == 2
+  ftype = 'Testamonial' if f.feedback_type == 3
+-%>
+ <tr>
+ <td align="left">
+  <%= h(f.user.login) -%>
+ </td>
+ <td align="left">
+  <%= ftype -%>
+ </td>
+ <td align="left">
+  <%= h(f.subject) -%>
+ </td>
+ <td align="right">
+  <%= h(f.name) -%>
+ </td>
+ <td align="right">
+  <%= h(f.location) -%>
+ </td>
+ <td align="right">
+  <%= h(f.feedback) -%>
+ </td>
+ </tr>
+<% end -%>
+</table>
+
+<!-- SURVEYS -->
+<%
+  surveys = Survey.find(:all).sort {|a,b| b.created_at <=> a.created_at}
+-%>
+<h2>Surveys:</h2>
+<table cellpadding=3 cellspacing=3>
+ <th align=center>
+  User
+ </th>
+ <th align=center>
+  Q1
+ </th>
+ <th align=center>
+  Q2
+ </th>
+ <th align="center">
+  Q3
+ </th>
+<%
+  surveys.each do |s|
+-%>
+ <tr>
+ <td align="left">
+  <%= h(s.user.login) -%>
+ </td>
+ <td align="left">
+  <%= h(s.q1) -%>
+ </td>
+ <td align="left">
+  <%= h(s.q2) -%>
+ </td>
+ <td align="right">
+  <%= h(s.q3) -%>
+ </td>
+ </tr>
+<% end -%>
+</table>

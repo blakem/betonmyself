@@ -1,4 +1,5 @@
 class Feedback < ActiveRecord::Base
+  belongs_to :user
   validates_presence_of :feedback_type, :subject, :user_id
   validates_presence_of :feedback,    :if => :feedback_required?
   validates_presence_of :testimonial, :if => :testimonial_required?

@@ -3,6 +3,8 @@ ActionController::Routing::Routes.draw do |map|
   map.resource :session
   #  map.resources :users
 
+  map.connect '/admin',   :controller => 'admin'
+
   map.connect '/faq',     :controller => 'faq'
   map.connect '/contact', :controller => 'contact'
   map.connect '/intro',   :controller => 'intro'
