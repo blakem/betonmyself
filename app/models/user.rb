@@ -274,6 +274,14 @@ class User < ActiveRecord::Base
     items = items.flatten.sort { |a,b| a.account_history_sort_date <=> b.account_history_sort_date }
     return items
   end
+  def most_recent_activity_date
+    sorted_items = items
+    if sorted_items.any?
+      items[-1].account_history_sort_date
+    else
+      created_at
+    end
+  end
 
   def is_admin
     role == BomConstant::ROLE_TYPE_ADMIN
