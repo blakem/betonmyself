@@ -120,7 +120,13 @@ module ApplicationHelper
       end
     end
 
-    if not logged_in? or selected_button == "demo" or selected_button == "signup" or self.current_user.is_demo
+    if selected_button == "admin"
+      display_buttons = [
+        buttons['admin'],
+        buttons['welcome'],
+        buttons['members'],
+      ]
+    elsif not logged_in? or selected_button == "demo" or selected_button == "signup" or self.current_user.is_demo
       display_buttons = [
         buttons['welcome'],
         buttons['story'],
@@ -130,12 +136,6 @@ module ApplicationHelper
         buttons['faq'],
         buttons['contact'],
         buttons['demo'],
-      ]
-    elsif selected_button == "admin"
-      display_buttons = [
-        buttons['admin'],
-        buttons['welcome'],
-        buttons['members'],
       ]
     else
       display_buttons = [
