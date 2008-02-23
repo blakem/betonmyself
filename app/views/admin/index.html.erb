@@ -214,6 +214,10 @@
 <% end -%>
 
 <!-- NO STUFF TO DO MESSAGES --> 
+<% if ((not cash_outs.any?) or (not feedbacks.any?) or (not surveys.any?)) -%>
+<p></p>
+<hr>
+<p></p>
 
 <% if not cash_outs.any? -%>
 <h2>No pending cash out requests.</h2>
@@ -226,3 +230,5 @@
 <% if not surveys.any? -%>
 <h2>No New Surveys.</h2>
 <% end -%>
+<% end -%>
+
