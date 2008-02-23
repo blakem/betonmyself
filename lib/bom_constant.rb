@@ -56,10 +56,9 @@ module BomConstant
     MEMBERS_URL='https://members.betonmyself.com'
     MEMBERS_LINK = MEMBERS_URL + '/'
   else
-    DEV_PORT = 1080.to_s;
-    WWW_URL = 'http://www.betonmyself.com:' + DEV_PORT
+    WWW_URL = 'http://dev.betonmyself.com'
     WWW_LINK= WWW_URL + '/'
-    MEMBERS_URL = 'http://www.betonmyself.com:' + DEV_PORT
+    MEMBERS_URL = 'http://dev.betonmyself.com'
     MEMBERS_LINK = MEMBERS_URL + '/members'
   end
 end
