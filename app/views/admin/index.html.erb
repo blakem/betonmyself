@@ -59,16 +59,13 @@
   User
  </th>
  <th align="center">
-  Activated
- </th>
- <th align="center">
   Bets
  </th>
  <th align="center">
   Balance
  </th>
  <th align="center">
-  CashOut
+  CashOutBal
  </th>
  <th align="center">
   Expired
@@ -82,6 +79,9 @@
  <th align="center">
   Feedback
  </th>
+ <th align="center">
+  Activated
+ </th>
 <%
   users.each do |u|
 -%>
@@ -90,10 +90,7 @@
   <%= u.most_recent_activity_date.strftime("%m/%d/%y") -%>
  </td>
  <td align="left">
-  <%= u.login -%>
- </td>
- <td align="left">
-  <%= u.active? ? 'Yes' : 'No' -%>
+  <b><%= h(u.login) -%></b>
  </td>
  <td align="right">
   <%= u.bets.count -%>
@@ -115,6 +112,9 @@
  </td>
  <td align="right">
   <%= u.feedbacks.count -%>
+ </td>
+ <td align="right">
+  <%= u.active? ? 'Yes' : 'No' -%>
  </td>
  </tr>
 <% end -%>
