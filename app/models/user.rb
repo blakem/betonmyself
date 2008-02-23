@@ -91,15 +91,15 @@ class User < ActiveRecord::Base
   end
 
   def balance
-    total_funds_in - total_funds_out - total_expired_bet_funds - total_current_bet_funds + total_loans_in
+    total_funds_in - total_funds_out - total_expired_bet_funds - total_current_bet_funds + total_loans_out
   end
   def available_cashout_funds
     fees = fee_total - total_expired_bet_funds
     fees = 0 if fees < 0
-    balance - fees - total_loans_in
+    balance - fees - total_loans_out
   end
   def straight_up_cashout_funds
-    balance - fee_total - total_loans_in
+    balance - fee_total - total_loans_out
   end
 
   def total_expired_bet_funds
