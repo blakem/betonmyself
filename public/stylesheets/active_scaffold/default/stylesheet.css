@@ -59,6 +59,10 @@ color: #333;
 position: relative;
 }
 
+.active-scaffold {
+position: relative;
+}
+
 .blue-theme .active-scaffold-header {
 background-color: #005CB8;
 }
