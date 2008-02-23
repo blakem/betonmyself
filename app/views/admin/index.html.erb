@@ -41,8 +41,6 @@
  </tr>
 <% end -%>
 </table>
-<% else -%>
-<h2>No pending cash out requests.</h2>
 <% end -%>
 
 <!-- USERS -->
@@ -117,8 +115,11 @@
 <!-- FEEDBACKS -->
 
 <%
-  feedbacks = Feedback.find(:all).sort {|a,b| b.created_at <=> a.created_at}
+  feedbacks = Feedback.find_all_by_state(BomConstant::FEEDBACK_STATE_NEW).sort {
+    |a,b| b.created_at <=> a.created_at
+  }
 -%>
+<% if feedbacks.any? -%>
 <h2>Feedback:</h2>
 <table cellpadding=3 cellspacing=3>
  <th align=center>
@@ -168,10 +169,13 @@
  </tr>
 <% end -%>
 </table>
+<% end -%>
 
 <!-- SURVEYS -->
 <%
-  surveys = Survey.find(:all).sort {|a,b| b.created_at <=> a.created_at}
+  surveys = Survey.find_all_by_state(BomConstant::SURVEY_STATE_NEW).sort {
+   |a,b| b.created_at <=> a.created_at
+  }
 -%>
 <% if surveys.any? -%>
 <h2>Surveys:</h2>
@@ -207,6 +211,18 @@
  </tr>
 <% end -%>
 </table>
-<% else -%>
-<h2>No Surveys.</h2>
+<% end -%>
+
+<!-- NO STUFF TO DO MESSAGES --> 
+
+<% if not cash_outs.any? -%>
+<h2>No pending cash out requests.</h2>
+<% end -%>
+
+<% if not feedbacks.any? -%>
+<h2>No New Feedback.</h2>
+<% end -%>
+
+<% if not surveys.any? -%>
+<h2>No New Surveys.</h2>
 <% end -%>

@@ -9,7 +9,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 7) do
+ActiveRecord::Schema.define(:version => 8) do
 
   create_table "bets", :force => true do |t|
     t.integer  "user_id",         :null => false
@@ -39,14 +39,15 @@ ActiveRecord::Schema.define(:version => 7) do
   end
 
   create_table "feedbacks", :force => true do |t|
-    t.integer  "user_id",       :null => false
-    t.integer  "feedback_type", :null => false
-    t.string   "subject",       :null => false
-    t.string   "feedback",      :null => false
+    t.integer  "user_id",                      :null => false
+    t.integer  "feedback_type",                :null => false
+    t.string   "subject",                      :null => false
+    t.string   "feedback",                     :null => false
     t.string   "name"
     t.string   "location"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "state",         :default => 1, :null => false
   end
 
   create_table "pseudos", :force => true do |t|
@@ -54,13 +55,14 @@ ActiveRecord::Schema.define(:version => 7) do
   end
 
   create_table "surveys", :force => true do |t|
-    t.integer  "user_id",    :null => false
-    t.integer  "version",    :null => false
+    t.integer  "user_id",                   :null => false
+    t.integer  "version",                   :null => false
     t.string   "q1"
     t.string   "q2"
     t.string   "q3"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "state",      :default => 1, :null => false
   end
 
   create_table "transactions", :force => true do |t|
