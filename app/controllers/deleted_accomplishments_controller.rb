@@ -17,7 +17,7 @@ class DeletedAccomplishmentsController < ApplicationController
       'Undelete this Accomplishment.  Are you Sure?';
     config.columns.add :checked
     config.label = "Deleted Accomplishments"
-    config.update.columns = [:notes, :congrats]
+    config.update.columns = [:congrats, :notes]
 
     list.per_page = BomConstant::RECORDS_PER_PAGE
     list.sorting = {:completion_date => :desc}
