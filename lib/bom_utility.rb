@@ -1,11 +1,15 @@
 module BomUtility
-  def money_format(integer)
-    sprintf("%.02f", integer.to_f / 100);
+  def money_format(integer, options = {})
+    if options == :round
+      (integer.to_f / 100).to_i.to_s;
+    else
+      sprintf("%.02f", integer.to_f / 100);
+    end
   end
-  def sigil_money(price)
+  def sigil_money(price, options = {})
     sign = price < 0 ? '-' : ''
     price = price.abs
-    sign + "$" + money_format(price)
+    sign + "$" + money_format(price, options)
   end
 
   def log(logfile_name, msg)

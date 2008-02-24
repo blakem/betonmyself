@@ -2,13 +2,12 @@
 
 <p>
 
-The process is actually quite simple.  You will use the BetOnMyself site to
-track promises to yourself.  Bets on yourself, if you will.  For instance,
-you place a $10 bet that you will make an appointment with your tax advisor
-by March 15th.  That's it.  All of a sudden, calling your tax advisor will
-turn from a burdensome chore, into a fun little game.  Once you've
-scheduled your appointment, you win your bet and get paid $10 out of your
-account.  Yay!
+You will use the BetOnMyself site to track promises to yourself.  Bets on
+yourself, if you will.  For instance, you place a $20 bet that you will
+make an appointment with your tax advisor by March 15th.  That's it.  All
+of a sudden, calling your tax advisor will turn from a burdensome chore,
+into a fun little game.  Once you've scheduled your appointment, you win
+your bet and get paid $20 out of your account.  Yay!
 
 </p><p>
 
@@ -16,6 +15,15 @@ After setting up your account, you'll have access to the tools you need for
 keeping track of your promises.  You can see what this looks like on the
 <%= link_to "demo", {:controller => "demo"} %> page.
 
+</p><p>
+We'll even give you 
+<b><%= sigil_money(BomConstant::INITIAL_LOAN_AMOUNT, :round) %></b> 
+to start with.  You won't be able to cash this money out, but if you 
+<%= link_to "sign up", {:controller => "users", :action => "new"} %> now, 
+you'll be able to place 
+<b><%= sigil_money(BomConstant::INITIAL_LOAN_AMOUNT, :round) %></b>
+worth of free bets to get a feel for how the site works.... And start
+getting your stuff done!
 </p><p>
 
 <%= link_to "Sign me up!", {:controller => "users", :action => "new"}, :class => "red_link"%>
