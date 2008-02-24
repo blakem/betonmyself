@@ -147,8 +147,11 @@ module ApplicationHelper
        buttons['support'],
        buttons['member_faq'],
        buttons['member_contact'],
-       buttons['logout'],
       ]
+      if current_user.is_admin
+        display_buttons.push buttons['admin']
+      end
+      display_buttons.push buttons['logout']
     end
     return display_buttons
   end
