@@ -15,8 +15,9 @@
   </ul>
 </div>
 <% end %>
-<h1>Feedback</h1>
-<h2>We'd love to hear from you....</h2> 
+<h2>Feedback</h2>
+<p><b>We'd love to hear from you....</b></p> 
+
 <% form_for :feedback, @feedback, :url => { :action => 'submit' } do |f| %>
 <p><label>Subject</label><br>
 <%= f.text_field :subject, :class => 'text-input', 

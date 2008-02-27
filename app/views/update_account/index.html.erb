@@ -15,7 +15,7 @@
   </ul>
 </div>
 <% end %>
-<h1>Update Account for <%= @user.login %> </h1>
+<h2>Update Account for <%= h(@user.login) %> </h2>
 <% form_for :user, :url => { :action => :change } do |f| -%>
 <p><label for="first_name">First Name</label><br/>
 <%= f.text_field :first_name %></p>

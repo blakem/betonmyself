@@ -1,12 +1,12 @@
 <% @accomplishments = @user.accomplishments %>
-<h1>So soon?</h1>
+<h2>So soon?</h2>
 <% if @user.bets.length == 0 %>
-<h2>Come on, now... You haven't even set up any goals, yet.</h2>
+<p><b>Come on, now... You haven't even set up any goals, yet.</b></p>
 <% elsif @accomplishments.length == 0 %>
-<h2>But you haven't accomplished any of your goals...</h2>
+<p><b>But you haven't accomplished any of your goals...</b></p>
 <% else %>
-<h2>So far you've accomplished <%= @accomplishments.length %>
-goal<%= @accomplishments.length == 1 ? '' : 's' -%>, including:<br></h2>
+<p><b>So far you've accomplished <%= @accomplishments.length %>
+goal<%= @accomplishments.length == 1 ? '' : 's' -%>, including:</b></p>
 <ul>
 <% @accomplishments.each do |a| %>
   <li><%= h(a.descr) %></li>

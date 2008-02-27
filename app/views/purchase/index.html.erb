@@ -1,5 +1,5 @@
-<h1>Get some <%= @user.balance == 0 ? '' : 'more ' -%>
-incentive money...</h1>
+<h2>Get some <%= @user.balance == 0 ? '' : 'more ' -%>
+incentive money...</h2>
 <% form_for :transaction, :url => { :action => :form } do |form| -%>
   <p><b>Amount:</b> <%= form.select('price', [ [ '$20',  2000],
                                                [ '$50',  5000],

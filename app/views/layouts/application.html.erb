@@ -59,7 +59,7 @@
 <% if flash[:note] -%>
 <div class="flash_note"><%= flash[:note] %></div>
 <% elsif flash[:error] -%>
-<div class="flash_error"><h1>Error!</h1><%= flash[:error] %></div>
+<div class="flash_error"><h2>Error!</h2><%= flash[:error] %></div>
 <% end -%>
 <%= yield :layout %>
 </div>  <!-- class="content" -->
