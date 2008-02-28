@@ -3470,12 +3470,12 @@ Form.Methods = {
     form.findFirstElement().activate();
     return form;
   },
-  focusElement: function(form, label) {
+  focusElement: function(form, index) {
     form = $(form);
-    if (label == "Current Goals") {
-       form.elements[3].activate();
-    } else {
+    if (index == "first") {
        form.findFirstElement().activate();
+    } else {
+       form.elements[index].activate();
     }
     return form;
   },
