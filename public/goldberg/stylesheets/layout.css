@@ -107,6 +107,11 @@ margin:0;
 padding:0;
 }
 
+div.mainmenu li b {
+color:#900060;
+letter-spacing:1px;
+}
+
 div.mainmenu a {
 border-right:1px solid #b0b0b0;
 color:#606060;
