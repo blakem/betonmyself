@@ -40,9 +40,16 @@ module BetHelper
       h(record.descr) + ' (Was originally: <em>' + h(record.descr_orig) + '</em>)'
     end
   end
+  def date_is_editable_by_time(record)
+    record.created_at and (1.hour.ago.utc < record.created_at)
+  end
+  def date_is_editable(record)
+    ((not record.due_date) or 
+     date_is_editable_by_time(record) or 
+     current_user.is_admin)
+  end
   def due_date_form_column(record, input_name) 
-    is_editable = (record.created_at and (1.hour.ago.utc < record.created_at))
-    if (((not record.due_date) or is_editable) or current_user.is_admin)
+    if date_is_editable(record)
       start_date = record.due_date.nil? ? Date.today : record.due_date
       field = calendar_date_select_tag "record[due_date]", 
         start_date.strftime("%B %d, %Y"), 
@@ -50,7 +57,7 @@ module BetHelper
         :year_range => [0.years.ago, 12.years.from_now],
         :class => 'text-input',
         :month_year => "label"
-      if record.due_date and is_editable
+      if record.due_date and date_is_editable_by_time(record)
         field = field + " <em>(due date is only editable for 1 hour)</em>"
       end
       field

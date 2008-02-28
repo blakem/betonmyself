@@ -45,5 +45,7 @@ end
 
 </form>
 <script type="text/javascript">
-Form.focusElement('<%= element_form_id(:action => :update) -%>', '<%= active_scaffold_config.label == "Current Goals" ? 3 : "first" -%>');
+Form.focusElement('<%= element_form_id(:action => :update) -%>', '<%= 
+  active_scaffold_config.label == "Current Goals" ? (date_is_editable(@record) ? 4 : 3) : "first" 
+-%>');
 </script>
