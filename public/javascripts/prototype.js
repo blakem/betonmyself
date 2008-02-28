@@ -3470,6 +3470,15 @@ Form.Methods = {
     form.findFirstElement().activate();
     return form;
   },
+  focusElement: function(form, label) {
+    form = $(form);
+    if (label == "Current Goals") {
+       form.elements[3].activate();
+    } else {
+       form.findFirstElement().activate();
+    }
+    return form;
+  },
 
   request: function(form, options) {
     form = $(form), options = Object.clone(options || { });

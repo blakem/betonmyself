@@ -45,5 +45,5 @@ end
 
 </form>
 <script type="text/javascript">
-Form.focusFirstElement('<%= element_form_id(:action => :update) -%>');
+Form.focusElement('<%= element_form_id(:action => :update) -%>', '<%= active_scaffold_config.label -%>');
 </script>
