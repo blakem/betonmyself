@@ -1,3 +1,3 @@
 service postgresql restart
 service httpd restart
-start_mongrel.sh
+start_mongrel.sh production
