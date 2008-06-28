@@ -76,6 +76,13 @@ class Notifier < ActionMailer::Base
     subject "TESTIMONIAL: " + user.first_name + " " + user.last_name + " (" + user.login + ") " + feedback.feedback
     body :user => user, :feedback => feedback
   end
+
+  def sms_chawtok_success
+    setup_sms
+    subject "CT: Buy"
+    body ""
+  end
+
   protected
     def setup_email(user)
       recipients user.email
