@@ -80,7 +80,7 @@ class Notifier < ActionMailer::Base
   def sms_chawtok_success(params)
     setup_sms
     subject "CT: Buy"
-    body "tx=" + params['tx']
+    body "tx=" + (params.nil? ? "" : (params['tx'].nil? ? "EMPTY" : params['tx']))
   end
 
   protected
