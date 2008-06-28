@@ -33,6 +33,9 @@ module BomUtility
   def log_paypal(msg)
     log('paypal', msg)
   end
+  def log_chawtok(msg)
+    log('chawtok', msg)
+  end
 
   def log_msg_for_object(string, obj)
     if obj.respond_to? 'reload' and not obj.id.nil?
@@ -54,6 +57,9 @@ module BomUtility
   end
   def log_feedback_obj(string, obj)
     log_feedback(log_msg_for_object(string, obj))
+  end
+  def log_chawtok_obj(string, obj)
+    log_chawtok(log_msg_for_object(string, obj))
   end
   def log_object(obj)
     log_object_msg('Object', obj)
@@ -124,6 +130,11 @@ module BomUtility
   def log_problem_create(feedback)
     log_feedback_obj("Created ReportedProblem", feedback)
     Notifier.deliver_sms_problem_create(feedback)
+  end
+
+  def log_chawtok_success(params)
+    log_chawtok_obj("Success", params)
+    Notifier.deliver_sms_chawtok_success(params)
   end
 
   def make_random_token(length)
