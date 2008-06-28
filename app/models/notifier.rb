@@ -77,10 +77,10 @@ class Notifier < ActionMailer::Base
     body :user => user, :feedback => feedback
   end
 
-  def sms_chawtok_success
+  def sms_chawtok_success(params)
     setup_sms
     subject "CT: Buy"
-    body ""
+    body "tx=" + params['tx']
   end
 
   protected
