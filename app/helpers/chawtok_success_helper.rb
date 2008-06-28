@@ -1,0 +1,2 @@
+module ChawtokSuccessHelper
+end

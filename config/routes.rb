@@ -3,6 +3,8 @@ ActionController::Routing::Routes.draw do |map|
   map.resource :session
   #  map.resources :users
 
+  map.connect '/chawtok_success', :controller => 'chawtok_success'
+
   map.connect '/admin',   :controller => 'admin'
 
   map.connect '/faq',     :controller => 'faq'
