@@ -72,3 +72,15 @@ ActionView::Base.field_error_proc = Proc.new do |html_tag, instance|
   end
   html_tag
 end
+
+module ActiveSupport
+  module CoreExtensions
+    module String
+      module Access
+        def first(limit = 1)
+          chars.to_a[0..(limit - 1)].to_s
+        end
+      end
+    end
+  end
+end
